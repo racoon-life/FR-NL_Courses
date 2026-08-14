@@ -1,1 +1,1 @@
-# French-course
+# FR / NL -courses
