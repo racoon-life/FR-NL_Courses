@@ -134,6 +134,16 @@
     cursor:pointer;
   }
   .checklist li.checked span{ color:#7c8794; text-decoration: line-through; }
+  .checklist li{ flex-direction:column; align-items:stretch; gap:4px; }
+  .day-row{ display:flex; gap:7px; margin-top:2px; }
+  .day-box{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .day-box .day-label{ font-size:.6rem; color: var(--rust); font-weight:700; letter-spacing:.02em; }
+  .day-box input[type="checkbox"]{
+    width:17px; height:17px;
+    margin:0;
+    accent-color: var(--teal);
+    cursor:pointer;
+  }
   .week-progress{
     font-size:.74rem;
     color: var(--mustard);
@@ -2188,14 +2198,26 @@ function speak(text){
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = ()=>{}; }
 
 /* ---------- RENDER: PLAN ---------- */
+const DAY_LABELS = ['M','T','W','T','F','S','S'];
 let weekChecks = {};
+function blankItemDays(){ return [false,false,false,false,false,false,false]; }
+function blankWeekChecks(w){ return w.details.map(()=>blankItemDays()); }
+// normalises an item's stored value into a 7-day array, upgrading old single-boolean data
+function normItemDays(v){
+  if(Array.isArray(v)) return v;
+  const days = blankItemDays();
+  if(v) days.fill(true); // migrate legacy "checked for the week" into a fully-checked week
+  return days;
+}
 function renderWeeks(){
   const wrap = document.getElementById('weeks');
   wrap.innerHTML = '';
   weeks.forEach((w, i)=>{
-    const checks = weekChecks[i] || w.details.map(()=>false);
-    const checkedCount = checks.filter(Boolean).length;
-    const allDone = checkedCount === w.details.length;
+    const rawChecks = weekChecks[i] || blankWeekChecks(w);
+    const checks = w.details.map((_, di)=> normItemDays(rawChecks[di]));
+    const totalBoxes = w.details.length * 7;
+    const checkedCount = checks.reduce((sum, days)=> sum + days.filter(Boolean).length, 0);
+    const allDone = checkedCount === totalBoxes;
     const el = document.createElement('div');
     el.className = 'week' + (allDone? ' done':'');
     el.innerHTML = `
@@ -2207,27 +2229,33 @@ function renderWeeks(){
           <p>${w.summary}</p>
           <div class="details">
             <ul class="checklist">${w.details.map((d, di)=>`
-              <li class="${checks[di]? 'checked':''}">
-                <input type="checkbox" data-week="${i}" data-item="${di}" ${checks[di]? 'checked':''}>
+              <li class="${checks[di].every(Boolean)? 'checked':''}">
                 <span>${d}</span>
+                <div class="day-row">${DAY_LABELS.map((lbl, dayIdx)=>`
+                  <label class="day-box">
+                    <span class="day-label">${lbl}</span>
+                    <input type="checkbox" data-week="${i}" data-item="${di}" data-day="${dayIdx}" ${checks[di][dayIdx]? 'checked':''}>
+                  </label>`).join('')}
+                </div>
               </li>`).join('')}
             </ul>
-            <div class="week-progress">${checkedCount} of ${w.details.length} done</div>
+            <div class="week-progress">${checkedCount} of ${totalBoxes} done</div>
           </div>
         </div>
         <div class="chev">▸</div>
       </button>`;
     wrap.appendChild(el);
     el.querySelector('.week-toggle').addEventListener('click', (e)=>{
-      if(e.target.tagName === 'INPUT' || e.target.tagName === 'SPAN' && e.target.closest('li')) return;
+      if(e.target.tagName === 'INPUT' || (e.target.tagName === 'SPAN' && e.target.closest('li')) || e.target.closest('.day-box')) return;
       el.classList.toggle('open');
     });
     el.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb=>{
       cb.addEventListener('click', (e)=> e.stopPropagation());
       cb.addEventListener('change', ()=>{
-        const wi = +cb.dataset.week, di = +cb.dataset.item;
-        if(!weekChecks[wi]) weekChecks[wi] = weeks[wi].details.map(()=>false);
-        weekChecks[wi][di] = cb.checked;
+        const wi = +cb.dataset.week, di = +cb.dataset.item, dayIdx = +cb.dataset.day;
+        if(!weekChecks[wi]) weekChecks[wi] = blankWeekChecks(weeks[wi]);
+        weekChecks[wi][di] = normItemDays(weekChecks[wi][di]);
+        weekChecks[wi][di][dayIdx] = cb.checked;
         store.set('weekChecks_'+currentStoreKey, weekChecks);
         renderWeeks();
         const reopened = document.querySelectorAll('.week')[wi];
