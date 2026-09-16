@@ -235,8 +235,24 @@
   .q-progress{
     font-size:.78rem; color:#5b6664; font-weight:600; margin-bottom:10px;
   }
-  .q-prompt{ font-size:1.1rem; margin-bottom:14px; line-height:1.4; }
-  .q-prompt .french{ font-size:1.25rem; color: var(--teal-deep); }
+  .q-prompt{ font-size:.8rem; color:#5b6664; font-weight:600; margin-bottom:12px; line-height:1.4; }
+  .q-prompt .french{ display:inline-block; margin-top:5px; font-size:1.3rem; font-weight:700; color: var(--teal-deep); }
+  .q-prompt em{ display:inline-block; margin-top:5px; font-size:1.15rem; font-weight:700; font-style:italic; color: var(--teal-deep); }
+  .q-instruction{ font-size:.8rem; color:#5b6664; font-weight:600; margin-bottom:8px; }
+  .q-word-row{ display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+  .q-word-row .q-word{ font-size:1.4rem; font-weight:700; }
+  .play-btn-inline{
+    flex:0 0 auto;
+    width:32px; height:32px;
+    border-radius:50%;
+    border:1px solid var(--teal);
+    background: var(--cream);
+    color: var(--teal);
+    font-size:.85rem;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .play-btn-inline:active{ background: var(--teal); color: var(--cream); }
   .opt{
     display:block;
     width:100%;
@@ -291,6 +307,128 @@
     font-weight:700;
     margin-bottom:14px;
   }
+  .score-pill.mastered-total{ background:#3f6e38; color:#fff; }
+
+  /* Mastery & difficulty */
+  .q-topline{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .q-topline .q-progress{ margin-bottom:0; padding-top:5px; }
+  .q-actions{
+    display:flex;
+    gap:6px;
+    flex:0 0 auto;
+  }
+  .icon-toggle{
+    width:36px; height:36px;
+    flex:0 0 auto;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background: var(--cream);
+    color:#8a9490;
+    font-size:1.05rem;
+    line-height:1;
+    padding:0;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .icon-toggle.master:active{ filter:brightness(.94); }
+  .icon-toggle.master.confirmed{
+    background:#3f6e38; border-color:#3f6e38; color:#fff;
+    animation: masterPulse .45s ease;
+  }
+  .icon-toggle.difficult.active{ background: var(--rust); border-color:var(--rust); color:#fff; }
+  .icon-toggle.difficult:active{ filter:brightness(.94); }
+  @keyframes masterPulse{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(1.3); }
+    100%{ transform:scale(1); }
+  }
+
+  /* Smooth "marked as mastered" transition: a toast overlays the card, the icon turns
+     green, then the card fades/slides out before the next question fades in — instead
+     of the old abrupt swap. */
+  .question-card{
+    position:relative;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .question-card.card-exit{
+    opacity:0;
+    transform: scale(.97) translateY(-6px);
+    pointer-events:none;
+  }
+  .question-card.card-enter{
+    animation: cardEnter .28s ease both;
+  }
+  @keyframes cardEnter{
+    from{ opacity:0; transform: translateY(8px); }
+    to{ opacity:1; transform:none; }
+  }
+  .mastered-toast{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background: rgba(63,110,56,.95);
+    color:#fff;
+    font-weight:700;
+    font-size:1rem;
+    border-radius:14px;
+    opacity:0;
+    pointer-events:none;
+    z-index:5;
+    animation: toastIn .25s ease forwards;
+  }
+  .mastered-toast .check{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%;
+    background:#fff; color:#3f6e38; font-size:.85rem; font-weight:900;
+  }
+  @keyframes toastIn{
+    from{ opacity:0; transform: scale(.94); }
+    to{ opacity:1; transform:none; }
+  }
+  .mastered-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 2px;
+    border-bottom:1px solid var(--line);
+  }
+  .mastered-item:last-child{ border-bottom:none; }
+  .mastered-item .txt{ min-width:0; flex:1; }
+  .mastered-item .fr{ font-size:1rem; color: var(--teal-deep); }
+  .mastered-item .en{ font-size:.8rem; color:#5b6664; margin-top:1px; }
+  .mastered-count{
+    display:inline-block;
+    background: var(--teal);
+    color: var(--cream);
+    border-radius:12px;
+    padding:1px 9px;
+    font-size:.72rem;
+    font-weight:700;
+  }
+  .unmaster-btn{
+    flex:0 0 auto;
+    background:none;
+    border:1px solid var(--teal);
+    color:var(--teal);
+    border-radius:20px;
+    padding:6px 12px;
+    font-size:.74rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .unmaster-btn:active{ background: var(--teal); color: var(--cream); }
+
   .builder-bank{
     display:flex; flex-wrap:wrap; gap:8px;
     margin-bottom:14px;
@@ -366,16 +504,18 @@
   }
   nav.bottom button{
     flex:1;
+    min-width:0;
     background:none;
     border:none;
     color: rgba(246,241,228,.6);
-    font-size:.68rem;
+    font-size:.62rem;
     font-weight:600;
-    padding:6px 2px;
-    display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:6px 1px;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
     cursor:pointer;
+    white-space:nowrap;
   }
-  nav.bottom button .ic{ font-size:1.25rem; }
+  nav.bottom button .ic{ font-size:1.15rem; }
   nav.bottom button.active{ color: var(--cream); }
   nav.bottom button.active .ic{ color: var(--mustard); }
 
@@ -623,6 +763,13 @@
     <div class="card" id="resList"></div>
   </section>
 
+  <!-- MASTERED -->
+  <section id="mastered">
+    <h2>Mastered</h2>
+    <p style="font-size:.85rem; color:#5b6664; margin-top:0;">Items you've marked as known by heart. They're skipped in Practice until you bring them back here.</p>
+    <div id="masteredBody"></div>
+  </section>
+
 </main>
 
 <footer class="note">Made for self-study · progress stored locally in your browser</footer>
@@ -633,6 +780,7 @@
   <button data-target="exercises"><span class="ic">✏️</span>Practice</button>
   <button data-target="quiz"><span class="ic">🏁</span>Quiz</button>
   <button data-target="resources"><span class="ic">🔗</span>Resources</button>
+  <button data-target="mastered"><span class="ic">🏆</span>Mastered</button>
 </nav>
 
 </div>
@@ -948,6 +1096,315 @@ const COURSES = {
   {en:"I think it's a good idea.", fr:"Je pense que c'est une bonne idée."},
   {en:"I can't wait!", fr:"J'ai hâte !"},
   {en:"That's really nice.", fr:"C'est vraiment sympa."}
+    ],
+
+    /* 200 most used French words (deduplicated across grammatical categories;
+       each entry is [french, english, part-of-speech]) */
+    topWords: [
+  ["je","I","pronoun"],
+  ["tu","you (informal)","pronoun"],
+  ["il","he / it","pronoun"],
+  ["elle","she / it","pronoun"],
+  ["on","one / we (informal)","pronoun"],
+  ["nous","we / us","pronoun"],
+  ["vous","you (formal/plural)","pronoun"],
+  ["se","himself / herself / oneself","pronoun"],
+  ["me","me / myself","pronoun"],
+  ["te","you / yourself","pronoun"],
+  ["lui","him / to him/her","pronoun"],
+  ["moi","me","pronoun"],
+  ["qui","who / whom","pronoun"],
+  ["celui","the one","pronoun"],
+  ["rien","nothing","pronoun"],
+  ["dont","whose / of which","pronoun"],
+  ["ça","this / that","pronoun"],
+  ["cela","that","pronoun"],
+  ["le","the / him / it","determiner/pronoun"],
+  ["un","a / an / one","determiner"],
+  ["son","his / her (+ noun)","determiner"],
+  ["ce","this / that","determiner/pronoun"],
+  ["du","some / of the","determiner"],
+  ["au","at the / to the","determiner"],
+  ["de","of / from / some","preposition/determiner"],
+  ["mon","my","determiner"],
+  ["leur","their / to them","determiner/pronoun"],
+  ["notre","our","determiner"],
+  ["votre","your","determiner"],
+  ["quelque","some / a few","determiner"],
+  ["ton","your (informal)","determiner"],
+  ["tout","all / every / everything","determiner/pronoun/adverb"],
+  ["chaque","each","determiner"],
+  ["aucun","none / no","determiner"],
+  ["tel","such","determiner"],
+  ["plusieurs","several","determiner"],
+  ["autre","other","adjective/determiner"],
+  ["nul","no one / null / void","determiner"],
+  ["à","to / at / in","preposition"],
+  ["en","in / by / made of","preposition"],
+  ["dans","in / into","preposition"],
+  ["pour","for / in order to","preposition"],
+  ["par","by / through","preposition"],
+  ["sur","on / about","preposition"],
+  ["avec","with","preposition"],
+  ["sans","without","preposition"],
+  ["sous","under","preposition"],
+  ["après","after","preposition"],
+  ["entre","between / among","preposition"],
+  ["vers","towards","preposition"],
+  ["chez","at the home/place of","preposition"],
+  ["jusque","until / as far as","preposition"],
+  ["contre","against","preposition"],
+  ["devant","in front of","preposition"],
+  ["depuis","since / for","preposition"],
+  ["pendant","during","preposition"],
+  ["avant","before","preposition"],
+  ["voilà","there is / here is","preposition"],
+  ["près","near / close","preposition"],
+  ["dès","from / as of","preposition"],
+  ["malgré","despite / in spite of","preposition"],
+  ["voici","here is / here are","preposition"],
+  ["et","and","conjunction"],
+  ["que","that / which / than","conjunction/pronoun"],
+  ["comme","like / as","conjunction"],
+  ["mais","but","conjunction"],
+  ["ou","or","conjunction"],
+  ["quand","when","conjunction"],
+  ["si","if / so","conjunction/adverb"],
+  ["puis","then / next","conjunction"],
+  ["donc","so / therefore","conjunction"],
+  ["car","because / for","conjunction"],
+  ["ni","nor","conjunction"],
+  ["parce que","because","conjunction"],
+  ["pourquoi","why","conjunction"],
+  ["lorsque","when","conjunction"],
+  ["tandis que","whereas / while","conjunction"],
+  ["puisque","since / as","conjunction"],
+  ["comment","how","conjunction"],
+  ["soit","either... or / that is","conjunction"],
+  ["or","yet / now (then)","conjunction"],
+  ["être","to be","verb"],
+  ["avoir","to have","verb"],
+  ["faire","to do / to make","verb"],
+  ["dire","to say","verb"],
+  ["pouvoir","to be able to / can","verb"],
+  ["aller","to go","verb"],
+  ["voir","to see","verb"],
+  ["vouloir","to want","verb"],
+  ["venir","to come","verb"],
+  ["devoir","to have to / must","verb"],
+  ["prendre","to take","verb"],
+  ["trouver","to find","verb"],
+  ["donner","to give","verb"],
+  ["falloir","to be necessary","verb"],
+  ["parler","to speak","verb"],
+  ["mettre","to put","verb"],
+  ["savoir","to know","verb"],
+  ["passer","to pass / to spend (time)","verb"],
+  ["regarder","to watch / to look at","verb"],
+  ["aimer","to love / to like","verb"],
+  ["croire","to believe","verb"],
+  ["demander","to ask","verb"],
+  ["rester","to stay","verb"],
+  ["répondre","to answer","verb"],
+  ["entendre","to hear","verb"],
+  ["grand","tall / big / great","adjective"],
+  ["petit","small","adjective"],
+  ["même","same / even","adjective/adverb"],
+  ["seul","alone / only","adjective"],
+  ["jeune","young","adjective"],
+  ["premier","first","adjective"],
+  ["bon","good","adjective"],
+  ["quel","which / what","adjective"],
+  ["beau","beautiful / handsome","adjective"],
+  ["vieux","old","adjective"],
+  ["noir","black","adjective"],
+  ["nouveau","new","adjective"],
+  ["dernier","last","adjective"],
+  ["blanc","white","adjective"],
+  ["cher","expensive / dear","adjective"],
+  ["long","long","adjective"],
+  ["pauvre","poor","adjective"],
+  ["plein","full","adjective"],
+  ["vrai","true / real","adjective"],
+  ["bas","low","adjective"],
+  ["gros","big / fat","adjective"],
+  ["doux","soft / gentle / sweet","adjective"],
+  ["bleu","blue","adjective"],
+  ["rouge","red","adjective"],
+  ["jaune","yellow","adjective"],
+  ["vert","green","adjective"],
+  ["rose","pink","adjective"],
+  ["marron","brown","adjective"],
+  ["orange","orange","adjective"],
+  ["violet","purple","adjective"],
+  ["gris","grey","adjective"],
+  ["ne","not (with pas)","adverb"],
+  ["pas","not","adverb"],
+  ["plus","more / no more","adverb"],
+  ["bien","well","adverb"],
+  ["là","there / here","adverb"],
+  ["encore","again / still / yet","adverb"],
+  ["aussi","also / too","adverb"],
+  ["peu","little / few","adverb"],
+  ["alors","then / so","adverb"],
+  ["toujours","always","adverb"],
+  ["jamais","never","adverb"],
+  ["non","no","adverb"],
+  ["très","very","adverb"],
+  ["ainsi","thus / this way","adverb"],
+  ["moins","less / fewer","adverb"],
+  ["ici","here","adverb"],
+  ["oui","yes","adverb"],
+  ["trop","too much / too many","adverb"],
+  ["déjà","already","adverb"],
+  ["tant","so much","adverb"],
+  ["enfin","finally / at last","adverb"],
+  ["maintenant","now","adverb"],
+  ["professeur","teacher / professor","noun"],
+  ["homme","man","noun"],
+  ["mari","husband","noun"],
+  ["femme","woman / wife","noun"],
+  ["jour","day","noun"],
+  ["mer","sea","noun"],
+  ["temps","time / weather","noun"],
+  ["main","hand","noun"],
+  ["chose","thing","noun"],
+  ["vie","life","noun"],
+  ["yeux","eyes","noun"],
+  ["heure","hour / time (o'clock)","noun"],
+  ["monde","world / people","noun"],
+  ["enfant","child","noun"],
+  ["fois","time (occurrence)","noun"],
+  ["moment","moment","noun"],
+  ["tête","head","noun"],
+  ["père","father","noun"],
+  ["fille","girl / daughter","noun"],
+  ["coeur","heart","noun"],
+  ["année","year","noun"],
+  ["terre","earth / land","noun"],
+  ["dieu","god","noun"],
+  ["monsieur","Mr. / sir","noun"],
+  ["madame","Mrs. / ma'am","noun"],
+  ["voix","voice","noun"],
+  ["maison","house / home","noun"],
+  ["air","air / look","noun"],
+  ["mot","word","noun"],
+  ["nuit","night","noun"],
+  ["où","where","adverb"],
+  ["quoi","what","pronoun"],
+  ["combien","how much / how many","adverb"],
+  ["beaucoup","a lot / many","adverb"],
+  ["assez","enough / rather","adverb"],
+  ["aujourd'hui","today","adverb"],
+  ["hier","yesterday","adverb"],
+  ["demain","tomorrow","adverb"],
+  ["souvent","often","adverb"],
+  ["chacun","each one / everyone","pronoun"],
+  ["peut-être","maybe / perhaps","adverb"]
+    ],
+
+    /* 100 most common French verbs (infinitive + English meaning) */
+    topVerbs: [
+  ["être","to be"],
+  ["avoir","to have"],
+  ["faire","to do / to make"],
+  ["aller","to go"],
+  ["falloir","to be necessary"],
+  ["mettre","to put"],
+  ["vouloir","to want"],
+  ["pouvoir","to be able to / can"],
+  ["devoir","to have to / must"],
+  ["dire","to say"],
+  ["comprendre","to understand"],
+  ["croire","to believe"],
+  ["parler","to speak"],
+  ["prendre","to take"],
+  ["venir","to come"],
+  ["tenir","to hold"],
+  ["savoir","to know"],
+  ["aimer","to love / to like"],
+  ["donner","to give"],
+  ["demander","to ask"],
+  ["passer","to pass / to spend (time)"],
+  ["rester","to stay"],
+  ["arriver","to arrive / to happen"],
+  ["entrer","to enter"],
+  ["sortir","to go out / to leave"],
+  ["partir","to leave"],
+  ["penser","to think"],
+  ["connaître","to know (be familiar with)"],
+  ["appeler","to call"],
+  ["trouver","to find"],
+  ["recevoir","to receive"],
+  ["sentir","to feel / to smell"],
+  ["suivre","to follow"],
+  ["écrire","to write"],
+  ["lire","to read"],
+  ["voir","to see"],
+  ["ouvrir","to open"],
+  ["porter","to wear / to carry"],
+  ["chercher","to search / to look for"],
+  ["perdre","to lose"],
+  ["finir","to finish"],
+  ["rendre","to give back / to return"],
+  ["attendre","to wait"],
+  ["revenir","to come back"],
+  ["monter","to go up"],
+  ["descendre","to go down"],
+  ["vivre","to live"],
+  ["apprendre","to learn"],
+  ["travailler","to work"],
+  ["manger","to eat"],
+  ["boire","to drink"],
+  ["dormir","to sleep"],
+  ["se lever","to get up"],
+  ["s'asseoir","to sit down"],
+  ["écouter","to listen"],
+  ["regarder","to watch / to look at"],
+  ["répondre","to answer"],
+  ["oublier","to forget"],
+  ["courir","to run"],
+  ["arrêter","to stop"],
+  ["commencer","to start / to begin"],
+  ["devenir","to become"],
+  ["fermer","to close"],
+  ["utiliser","to use"],
+  ["essayer","to try"],
+  ["changer","to change"],
+  ["se coucher","to go to bed"],
+  ["s'habiller","to get dressed"],
+  ["étudier","to study"],
+  ["jouer","to play"],
+  ["rire","to laugh"],
+  ["pleurer","to cry"],
+  ["réfléchir","to think it over / to reflect"],
+  ["se souvenir","to remember"],
+  ["payer","to pay"],
+  ["acheter","to buy"],
+  ["vendre","to sell"],
+  ["conduire","to drive"],
+  ["aider","to help"],
+  ["montrer","to show"],
+  ["sauter","to jump"],
+  ["crier","to shout"],
+  ["éteindre","to turn off"],
+  ["allumer","to turn on"],
+  ["nettoyer","to clean"],
+  ["laver","to wash"],
+  ["cuisiner","to cook"],
+  ["sembler","to seem"],
+  ["reconnaître","to recognize"],
+  ["rencontrer","to meet"],
+  ["garder","to keep"],
+  ["laisser","to leave / to let"],
+  ["construire","to build"],
+  ["apporter","to bring"],
+  ["souffrir","to suffer"],
+  ["couvrir","to cover"],
+  ["détester","to hate"],
+  ["adorer","to adore / to love"],
+  ["se rappeler","to remember"],
+  ["s'amuser","to have fun"]
     ],
 
     /* weekly quizzes — themed to each week's focus */
@@ -2164,7 +2621,7 @@ const COURSES = {
 
 /* ---------- ACTIVE COURSE STATE ---------- */
 let currentCourseId = null;
-let weeks, PHRASE_CATS, phrases, RES_TYPES, resources, mcq, fillBlank, listenItems, builderSentences, translateItems, quizWeeks;
+let weeks, PHRASE_CATS, phrases, RES_TYPES, resources, mcq, fillBlank, listenItems, builderSentences, translateItems, quizWeeks, topWords, topVerbs;
 
 const store = {
   get(key, fallback){ try{ const v = localStorage.getItem(key); return v===null? fallback : JSON.parse(v); }catch(e){ return fallback; } },
@@ -2177,6 +2634,12 @@ document.querySelectorAll('nav.bottom button').forEach(btn=>{
     document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.target).classList.add('active');
+    // if mastery changed while we were away (e.g. unmastered something from the
+    // Mastered tab), the Practice pool is stale — refresh it on the way back in
+    if(btn.dataset.target === 'exercises' && typeof exBodyStale !== 'undefined' && exBodyStale){
+      exBodyStale = false;
+      renderExBody();
+    }
     window.scrollTo({top:0});
   });
 });
@@ -2426,19 +2889,174 @@ function renderQuizBody(){
   show();
 }
 
+/* ---------- MASTERY & DIFFICULTY TRACKING ---------- */
+/* An item marked "mastered" is skipped in its Practice drill from then on, and shows up
+   instead in the separate Mastered view. An item marked "difficult" stays in its drill but
+   gets an extra shuffled-in repeat each pass, so it comes up more often. Both are tracked
+   per exercise type, keyed by each item's original (stable) index in its source array, and
+   persisted per course/level. */
+const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs'];
+let mastered = {};
+let difficult = {};
+let exBodyStale = false; // set true whenever mastery/difficulty changes; tells nav to refresh Practice on next visit
+function loadMastered(){
+  mastered = store.get('mastered_'+currentStoreKey, {});
+  MASTERY_TYPES.forEach(t=>{
+    if(!mastered[t] || typeof mastered[t] !== 'object') mastered[t] = {};
+    // migrate old boolean-flag entries (true) to a timestamp so the Mastered view can sort
+    // by date added; migrated entries get 0 (oldest) since we don't know when they happened
+    Object.keys(mastered[t]).forEach(k=>{ if(typeof mastered[t][k] !== 'number') mastered[t][k] = 0; });
+  });
+}
+function saveMastered(){ store.set('mastered_'+currentStoreKey, mastered); }
+function isMastered(type, idx){ return !!(mastered[type] && (idx in mastered[type])); }
+function masteredCount(type){ return mastered[type] ? Object.keys(mastered[type]).length : 0; }
+function setMastered(type, idx, val){
+  if(!mastered[type]) mastered[type] = {};
+  if(val) mastered[type][idx] = Date.now(); else delete mastered[type][idx];
+  saveMastered();
+  renderMastered();
+  exBodyStale = true;
+}
+function loadDifficult(){
+  difficult = store.get('difficult_'+currentStoreKey, {});
+  MASTERY_TYPES.forEach(t=>{ if(!difficult[t] || typeof difficult[t] !== 'object') difficult[t] = {}; });
+}
+function saveDifficult(){ store.set('difficult_'+currentStoreKey, difficult); }
+function isDifficult(type, idx){ return !!(difficult[type] && difficult[type][idx]); }
+function toggleDifficult(type, idx){
+  if(!difficult[type]) difficult[type] = {};
+  if(difficult[type][idx]) delete difficult[type][idx]; else difficult[type][idx] = true;
+  saveDifficult();
+  exBodyStale = true;
+}
+/* Builds [{idx, item}, ...] for items not yet mastered, preserving each item's original
+   array index so mastery/difficulty stay attached correctly even as the pool changes.
+   Items marked difficult get one extra appearance, shuffled in, so they come up more often —
+   but that repeat is an extra practice rep, not a new word, so it must never inflate the
+   word count shown to the user. `pool.uniqueTotal` tracks the real distinct-word count
+   (used as the "of N" denominator everywhere) separately from pool.length (the raw walk,
+   repeats included, which is what actually drives how many times you see each card). */
+function buildPracticePool(type, sourceList, shuffle){
+  const base = [], extra = [];
+  sourceList.forEach((item, idx)=>{
+    if(isMastered(type, idx)) return;
+    base.push({idx, item});
+    if(isDifficult(type, idx)) extra.push({idx, item});
+  });
+  let pool;
+  if(shuffle){
+    pool = base.concat(extra);
+    pool.sort(()=>Math.random()-0.5);
+  } else {
+    extra.sort(()=>Math.random()-0.5);
+    pool = base.concat(extra);
+  }
+  pool.uniqueTotal = base.length;
+  return pool;
+}
+/* Turns a raw pool position into "how many distinct words have been reached by here" —
+   i.e. the size of the set of unique idx values in pool[0..i]. A difficulty repeat doesn't
+   introduce a new idx, so this number can never exceed pool.uniqueTotal, and it's what the
+   "Question X of Y" display uses instead of the raw (repeat-inflated) position. */
+function distinctOrdinal(pool, i){
+  const seen = new Set();
+  for(let k=0; k<=i && k<pool.length; k++) seen.add(pool[k].idx);
+  return seen.size;
+}
+/* Removes every occurrence of idx from position i onward (an item can appear more than once
+   if it was marked difficult), so mastering it can't leave a duplicate lingering later on.
+   Mastering always retires exactly one distinct word, so uniqueTotal drops by one too. */
+function removeUpcomingOccurrences(pool, state, i, idxToRemove){
+  let removedAny = false;
+  for(let k = pool.length - 1; k >= i; k--){
+    if(pool[k].idx === idxToRemove){
+      pool.splice(k, 1);
+      if(state) state.splice(k, 1);
+      removedAny = true;
+    }
+  }
+  if(removedAny && typeof pool.uniqueTotal === 'number') pool.uniqueTotal -= 1;
+}
+/* Applies a difficulty toggle to the CURRENTLY RUNNING pool/state arrays too, so the extra
+   repeat (or its removal) is visible immediately in this session, not just on next rebuild.
+   Only ever touches the not-yet-seen tail of the pool (after the current question, i). */
+function applyDifficultToggle(type, idx, pool, i, state){
+  if(isDifficult(type, idx)){
+    const remaining = pool.length - (i + 1);
+    const offset = remaining > 0 ? Math.floor(Math.random() * (remaining + 1)) : 0;
+    const insertAt = i + 1 + offset;
+    pool.splice(insertAt, 0, { idx, item: pool[i].item });
+    if(state) state.splice(insertAt, 0, { wrong: [], done: false, choices: null, answer: null });
+  } else {
+    for(let k = pool.length - 1; k > i; k--){
+      if(pool[k].idx === idx){
+        pool.splice(k, 1);
+        if(state) state.splice(k, 1);
+        break;
+      }
+    }
+  }
+}
+function masteredNote(type){
+  const n = masteredCount(type);
+  return n ? ` · ${n} mastered` : '';
+}
+/* Small icon-button pair for the top-right corner of a question card. */
+function qActionsHtml(type, idx){
+  const diffOn = isDifficult(type, idx);
+  return `<div class="q-actions">
+    <button type="button" class="icon-toggle difficult${diffOn ? ' active' : ''}" id="difficultBtn" title="${diffOn ? 'Marked difficult — shows up more often. Tap to unmark.' : 'Mark as difficult — shows up more often'}" aria-label="Mark as difficult">🐢</button>
+    <button type="button" class="icon-toggle master" id="masterBtn" title="Mark as mastered — won't show again" aria-label="Mark as mastered">★</button>
+  </div>`;
+}
+/* Plays a short "marked as mastered" confirmation — the icon turns green and pulses, a
+   toast overlays the card, and further taps are blocked — before the card fades out and
+   `advance()` runs (which does the actual mastering + moves on). Replaces the old abrupt
+   instant swap with something that gives the user a clear beat of feedback. */
+function celebrateMastered(body, advance){
+  const card = body.querySelector('.question-card');
+  const btn = body.querySelector('#masterBtn');
+  if(!card || !btn){ advance(); return; }
+  card.style.pointerEvents = 'none';
+  btn.classList.add('confirmed');
+  const toast = document.createElement('div');
+  toast.className = 'mastered-toast';
+  toast.innerHTML = '<span class="check">✓</span> Marked as mastered';
+  card.appendChild(toast);
+  setTimeout(()=>{
+    card.classList.add('card-exit');
+    setTimeout(advance, 200);
+  }, 550);
+}
+function emptyPoolCard(label){
+  return `<div class="card"><p style="margin:0;">🎉 You've mastered everything in <strong>${label}</strong> for now. Find it in the <strong>Mastered</strong> tab, or unmaster an item there to bring it back here.</p></div>`;
+}
+
 /* ---------- EXERCISES ---------- */
 const exTabs = [
   {id:'mcq', label:'Multiple choice'},
   {id:'fill', label:'Fill in the blank'},
   {id:'listen', label:'Listening dictation'},
   {id:'build', label:'Sentence builder'},
-  {id:'translate', label:'Translate'}
+  {id:'translate', label:'Translate'},
+  {id:'words', label:'Top 200 words'},
+  {id:'verbs', label:'Top 100 verbs'}
 ];
 let activeEx = 'mcq';
+function availableExTabs(){
+  return exTabs.filter(t=>{
+    if(t.id==='words') return topWords && topWords.length > 0;
+    if(t.id==='verbs') return topVerbs && topVerbs.length > 0;
+    return true;
+  });
+}
 function renderExTabs(){
   const wrap = document.getElementById('exTabs');
   wrap.innerHTML = '';
-  exTabs.forEach(t=>{
+  const tabs = availableExTabs();
+  if(!tabs.some(t=>t.id===activeEx)) activeEx = tabs[0] ? tabs[0].id : 'mcq';
+  tabs.forEach(t=>{
     const b = document.createElement('button');
     b.className = 'ex-tab' + (t.id===activeEx? ' active':'');
     b.textContent = t.id==='translate' ? `Translate EN→${(currentCourseId||'').toUpperCase()}` : t.label;
@@ -2453,33 +3071,40 @@ function renderExBody(){
   if(activeEx==='listen') return renderListen(body);
   if(activeEx==='build') return renderBuilder(body);
   if(activeEx==='translate') return renderTranslate(body);
+  if(activeEx==='words') return renderVocabDrill(body, topWords, {type:'words', tabLabel:'Top 200 words', itemLabel:'Word', qtext:'What does this word mean?', doneText:"That's all 200 words. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='verbs') return renderVocabDrill(body, topVerbs, {type:'verbs', tabLabel:'Top 100 verbs', itemLabel:'Verb', qtext:'What does this verb mean?', doneText:"That's all 100 verbs. Reset to go again — the order and answer choices reshuffle each time."});
 }
 
 /* MCQ */
 function renderMCQ(body){
+  let pool = buildPracticePool('mcq', mcq, false);
   let i = 0;
-  const state = mcq.map(()=>({ wrong: [], done: false }));
+  let state = pool.map(()=>({ wrong: [], done: false }));
 
   function score(){ return state.filter(s=>s.done).length; }
 
-  function show(){
-    if(i >= mcq.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${score()}/${mcq.length}</div><p>Nice work. Reset to try again.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ state.forEach(s=>{s.wrong=[]; s.done=false;}); i=0; show(); });
-      body.querySelector('#back').addEventListener('click', ()=>{ i = mcq.length-1; show(); });
+  function show(skipAnim){
+    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Multiple choice'); return; }
+    if(i >= pool.length){
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>Nice work. Reset to try again.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('mcq', mcq, false); state = pool.map(()=>({ wrong: [], done: false })); i=0; show(); });
+      body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
       return;
     }
-    const q = mcq[i];
+    const q = pool[i].item;
     const st = state[i];
     body.innerHTML = `
-      <div class="card question-card">
-        <div class="q-progress">Question ${i+1} of ${mcq.length}</div>
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('mcq')}</div>
+          ${qActionsHtml('mcq', pool[i].idx)}
+        </div>
         <div class="q-prompt">What does this mean?<br><span class="french">«${q.fr}»</span></div>
         ${q.choices.map((c,idx)=>`<button class="opt" data-idx="${idx}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
         <div class="ex-btn-row">
           <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>Back</button>
-          <button class="btn btn-primary" id="nextBtn" ${st.done? '' : 'disabled'}>${i===mcq.length-1? 'Finish':'Next'}</button>
+          <button class="btn btn-primary" id="nextBtn" ${st.done? '' : 'disabled'}>${i===pool.length-1? 'Finish':'Next'}</button>
         </div>
       </div>`;
     const opts = body.querySelectorAll('.opt');
@@ -2521,23 +3146,43 @@ function renderMCQ(body){
     });
     body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
     nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      const masteredIdx = pool[i].idx;
+      celebrateMastered(body, ()=>{
+        setMastered('mcq', masteredIdx, true);
+        removeUpcomingOccurrences(pool, state, i, masteredIdx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult('mcq', pool[i].idx);
+      applyDifficultToggle('mcq', pool[i].idx, pool, i, state);
+      show(true);
+    });
   }
   show();
 }
 
 /* Fill in the blank */
 function renderFill(body){
+  let pool = buildPracticePool('fill', fillBlank, false);
   let i = 0, score = 0;
-  function show(){
-    if(i >= fillBlank.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${score}/${fillBlank.length}</div><p>Done. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ i=0; score=0; show(); });
+  function show(skipAnim){
+    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Fill in the blank'); return; }
+    if(i >= pool.length){
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>Done. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('fill', fillBlank, false); i=0; score=0; show(); });
       return;
     }
-    const q = fillBlank[i];
+    const q = pool[i].item;
+    // keep whatever the user already typed when this is just a difficulty-toggle refresh
+    const prevVal = skipAnim ? (body.querySelector('#fillIn')?.value || '') : '';
     body.innerHTML = `
-      <div class="card question-card">
-        <div class="q-progress">Question ${i+1} of ${fillBlank.length}</div>
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('fill')}</div>
+          ${qActionsHtml('fill', pool[i].idx)}
+        </div>
         <div class="q-prompt"><span class="french">${q.prompt}</span></div>
         <input class="fill-input" id="fillIn" placeholder="Type the missing word" autocomplete="off" autocapitalize="off">
         <div class="ex-btn-row">
@@ -2547,6 +3192,7 @@ function renderFill(body){
         <div class="feedback" id="fb"></div>
       </div>`;
     const input = body.querySelector('#fillIn');
+    if(prevVal) input.value = prevVal;
     body.querySelector('#hintBtn').addEventListener('click', ()=>{
       body.querySelector('#fb').textContent = q.hint;
       body.querySelector('#fb').className = 'feedback';
@@ -2564,24 +3210,42 @@ function renderFill(body){
       setTimeout(()=>{ i++; show(); }, 1100);
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter') body.querySelector('#check').click(); });
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      const masteredIdx = pool[i].idx;
+      celebrateMastered(body, ()=>{
+        setMastered('fill', masteredIdx, true);
+        removeUpcomingOccurrences(pool, null, i, masteredIdx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult('fill', pool[i].idx);
+      applyDifficultToggle('fill', pool[i].idx, pool, i, null);
+      show(true);
+    });
   }
   show();
 }
 
 /* Listening dictation */
 function renderListen(body){
+  let pool = buildPracticePool('listen', listenItems, false);
   let i = 0, score = 0;
-  const items = listenItems;
-  function show(){
-    if(i >= items.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${score}/${items.length}</div><p>That's the set. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ i=0; score=0; show(); });
+  function show(skipAnim){
+    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Listening dictation'); return; }
+    if(i >= pool.length){
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>That's the set. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('listen', listenItems, false); i=0; score=0; show(); });
       return;
     }
-    const [fr, en] = items[i];
+    const [fr, en] = pool[i].item;
+    const prevVal = skipAnim ? (body.querySelector('#dictIn')?.value || '') : '';
     body.innerHTML = `
-      <div class="card question-card">
-        <div class="q-progress">Phrase ${i+1} of ${items.length}</div>
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">Phrase ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('listen')}</div>
+          ${qActionsHtml('listen', pool[i].idx)}
+        </div>
         <p style="font-size:.88rem; color:#5b6664; margin-top:0;">Listen, then type what you hear — ${COURSES[currentCourseId].name} only.</p>
         <button class="btn btn-primary" id="playBtn" style="margin-bottom:14px;">▶ Play phrase</button>
         <input class="fill-input" id="dictIn" placeholder="Type what you heard" autocomplete="off" autocapitalize="off">
@@ -2591,6 +3255,7 @@ function renderListen(body){
         </div>
         <div class="feedback" id="fb"></div>
       </div>`;
+    if(prevVal) body.querySelector('#dictIn').value = prevVal;
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(fr));
     body.querySelector('#replay').addEventListener('click', ()=> speak(fr));
     const input = body.querySelector('#dictIn');
@@ -2607,28 +3272,50 @@ function renderListen(body){
       setTimeout(()=>{ i++; show(); }, 1500);
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter') body.querySelector('#check').click(); });
-    speak(fr);
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      const masteredIdx = pool[i].idx;
+      celebrateMastered(body, ()=>{
+        setMastered('listen', masteredIdx, true);
+        removeUpcomingOccurrences(pool, null, i, masteredIdx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult('listen', pool[i].idx);
+      applyDifficultToggle('listen', pool[i].idx, pool, i, null);
+      show(true);
+    });
+    if(!skipAnim) speak(fr);
   }
   show();
 }
 
 /* Sentence builder */
 function renderBuilder(body){
+  let qPool = buildPracticePool('build', builderSentences, false);
   let i = 0, score = 0;
   let chosen = [];
-  let pool = [];
-  function show(){
-    if(i >= builderSentences.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${score}/${builderSentences.length}</div><p>All done. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ i=0; score=0; show(); });
+  let bank = [];
+  function show(skipAnim){
+    if(qPool.length === 0){ body.innerHTML = emptyPoolCard('Sentence builder'); return; }
+    if(i >= qPool.length){
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, qPool.uniqueTotal)}/${qPool.uniqueTotal}</div><p>All done. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ qPool = buildPracticePool('build', builderSentences, false); i=0; score=0; show(); });
       return;
     }
-    const q = builderSentences[i];
-    chosen = [];
-    pool = q.parts.map((p, idx)=>({p, idx})).sort(()=>Math.random()-0.5);
+    const q = qPool[i].item;
+    if(!skipAnim){
+      // only reshuffle/reset the in-progress build when this is a genuinely new question —
+      // a difficulty-toggle refresh should leave whatever the user has already built alone
+      chosen = [];
+      bank = q.parts.map((p, idx)=>({p, idx})).sort(()=>Math.random()-0.5);
+    }
     body.innerHTML = `
-      <div class="card question-card">
-        <div class="q-progress">Sentence ${i+1} of ${builderSentences.length}</div>
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">Sentence ${distinctOrdinal(qPool,i)} of ${qPool.uniqueTotal}${masteredNote('build')}</div>
+          ${qActionsHtml('build', qPool[i].idx)}
+        </div>
         <div class="q-prompt">Build: <em>${q.en}</em></div>
         <div class="builder-answer" id="answerRow"></div>
         <div class="builder-bank" id="bankRow"></div>
@@ -2639,7 +3326,7 @@ function renderBuilder(body){
         <div class="feedback" id="fb"></div>
       </div>`;
     renderRows();
-    body.querySelector('#clear').addEventListener('click', ()=>{ chosen = []; pool = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
+    body.querySelector('#clear').addEventListener('click', ()=>{ chosen = []; bank = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
     body.querySelector('#check').addEventListener('click', ()=>{
       const built = chosen.map(c=>c.p).join(' ').replace(/\s+([,?!])/g,'$1');
       const fb = body.querySelector('#fb');
@@ -2650,21 +3337,34 @@ function renderBuilder(body){
       }
       setTimeout(()=>{ i++; show(); }, 1300);
     });
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      const masteredIdx = qPool[i].idx;
+      celebrateMastered(body, ()=>{
+        setMastered('build', masteredIdx, true);
+        removeUpcomingOccurrences(qPool, null, i, masteredIdx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult('build', qPool[i].idx);
+      applyDifficultToggle('build', qPool[i].idx, qPool, i, null);
+      show(true);
+    });
     function renderRows(){
       body.querySelector('#answerRow').innerHTML = chosen.map((c,ci)=>`<span class="chip" data-from="answer" data-ci="${ci}">${c.p}</span>`).join('') || '<span style="color:#9aa3a0; font-size:.85rem;">tap words below in order</span>';
-      body.querySelector('#bankRow').innerHTML = pool.map((c,pi)=>`<span class="chip" data-from="bank" data-pi="${pi}">${c.p}</span>`).join('');
+      body.querySelector('#bankRow').innerHTML = bank.map((c,pi)=>`<span class="chip" data-from="bank" data-pi="${pi}">${c.p}</span>`).join('');
       body.querySelectorAll('[data-from="bank"]').forEach(chip=>{
         chip.addEventListener('click', ()=>{
           const pi = +chip.dataset.pi;
-          chosen.push(pool[pi]);
-          pool.splice(pi,1);
+          chosen.push(bank[pi]);
+          bank.splice(pi,1);
           renderRows();
         });
       });
       body.querySelectorAll('[data-from="answer"]').forEach(chip=>{
         chip.addEventListener('click', ()=>{
           const ci = +chip.dataset.ci;
-          pool.push(chosen[ci]);
+          bank.push(chosen[ci]);
           chosen.splice(ci,1);
           renderRows();
         });
@@ -2676,18 +3376,23 @@ function renderBuilder(body){
 
 /* Translate EN -> target language */
 function renderTranslate(body){
+  let pool = buildPracticePool('translate', translateItems, false);
   let i = 0, score = 0;
-  const items = translateItems;
-  function show(){
-    if(i >= items.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${score}/${items.length}</div><p>That's the set. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ i=0; score=0; show(); });
+  function show(skipAnim){
+    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Translate'); return; }
+    if(i >= pool.length){
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>That's the set. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('translate', translateItems, false); i=0; score=0; show(); });
       return;
     }
-    const q = items[i];
+    const q = pool[i].item;
+    const prevVal = skipAnim ? (body.querySelector('#trIn')?.value || '') : '';
     body.innerHTML = `
-      <div class="card question-card">
-        <div class="q-progress">Phrase ${i+1} of ${items.length}</div>
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">Phrase ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('translate')}</div>
+          ${qActionsHtml('translate', pool[i].idx)}
+        </div>
         <div class="q-prompt">Translate to ${COURSES[currentCourseId].name}:<br><em>${q.en}</em></div>
         <input class="fill-input" id="trIn" placeholder="Type the ${COURSES[currentCourseId].name} translation" autocomplete="off" autocapitalize="off">
         <div class="ex-btn-row">
@@ -2696,6 +3401,7 @@ function renderTranslate(body){
         </div>
         <div class="feedback" id="fb"></div>
       </div>`;
+    if(prevVal) body.querySelector('#trIn').value = prevVal;
     const input = body.querySelector('#trIn');
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.fr));
     body.querySelector('#check').addEventListener('click', ()=>{
@@ -2711,8 +3417,210 @@ function renderTranslate(body){
       setTimeout(()=>{ i++; show(); }, 1400);
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter') body.querySelector('#check').click(); });
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      const masteredIdx = pool[i].idx;
+      celebrateMastered(body, ()=>{
+        setMastered('translate', masteredIdx, true);
+        removeUpcomingOccurrences(pool, null, i, masteredIdx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult('translate', pool[i].idx);
+      applyDifficultToggle('translate', pool[i].idx, pool, i, null);
+      show(true);
+    });
   }
   show();
+}
+
+/* Vocab drill — used for "Top 200 words" and "Top 100 verbs" practice.
+   list entries are [target, english] or [target, english, partOfSpeech].
+   Multiple-choice options are generated on the fly from the rest of the list. */
+function renderVocabDrill(body, list, opts){
+  const type = opts.type;
+  if(!list.length){
+    body.innerHTML = `<div class="card"><p>Not available for this course yet.</p></div>`;
+    return;
+  }
+  let pool = buildPracticePool(type, list, true);
+  if(!pool.length){
+    body.innerHTML = emptyPoolCard(opts.tabLabel || opts.itemLabel);
+    return;
+  }
+  let i = 0;
+  let state = pool.map(()=>({ wrong: [], done:false, choices:null, answer:null }));
+
+  function buildChoices(idx){
+    const correct = list[idx];
+    const distractors = list
+      .map((entry, k)=>({entry, k}))
+      .filter(x=> x.k!==idx)
+      .sort(()=>Math.random()-0.5)
+      .slice(0, Math.min(2, list.length-1))
+      .map(x=> x.entry[1]);
+    const combined = [{c:correct[1], ok:true}, ...distractors.map(c=>({c, ok:false}))]
+      .sort(()=>Math.random()-0.5);
+    return { choices: combined.map(c=>c.c), answer: combined.findIndex(c=>c.ok) };
+  }
+
+  function score(){ return state.filter(s=>s.done).length; }
+
+  function show(skipAnim){
+    if(pool.length === 0){ body.innerHTML = emptyPoolCard(opts.tabLabel || opts.itemLabel); return; }
+    if(i >= pool.length){
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${opts.doneText || "That's the full set. Reset to try again."}</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=> renderVocabDrill(body, list, opts));
+      body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
+      return;
+    }
+    const idx = pool[i].idx;
+    const item = pool[i].item;
+    const st = state[i];
+    if(!st.choices){
+      const built = buildChoices(idx);
+      st.choices = built.choices;
+      st.answer = built.answer;
+    }
+    const posTag = item[2] ? `<span style="font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--rust);">${item[2].split('/')[0]}</span>` : '';
+    body.innerHTML = `
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">${opts.itemLabel} ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote(type)}</div>
+          ${qActionsHtml(type, idx)}
+        </div>
+        <div class="q-instruction">${opts.qtext}</div>
+        <div class="q-word-row">
+          <span class="french q-word">${item[0]}</span>${posTag}
+          <button class="play-btn-inline" id="playBtn" aria-label="Play pronunciation">▶</button>
+        </div>
+        ${st.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
+        <div class="feedback" id="fb"></div>
+        <div class="ex-btn-row">
+          <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>Back</button>
+          <button class="btn btn-primary" id="nextBtn" ${st.done? '' : 'disabled'}>${i===pool.length-1? 'Finish':'Next'}</button>
+        </div>
+      </div>`;
+    body.querySelector('#playBtn').addEventListener('click', ()=> speak(item[0]));
+    const optBtns = body.querySelectorAll('.opt');
+    const fb = body.querySelector('#fb');
+    const nextBtn = body.querySelector('#nextBtn');
+
+    function renderState(){
+      st.wrong.forEach(w=> optBtns[w].classList.add('wrong'));
+      st.wrong.forEach(w=> optBtns[w].disabled = true);
+      if(st.done){
+        optBtns[st.answer].classList.add('correct');
+        optBtns.forEach(o=> o.disabled = true);
+        fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+        nextBtn.disabled = false;
+      } else if(st.wrong.length){
+        fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+      }
+    }
+    renderState();
+
+    optBtns.forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        if(st.done || opt.disabled) return;
+        const ci = +opt.dataset.idx;
+        if(ci === st.answer){
+          st.done = true;
+          optBtns[ci].classList.add('correct');
+          optBtns.forEach(o=> o.disabled = true);
+          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+          nextBtn.disabled = false;
+          setTimeout(()=>{ i++; show(); }, 700);
+        } else {
+          st.wrong.push(ci);
+          opt.classList.add('wrong');
+          opt.disabled = true;
+          fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+        }
+      });
+    });
+    body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
+    nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      celebrateMastered(body, ()=>{
+        setMastered(type, idx, true);
+        removeUpcomingOccurrences(pool, state, i, idx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult(type, idx);
+      applyDifficultToggle(type, idx, pool, i, state);
+      show(true);
+    });
+  }
+  show();
+}
+
+/* ---------- MASTERED VIEW ---------- */
+function masteredTypeMeta(){
+  return {
+    mcq:       { label: 'Multiple choice',   getFr: it=> it.fr,           getEn: it=> it.choices[it.answer] },
+    fill:      { label: 'Fill in the blank', getFr: it=> it.prompt,       getEn: it=> it.hint || `Answer: ${it.answer}` },
+    listen:    { label: 'Listening dictation', getFr: it=> it[0],         getEn: it=> it[1] },
+    build:     { label: 'Sentence builder',  getFr: it=> it.answer,       getEn: it=> it.en },
+    translate: { label: 'Translate',         getFr: it=> it.fr,           getEn: it=> it.en },
+    words:     { label: 'Top 200 words',     getFr: it=> it[0],           getEn: it=> it[1] },
+    verbs:     { label: 'Top 100 verbs',     getFr: it=> it[0],           getEn: it=> it[1] }
+  };
+}
+function masteredSourceList(type){
+  if(type==='mcq') return mcq;
+  if(type==='fill') return fillBlank;
+  if(type==='listen') return listenItems;
+  if(type==='build') return builderSentences;
+  if(type==='translate') return translateItems;
+  if(type==='words') return topWords;
+  if(type==='verbs') return topVerbs;
+  return [];
+}
+function renderMastered(){
+  const wrap = document.getElementById('masteredBody');
+  if(!wrap) return;
+  const meta = masteredTypeMeta();
+  // newest-mastered-first: sort each group's items by timestamp descending, then order the
+  // groups themselves by their own most-recently-mastered item, also descending
+  const groups = MASTERY_TYPES.map(type=>{
+    const idxs = Object.keys(mastered[type] || {})
+      .map(Number)
+      .sort((a,b)=> (mastered[type][b] || 0) - (mastered[type][a] || 0));
+    const latest = idxs.length ? Math.max(...idxs.map(idx=> mastered[type][idx] || 0)) : -1;
+    return { type, idxs, latest };
+  }).filter(g=> g.idxs.length)
+    .sort((a,b)=> b.latest - a.latest);
+
+  if(!groups.length){
+    wrap.innerHTML = `<div class="card"><p style="margin:0;">Nothing mastered yet. On any Practice question, tap <strong>★ Mark as mastered</strong> once you know it by heart — it'll move here and stop showing up in that drill.</p></div>`;
+    return;
+  }
+
+  const totalCount = groups.reduce((sum,g)=> sum + g.idxs.length, 0);
+  wrap.innerHTML = `<div class="score-pill mastered-total">${totalCount} mastered</div>` + groups.map(g=>{
+    const m = meta[g.type];
+    const sourceList = masteredSourceList(g.type);
+    const rows = g.idxs.map(idx=>{
+      const it = sourceList[idx];
+      if(!it) return '';
+      let fr, en;
+      try{ fr = m.getFr(it); en = m.getEn(it); }catch(e){ return ''; }
+      return `<div class="mastered-item">
+        <div class="txt"><div class="fr french">${fr}</div><div class="en">${en}</div></div>
+        <button class="unmaster-btn" data-type="${g.type}" data-idx="${idx}">↩ Practice again</button>
+      </div>`;
+    }).join('');
+    return `<div class="card"><h3 style="display:flex; align-items:center; gap:8px; font-size:1rem;">${m.label} <span class="mastered-count">${g.idxs.length}</span></h3>${rows}</div>`;
+  }).join('');
+
+  wrap.querySelectorAll('.unmaster-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      setMastered(btn.dataset.type, +btn.dataset.idx, false);
+    });
+  });
 }
 
 /* ---------- COURSE LOADING / LANDING SCREEN ---------- */
@@ -2749,6 +3657,8 @@ function loadCourse(langId, levelId){
   builderSentences = c.builderSentences;
   translateItems = c.translateItems;
   quizWeeks = c.quizWeeks;
+  topWords = c.topWords || [];
+  topVerbs = c.topVerbs || [];
   listenItems = Object.values(phrases).flat();
   currentLangCode = lang.langCode;
 
@@ -2766,14 +3676,17 @@ function loadCourse(langId, levelId){
 
   weekChecks = store.get('weekChecks_'+currentStoreKey, {});
   quizBest = store.get('quizBest_'+currentStoreKey, {});
+  loadMastered();
+  loadDifficult();
   activeCat = PHRASE_CATS[0];
   activeResType = 'All';
   activeQuizWeek = 0;
   activeEx = 'mcq';
+  exBodyStale = false;
 
   // clear dynamic containers first so no stale duplicate-id elements (e.g. #prevBtn)
   // linger in another panel while the next one is being rebuilt
-  ['weeks','phraseList','resList','quizBody','exBody'].forEach(elId=>{
+  ['weeks','phraseList','resList','quizBody','exBody','masteredBody'].forEach(elId=>{
     const el = document.getElementById(elId);
     if(el) el.innerHTML = '';
   });
@@ -2787,6 +3700,7 @@ function loadCourse(langId, levelId){
   renderQuizBody();
   renderExTabs();
   renderExBody();
+  renderMastered();
 
   // reset nav to the Plan tab
   document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.remove('active'));
