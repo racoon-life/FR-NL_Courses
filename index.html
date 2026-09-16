@@ -727,9 +727,74 @@
     font-size:.74rem;
     margin-top:26px;
   }
+
+  /* cloud sync pill */
+  .sync-pill{
+    position:fixed;
+    top:12px; right:12px;
+    z-index:500;
+    background: rgba(22,33,58,.88);
+    color: var(--cream);
+    border:1px solid rgba(247,248,251,.35);
+    border-radius:20px;
+    padding:7px 12px;
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.02em;
+    display:flex; align-items:center; gap:6px;
+    cursor:pointer;
+    backdrop-filter: blur(4px);
+    max-width:44vw;
+  }
+  .sync-pill .sp-icon{ flex:0 0 auto; }
+  .sync-pill .sp-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sync-pill.is-synced{ background: rgba(15,33,71,.94); border-color: var(--mustard); }
+  .sync-pill:active{ filter:brightness(1.15); }
 </style>
 </head>
 <body>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc
+  } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBx9D9KJZJ7BZxSoLwCTfnfpudqXcCy2SQ",
+    authDomain: "language-learner-fr.firebaseapp.com",
+    projectId: "language-learner-fr",
+    storageBucket: "language-learner-fr.firebasestorage.app",
+    messagingSenderId: "537377470695",
+    appId: "1:537377470695:web:10f4efdd4404f4c5bdca42"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const fbAuth = getAuth(fbApp);
+  const fbProvider = new GoogleAuthProvider();
+  const fbDb = getFirestore(fbApp);
+
+  window.FB = {
+    signIn: () => signInWithPopup(fbAuth, fbProvider),
+    signOutUser: () => signOut(fbAuth),
+    onAuthStateChanged: (cb) => onAuthStateChanged(fbAuth, cb),
+    loadRemote: async (uid) => {
+      const snap = await getDoc(doc(fbDb, 'users', uid));
+      return snap.exists() ? snap.data() : null;
+    },
+    saveRemote: async (uid, payload) => {
+      await setDoc(doc(fbDb, 'users', uid), payload);
+    }
+  };
+  window.dispatchEvent(new Event('fb-ready'));
+</script>
+
+<button id="syncPill" class="sync-pill" title="Sign in to sync progress across devices">
+  <span class="sp-icon">⇄</span><span class="sp-label" id="syncPillLabel">Sync</span>
+</button>
 
 <div id="landingScreen" class="landing">
   <div class="landing-inner">
@@ -2687,10 +2752,161 @@ const COURSES = {
 let currentCourseId = null;
 let weeks, PHRASE_CATS, phrases, RES_TYPES, resources, mcq, fillBlank, listenItems, builderSentences, translateItems, quizWeeks, topWords, topVerbs;
 
+/* One-time reverse-migration: the (now removed) 3-profile picker had namespaced everything
+   under "u1_"/"u2_"/"u3_" prefixes. Copy User 1's data back to the plain keys the app used
+   before, so any progress made while profiles were live isn't lost now that they're gone. */
+(function migrateBackFromProfiles(){
+  const FLAG = 'revertedFromProfiles';
+  try{
+    if(localStorage.getItem(FLAG)) return;
+    Object.keys(localStorage).forEach(k=>{
+      if(!k.startsWith('u1_')) return;
+      const plainKey = k.slice(3);
+      const val = localStorage.getItem(k);
+      if(val !== null) localStorage.setItem(plainKey, val);
+    });
+    localStorage.setItem(FLAG, '1');
+  }catch(e){}
+})();
+
 const store = {
   get(key, fallback){ try{ const v = localStorage.getItem(key); return v===null? fallback : JSON.parse(v); }catch(e){ return fallback; } },
   set(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
 };
+
+/* ---------- CLOUD SYNC (Firebase Auth + Firestore) ----------
+   Keeps progress in sync across devices for a signed-in Google account.
+   localStorage stays the source of truth for rendering; Firestore is a
+   mirror we push to (debounced) after every change and pull+merge from
+   whenever a device signs in / reopens the app already signed in. */
+function isSyncableKey(key){
+  if(key === 'revertedFromProfiles') return false;
+  if(key.startsWith('session_')) return false; // ephemeral mid-exercise resume state, not worth syncing/merging
+  return true;
+}
+function snapshotSyncableLocalStorage(){
+  const data = {};
+  Object.keys(localStorage).forEach(k=>{
+    if(!isSyncableKey(k)) return;
+    const raw = localStorage.getItem(k);
+    if(raw === null) return;
+    try{ data[k] = JSON.parse(raw); }catch(e){ data[k] = raw; }
+  });
+  return data;
+}
+// Deep-merges two values for the same key from two devices so neither side's
+// progress is lost: objects union their keys (numbers keep the higher value,
+// e.g. a later mastery timestamp or quiz score; booleans OR together, e.g.
+// weekly-plan day checkmarks); arrays merge position-by-position; anything
+// else (plain strings like "last course opened") just prefers the local copy.
+function mergeSyncValue(localVal, remoteVal){
+  if(localVal === undefined) return remoteVal;
+  if(remoteVal === undefined) return localVal;
+  if(Array.isArray(localVal) && Array.isArray(remoteVal)){
+    if(localVal.length !== remoteVal.length) return localVal.length >= remoteVal.length ? localVal : remoteVal;
+    return localVal.map((lv,i)=> mergeSyncValue(lv, remoteVal[i]));
+  }
+  if(localVal && remoteVal && typeof localVal==='object' && typeof remoteVal==='object' && !Array.isArray(localVal) && !Array.isArray(remoteVal)){
+    const merged = {...remoteVal};
+    Object.keys(localVal).forEach(k=> merged[k] = mergeSyncValue(localVal[k], remoteVal[k]));
+    return merged;
+  }
+  if(typeof localVal === 'number' && typeof remoteVal === 'number') return Math.max(localVal, remoteVal);
+  if(typeof localVal === 'boolean' && typeof remoteVal === 'boolean') return localVal || remoteVal;
+  return localVal;
+}
+
+let cloudUser = null;
+let cloudPushTimer = null;
+function scheduleCloudPush(){
+  if(!cloudUser) return;
+  clearTimeout(cloudPushTimer);
+  cloudPushTimer = setTimeout(pushToCloud, 2000);
+}
+async function pushToCloud(){
+  if(!cloudUser || !window.FB) return;
+  try{
+    await window.FB.saveRemote(cloudUser.uid, { data: snapshotSyncableLocalStorage(), updatedAt: Date.now() });
+    setSyncPillState('synced');
+  }catch(e){ setSyncPillState('error'); }
+}
+async function pullAndMergeFromCloud(){
+  if(!cloudUser || !window.FB) return;
+  setSyncPillState('syncing');
+  try{
+    const remote = await window.FB.loadRemote(cloudUser.uid);
+    const remoteData = (remote && remote.data) || {};
+    const localSnapshot = snapshotSyncableLocalStorage();
+    const allKeys = new Set([...Object.keys(remoteData), ...Object.keys(localSnapshot)]);
+    let changed = false;
+    allKeys.forEach(key=>{
+      const hasLocal = Object.prototype.hasOwnProperty.call(localSnapshot, key);
+      const hasRemote = Object.prototype.hasOwnProperty.call(remoteData, key);
+      const winner = (hasLocal && hasRemote) ? mergeSyncValue(localSnapshot[key], remoteData[key])
+                    : hasRemote ? remoteData[key] : localSnapshot[key];
+      const winnerStr = JSON.stringify(winner);
+      if(winnerStr !== localStorage.getItem(key)){
+        localStorage.setItem(key, winnerStr);
+        changed = true;
+      }
+    });
+    await pushToCloud();
+    if(changed){ location.reload(); return; }
+    setSyncPillState('synced');
+  }catch(e){ setSyncPillState('error'); }
+}
+function setSyncPillState(state){
+  const pill = document.getElementById('syncPill');
+  const label = document.getElementById('syncPillLabel');
+  if(!pill || !label) return;
+  if(state === 'signedout'){
+    pill.classList.remove('is-synced');
+    label.textContent = 'Sync';
+    pill.title = 'Sign in to sync progress across devices';
+  } else if(state === 'syncing'){
+    label.textContent = 'Syncing…';
+  } else if(state === 'synced'){
+    pill.classList.add('is-synced');
+    const name = (cloudUser && (cloudUser.displayName || cloudUser.email)) || 'Synced';
+    label.textContent = name.split(' ')[0];
+    pill.title = `Signed in as ${cloudUser ? (cloudUser.email || cloudUser.displayName) : ''} — tap to sign out`;
+  } else if(state === 'error'){
+    label.textContent = 'Sync error';
+  }
+}
+function initCloudSync(){
+  const pill = document.getElementById('syncPill');
+  if(pill){
+    pill.addEventListener('click', async ()=>{
+      if(cloudUser){
+        if(confirm(`Signed in as ${cloudUser.email || cloudUser.displayName}. Sign out?`)){
+          try{ await window.FB.signOutUser(); }catch(e){}
+        }
+        return;
+      }
+      try{
+        setSyncPillState('syncing');
+        await window.FB.signIn();
+      }catch(e){
+        setSyncPillState('signedout');
+        alert('Sign-in was cancelled or failed. You can try again anytime.');
+      }
+    });
+  }
+  window.FB.onAuthStateChanged((user)=>{
+    cloudUser = user;
+    if(user) pullAndMergeFromCloud();
+    else setSyncPillState('signedout');
+  });
+}
+if(window.FB){ initCloudSync(); } else { window.addEventListener('fb-ready', initCloudSync, {once:true}); }
+// every store.set() call queues a debounced push to the cloud for a signed-in user
+const _origStoreSet = store.set.bind(store);
+store.set = function(key, val){
+  _origStoreSet(key, val);
+  if(isSyncableKey(key)) scheduleCloudPush();
+};
+
 /* ---------- NAV ---------- */
 document.querySelectorAll('nav.bottom button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
