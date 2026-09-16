@@ -213,6 +213,8 @@
     display:flex; align-items:center; justify-content:center;
   }
   .play-btn:active{ background: var(--teal); color: var(--cream); }
+  .phrase-actions{ display:flex; align-items:center; gap:8px; flex:0 0 auto; }
+  .phrase-actions .icon-toggle{ width:36px; height:36px; font-size:1rem; }
 
   /* Exercises */
   .ex-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
@@ -349,6 +351,31 @@
     100%{ transform:scale(1); }
   }
 
+  /* Practice direction switch (FR→EN / EN→FR) shown on MCQ, Top words & Top verbs */
+  .dir-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+  }
+  .dir-switch{
+    display:flex;
+    border:1px solid var(--teal);
+    border-radius:20px;
+    overflow:hidden;
+  }
+  .dir-opt{
+    background:none;
+    border:none;
+    padding:5px 12px;
+    font-size:.7rem;
+    font-weight:700;
+    color: var(--teal);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .dir-opt.active{ background: var(--teal); color: var(--cream); }
+  .dir-opt:not(.active):active{ background: var(--line); }
+
   /* Smooth "marked as mastered" transition: a toast overlays the card, the icon turns
      green, then the card fades/slides out before the next question fades in — instead
      of the old abrupt swap. */
@@ -428,6 +455,43 @@
     white-space:nowrap;
   }
   .unmaster-btn:active{ background: var(--teal); color: var(--cream); }
+  .mastered-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn-sm{ padding:6px 12px; font-size:.78rem; }
+  .practice-group-btn{
+    margin-left:auto;
+    flex:0 0 auto;
+    background:none;
+    border:1px solid var(--teal);
+    color:var(--teal);
+    border-radius:20px;
+    padding:3px 10px;
+    font-size:.7rem;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .practice-group-btn:active{ background: var(--teal); color: var(--cream); }
+  .mastered-expand-btn{
+    display:block;
+    width:100%;
+    background:none;
+    border:none;
+    border-top:1px dashed var(--line);
+    color:var(--teal);
+    padding:10px 2px 2px;
+    margin-top:2px;
+    font-size:.78rem;
+    font-weight:700;
+    cursor:pointer;
+    text-align:center;
+  }
+  .mastered-expand-btn:active{ opacity:.7; }
 
   .builder-bank{
     display:flex; flex-wrap:wrap; gap:8px;
@@ -2640,6 +2704,10 @@ document.querySelectorAll('nav.bottom button').forEach(btn=>{
       exBodyStale = false;
       renderExBody();
     }
+    if(btn.dataset.target === 'phrases' && typeof phrasesStale !== 'undefined' && phrasesStale){
+      phrasesStale = false;
+      renderPhraseList();
+    }
     window.scrollTo({top:0});
   });
 });
@@ -2730,6 +2798,22 @@ function renderWeeks(){
 
 /* ---------- RENDER: PHRASES ---------- */
 let activeCat;
+/* Phrases are stored per-category (phrases[cat] = [[fr,en],...]), but mastery is tracked
+   by a single stable index like every other type — so every phrase across every category
+   gets flattened into one array in a fixed order, and phrasesFlatIndex maps "cat::idxInCat"
+   back to its position in that flat array. Rebuilt whenever a course/level loads. */
+let phrasesFlat = [];
+let phrasesFlatIndex = {};
+function buildPhrasesFlat(){
+  phrasesFlat = [];
+  phrasesFlatIndex = {};
+  (PHRASE_CATS || []).forEach(cat=>{
+    (phrases[cat] || []).forEach((pair, idxInCat)=>{
+      phrasesFlatIndex[cat+'::'+idxInCat] = phrasesFlat.length;
+      phrasesFlat.push(pair);
+    });
+  });
+}
 function renderCatTabs(){
   const wrap = document.getElementById('catTabs');
   wrap.innerHTML = '';
@@ -2743,16 +2827,35 @@ function renderCatTabs(){
 }
 function renderPhraseList(){
   const list = document.getElementById('phraseList');
-  list.innerHTML = phrases[activeCat].map(([fr,en])=>`
-    <div class="phrase">
+  const items = (phrases[activeCat] || [])
+    .map((pair, idxInCat)=> ({ pair, flatIdx: phrasesFlatIndex[activeCat+'::'+idxInCat] }))
+    .filter(x=> !isMastered('phrases', x.flatIdx));
+  if(!items.length){
+    list.innerHTML = `<p style="margin:0; padding:12px 4px; color:#5b6664; font-size:.9rem;">🎉 You've mastered every phrase in this category. Find them in the <strong>Mastered</strong> tab, or unmaster one there to bring it back here.</p>`;
+    return;
+  }
+  list.innerHTML = items.map(({pair, flatIdx})=>{
+    const [fr,en] = pair;
+    return `<div class="phrase">
       <div class="txt">
         <div class="fr">${fr}</div>
         <div class="en">${en}</div>
       </div>
-      <button class="play-btn" aria-label="Play audio">▶</button>
-    </div>`).join('');
-  list.querySelectorAll('.play-btn').forEach((btn, idx)=>{
-    btn.addEventListener('click', ()=> speak(phrases[activeCat][idx][0]));
+      <div class="phrase-actions">
+        <button class="play-btn" data-flat="${flatIdx}" aria-label="Play audio">▶</button>
+        <button type="button" class="icon-toggle master" data-flat="${flatIdx}" title="Mark as mastered — hides it from this list" aria-label="Mark as mastered">★</button>
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.play-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> speak(phrasesFlat[+btn.dataset.flat][0]));
+  });
+  list.querySelectorAll('.icon-toggle.master').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      setMastered('phrases', +btn.dataset.flat, true);
+      phrasesStale = false; // we're refreshing right now, no need for the nav handler to do it again
+      renderPhraseList();
+    });
   });
 }
 
@@ -2788,6 +2891,12 @@ function renderResTabs(){
 /* ---------- WEEKLY QUIZ ---------- */
 let activeQuizWeek = 0;
 let quizBest = {};
+// v2: quiz scoring changed to count only first-try-correct answers (previously any correct
+// answer counted, even after retries). Old quizBest_ values were saved under the lenient
+// rule, so a perfect score earned that way could never be beaten under the new stricter one
+// — the tab would show a frozen "10/10" that no longer reflected real performance. Bumping
+// the storage key discards those stale bests once so scores track accurately going forward.
+const QUIZ_BEST_KEY_PREFIX = 'quizBestV2_';
 
 function renderQuizTabs(){
   const wrap = document.getElementById('quizWeekTabs');
@@ -2809,7 +2918,9 @@ function renderQuizBody(){
   let i = 0;
   const state = questions.map(()=>({ wrong: [], done: false }));
 
-  function score(){ return state.filter(s=>s.done).length; }
+  // Only a first-try correct answer counts — st.wrong stays empty until a wrong option is
+  // clicked, so "done with no wrong attempts" is exactly "got it right first try".
+  function score(){ return state.filter(s=>s.done && s.wrong.length===0).length; }
 
   function show(){
     if(i >= questions.length){
@@ -2817,7 +2928,7 @@ function renderQuizBody(){
       const prevBest = quizBest[activeQuizWeek];
       if(prevBest === undefined || finalScore > prevBest){
         quizBest[activeQuizWeek] = finalScore;
-        store.set('quizBest_'+currentStoreKey, quizBest);
+        store.set(QUIZ_BEST_KEY_PREFIX+currentStoreKey, quizBest);
         renderQuizTabs();
       }
       body.innerHTML = `
@@ -2856,7 +2967,11 @@ function renderQuizBody(){
       if(st.done){
         opts[q.answer].classList.add('correct');
         opts.forEach(o=> o.disabled = true);
-        fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+        if(st.wrong.length === 0){
+          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+        } else {
+          fb.textContent = "Correct — but only a first-try answer counts toward your score."; fb.className = 'feedback';
+        }
         nextBtn.disabled = false;
       } else if(st.wrong.length){
         fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
@@ -2872,7 +2987,11 @@ function renderQuizBody(){
           st.done = true;
           opts[idx].classList.add('correct');
           opts.forEach(o=> o.disabled = true);
-          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+          if(st.wrong.length === 0){
+            fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+          } else {
+            fb.textContent = "Correct — but only a first-try answer counts toward your score."; fb.className = 'feedback';
+          }
           nextBtn.disabled = false;
           setTimeout(()=>{ i++; show(); }, 700);
         } else {
@@ -2895,10 +3014,11 @@ function renderQuizBody(){
    gets an extra shuffled-in repeat each pass, so it comes up more often. Both are tracked
    per exercise type, keyed by each item's original (stable) index in its source array, and
    persisted per course/level. */
-const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs'];
+const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs','phrases'];
 let mastered = {};
 let difficult = {};
 let exBodyStale = false; // set true whenever mastery/difficulty changes; tells nav to refresh Practice on next visit
+let phrasesStale = false; // same idea, for the Phrases list when a phrase gets (un)mastered
 function loadMastered(){
   mastered = store.get('mastered_'+currentStoreKey, {});
   MASTERY_TYPES.forEach(t=>{
@@ -2916,7 +3036,17 @@ function setMastered(type, idx, val){
   if(val) mastered[type][idx] = Date.now(); else delete mastered[type][idx];
   saveMastered();
   renderMastered();
+  if(type === 'phrases'){
+    phrasesStale = true;
+    return;
+  }
   exBodyStale = true;
+  // un-mastering (e.g. "Practice again" from the Mastered view) brings an item back into
+  // the pool — the active practice session was saved without it, so resuming that saved
+  // session would keep hiding it. Clear it so the type's practice rebuilds fresh and
+  // picks the item back up; mastering itself doesn't need this since the render that's
+  // doing the mastering already updates its own live pool/session in place.
+  if(!val) clearSession(type);
 }
 function loadDifficult(){
   difficult = store.get('difficult_'+currentStoreKey, {});
@@ -2929,6 +3059,34 @@ function toggleDifficult(type, idx){
   if(difficult[type][idx]) delete difficult[type][idx]; else difficult[type][idx] = true;
   saveDifficult();
   exBodyStale = true;
+}
+/* Practice position is persisted per exercise type (keyed by course+level) so leaving
+   Practice — or switching to a different exercise tab — and coming back resumes exactly
+   where you left off, instead of restarting from question 1. Only the dedicated Restart
+   button (or actually finishing the set) clears it. */
+function sessionKey(type){ return 'session_'+type+'_'+currentStoreKey; }
+function loadSession(type){ return store.get(sessionKey(type), null); }
+function saveSession(type, data){ store.set(sessionKey(type), data); }
+function clearSession(type){ store.set(sessionKey(type), null); }
+/* Rebuilds {pool, state, i, score} from a saved session for a resumable type, dropping any
+   item that's since been mastered elsewhere (keeping pool/state in lockstep by filtering
+   both the same way). Returns null when there's nothing usable to resume, so the caller
+   falls back to a fresh buildPracticePool(). */
+function resumeSession(type, sourceList, withState){
+  const saved = loadSession(type);
+  if(!saved || !Array.isArray(saved.order) || !saved.order.length) return null;
+  const pool = [], state = [];
+  saved.order.forEach((idx, k)=>{
+    if(isMastered(type, idx) || !sourceList[idx]) return;
+    pool.push({idx, item: sourceList[idx]});
+    if(withState) state.push((saved.state && saved.state[k]) || { wrong: [], done:false, choices:null, answer:null });
+  });
+  if(!pool.length) return null;
+  pool.uniqueTotal = new Set(pool.map(p=>p.idx)).size;
+  let i = typeof saved.i === 'number' ? saved.i : 0;
+  if(i >= pool.length) i = pool.length - 1;
+  if(i < 0) i = 0;
+  return { pool, state: withState ? state : null, i, score: typeof saved.score === 'number' ? saved.score : 0 };
 }
 /* Builds [{idx, item}, ...] for items not yet mastered, preserving each item's original
    array index so mastery/difficulty stay attached correctly even as the pool changes.
@@ -3006,6 +3164,7 @@ function masteredNote(type){
 function qActionsHtml(type, idx){
   const diffOn = isDifficult(type, idx);
   return `<div class="q-actions">
+    <button type="button" class="icon-toggle restart" id="restartBtn" title="Restart this exercise from the beginning" aria-label="Restart from the beginning">↺</button>
     <button type="button" class="icon-toggle difficult${diffOn ? ' active' : ''}" id="difficultBtn" title="${diffOn ? 'Marked difficult — shows up more often. Tap to unmark.' : 'Mark as difficult — shows up more often'}" aria-label="Mark as difficult">🐢</button>
     <button type="button" class="icon-toggle master" id="masterBtn" title="Mark as mastered — won't show again" aria-label="Mark as mastered">★</button>
   </div>`;
@@ -3031,6 +3190,39 @@ function celebrateMastered(body, advance){
 }
 function emptyPoolCard(label){
   return `<div class="card"><p style="margin:0;">🎉 You've mastered everything in <strong>${label}</strong> for now. Find it in the <strong>Mastered</strong> tab, or unmaster an item there to bring it back here.</p></div>`;
+}
+
+/* ---------- PRACTICE DIRECTION (target language → EN, or EN → target language) ----------
+   A per-type, per-course/level preference for which language is shown as the question vs.
+   the answer choices — supported on Multiple choice, Top words and Top verbs. Persisted
+   like every other per-course setting, keyed off currentStoreKey so switching courses/levels
+   doesn't bleed one course's direction into another's. */
+function courseLangLabel(){ return (currentCourseId || '').toUpperCase(); }
+function getDirection(type){ return store.get('dir_'+type+'_'+currentStoreKey, 'fr-en'); }
+function setDirection(type, dir){ store.set('dir_'+type+'_'+currentStoreKey, dir); }
+function dirToggleHtml(type){
+  const dir = getDirection(type);
+  const lang = courseLangLabel();
+  return `<div class="dir-row">
+    <div class="dir-switch" id="dirSwitch">
+      <button type="button" class="dir-opt${dir==='fr-en' ? ' active':''}" data-dir="fr-en">${lang} → EN</button>
+      <button type="button" class="dir-opt${dir==='en-fr' ? ' active':''}" data-dir="en-fr">EN → ${lang}</button>
+    </div>
+  </div>`;
+}
+/* Wires the toggle buttons; onSwitch() is responsible for actually resetting that
+   section's session/state for the new direction and re-rendering. */
+function wireDirToggle(body, type, onSwitch){
+  const wrap = body.querySelector('#dirSwitch');
+  if(!wrap) return;
+  wrap.querySelectorAll('.dir-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const newDir = btn.dataset.dir;
+      if(newDir === getDirection(type)) return;
+      setDirection(type, newDir);
+      onSwitch();
+    });
+  });
 }
 
 /* ---------- EXERCISES ---------- */
@@ -3071,36 +3263,84 @@ function renderExBody(){
   if(activeEx==='listen') return renderListen(body);
   if(activeEx==='build') return renderBuilder(body);
   if(activeEx==='translate') return renderTranslate(body);
-  if(activeEx==='words') return renderVocabDrill(body, topWords, {type:'words', tabLabel:'Top 200 words', itemLabel:'Word', qtext:'What does this word mean?', doneText:"That's all 200 words. Reset to go again — the order and answer choices reshuffle each time."});
-  if(activeEx==='verbs') return renderVocabDrill(body, topVerbs, {type:'verbs', tabLabel:'Top 100 verbs', itemLabel:'Verb', qtext:'What does this verb mean?', doneText:"That's all 100 verbs. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='words') return renderVocabDrill(body, topWords, {type:'words', tabLabel:'Top 200 words', itemLabel:'Word', qtext:'What does this word mean?', qtextReverse:'How do you say this word?', doneText:"That's all 200 words. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='verbs') return renderVocabDrill(body, topVerbs, {type:'verbs', tabLabel:'Top 100 verbs', itemLabel:'Verb', qtext:'What does this verb mean?', qtextReverse:'How do you say this verb?', doneText:"That's all 100 verbs. Reset to go again — the order and answer choices reshuffle each time."});
 }
 
 /* MCQ */
 function renderMCQ(body){
-  let pool = buildPracticePool('mcq', mcq, false);
-  let i = 0;
-  let state = pool.map(()=>({ wrong: [], done: false }));
+  const resumed = resumeSession('mcq', mcq, true);
+  let pool = resumed ? resumed.pool : buildPracticePool('mcq', mcq, false);
+  let i = resumed ? resumed.i : 0;
+  let state = resumed ? resumed.state : pool.map(()=>({ wrong: [], done: false, choices: null, answer: null }));
 
   function score(){ return state.filter(s=>s.done).length; }
+  function persist(){ saveSession('mcq', { order: pool.map(p=>p.idx), state, i }); }
+
+  // Only used in EN→FR mode — the authored data only has one set of English distractors
+  // per question (for FR→EN), so the reverse direction builds its own French distractors
+  // by borrowing other questions' French sentences, same approach as the vocab drills.
+  function buildReverseChoices(idx){
+    const correct = mcq[idx];
+    const distractors = mcq
+      .map((entry,k)=>({entry,k}))
+      .filter(x=> x.k!==idx && x.entry.fr !== correct.fr)
+      .sort(()=>Math.random()-0.5)
+      .slice(0, Math.min(2, mcq.length-1))
+      .map(x=> x.entry.fr);
+    const combined = [{c:correct.fr, ok:true}, ...distractors.map(c=>({c, ok:false}))]
+      .sort(()=>Math.random()-0.5);
+    return { choices: combined.map(c=>c.c), answer: combined.findIndex(c=>c.ok) };
+  }
+
+  // Switching direction invalidates any in-progress question state (wrong/done + cached
+  // reverse choices), so treat it like a restart of this set — same as the Restart button.
+  function resetForDirection(){
+    clearSession('mcq');
+    pool = buildPracticePool('mcq', mcq, false);
+    state = pool.map(()=>({ wrong: [], done: false, choices: null, answer: null }));
+    i = 0;
+    show();
+  }
 
   function show(skipAnim){
-    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Multiple choice'); return; }
+    if(pool.length === 0){ clearSession('mcq'); body.innerHTML = emptyPoolCard('Multiple choice'); return; }
     if(i >= pool.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>Nice work. Reset to try again.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('mcq', mcq, false); state = pool.map(()=>({ wrong: [], done: false })); i=0; show(); });
+      clearSession('mcq');
+      body.innerHTML = `<div class="card">${dirToggleHtml('mcq')}<div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>Nice work. Reset to try again.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('mcq', mcq, false); state = pool.map(()=>({ wrong: [], done: false, choices: null, answer: null })); i=0; show(); });
       body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
+      wireDirToggle(body, 'mcq', resetForDirection);
       return;
     }
+    const direction = getDirection('mcq');
     const q = pool[i].item;
     const st = state[i];
+    let promptText, choicesArr, correctIdx;
+    if(direction === 'fr-en'){
+      promptText = q.fr;
+      choicesArr = q.choices;
+      correctIdx = q.answer;
+    } else {
+      if(!st.choices){
+        const built = buildReverseChoices(pool[i].idx);
+        st.choices = built.choices;
+        st.answer = built.answer;
+      }
+      promptText = q.choices[q.answer];
+      choicesArr = st.choices;
+      correctIdx = st.answer;
+    }
+    persist();
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        ${dirToggleHtml('mcq')}
         <div class="q-topline">
           <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('mcq')}</div>
           ${qActionsHtml('mcq', pool[i].idx)}
         </div>
-        <div class="q-prompt">What does this mean?<br><span class="french">«${q.fr}»</span></div>
-        ${q.choices.map((c,idx)=>`<button class="opt" data-idx="${idx}">${c}</button>`).join('')}
+        <div class="q-prompt">${direction==='fr-en' ? 'What does this mean?' : 'How do you say this?'}<br><span class="french">«${promptText}»</span></div>
+        ${choicesArr.map((c,idx)=>`<button class="opt" data-idx="${idx}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
         <div class="ex-btn-row">
           <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>Back</button>
@@ -3115,7 +3355,7 @@ function renderMCQ(body){
       st.wrong.forEach(w=> opts[w].classList.add('wrong'));
       st.wrong.forEach(w=> opts[w].disabled = true);
       if(st.done){
-        opts[q.answer].classList.add('correct');
+        opts[correctIdx].classList.add('correct');
         opts.forEach(o=> o.disabled = true);
         fb.textContent = 'Correct!'; fb.className = 'feedback ok';
         nextBtn.disabled = false;
@@ -3129,7 +3369,7 @@ function renderMCQ(body){
       opt.addEventListener('click', ()=>{
         if(st.done || opt.disabled) return;
         const idx = +opt.dataset.idx;
-        if(idx === q.answer){
+        if(idx === correctIdx){
           st.done = true;
           opts[idx].classList.add('correct');
           opts.forEach(o=> o.disabled = true);
@@ -3141,6 +3381,7 @@ function renderMCQ(body){
           opt.classList.add('wrong');
           opt.disabled = true;
           fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+          persist();
         }
       });
     });
@@ -3159,17 +3400,30 @@ function renderMCQ(body){
       applyDifficultToggle('mcq', pool[i].idx, pool, i, state);
       show(true);
     });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm('Restart Multiple choice from the beginning? Your progress in this set will be reset.')) return;
+      clearSession('mcq');
+      pool = buildPracticePool('mcq', mcq, false);
+      state = pool.map(()=>({ wrong: [], done: false, choices: null, answer: null }));
+      i = 0;
+      show();
+    });
+    wireDirToggle(body, 'mcq', resetForDirection);
   }
   show();
 }
 
 /* Fill in the blank */
 function renderFill(body){
-  let pool = buildPracticePool('fill', fillBlank, false);
-  let i = 0, score = 0;
+  const resumed = resumeSession('fill', fillBlank, false);
+  let pool = resumed ? resumed.pool : buildPracticePool('fill', fillBlank, false);
+  let i = resumed ? resumed.i : 0;
+  let score = resumed ? resumed.score : 0;
+  function persist(){ saveSession('fill', { order: pool.map(p=>p.idx), i, score }); }
   function show(skipAnim){
-    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Fill in the blank'); return; }
+    if(pool.length === 0){ clearSession('fill'); body.innerHTML = emptyPoolCard('Fill in the blank'); return; }
     if(i >= pool.length){
+      clearSession('fill');
       body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>Done. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
       body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('fill', fillBlank, false); i=0; score=0; show(); });
       return;
@@ -3177,6 +3431,7 @@ function renderFill(body){
     const q = pool[i].item;
     // keep whatever the user already typed when this is just a difficulty-toggle refresh
     const prevVal = skipAnim ? (body.querySelector('#fillIn')?.value || '') : '';
+    persist();
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
@@ -3188,11 +3443,14 @@ function renderFill(body){
         <div class="ex-btn-row">
           <button class="btn btn-primary" id="check">Check</button>
           <button class="btn btn-ghost" id="hintBtn">Hint</button>
+          <button class="btn btn-primary" id="nextBtn" disabled>${i===pool.length-1? 'Finish':'Next'}</button>
         </div>
         <div class="feedback" id="fb"></div>
       </div>`;
     const input = body.querySelector('#fillIn');
     if(prevVal) input.value = prevVal;
+    const nextBtn = body.querySelector('#nextBtn');
+    let advanceTimer = null;
     body.querySelector('#hintBtn').addEventListener('click', ()=>{
       body.querySelector('#fb').textContent = q.hint;
       body.querySelector('#fb').className = 'feedback';
@@ -3200,16 +3458,20 @@ function renderFill(body){
     body.querySelector('#check').addEventListener('click', ()=>{
       const val = input.value.trim().toLowerCase();
       const fb = body.querySelector('#fb');
-      if(val === q.answer){
+      const correct = val === q.answer;
+      if(correct){
         fb.textContent = 'Correct!'; fb.className='feedback ok'; score++;
       } else {
         fb.textContent = `Correct answer: "${q.answer}"`; fb.className='feedback bad';
       }
       input.disabled = true;
       body.querySelector('#check').disabled = true;
-      setTimeout(()=>{ i++; show(); }, 1100);
+      nextBtn.disabled = false;
+      // a wrong answer stays put until Next is clicked — only a correct one auto-advances
+      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
     });
-    input.addEventListener('keydown', e=>{ if(e.key==='Enter') body.querySelector('#check').click(); });
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
+    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       celebrateMastered(body, ()=>{
@@ -3223,23 +3485,35 @@ function renderFill(body){
       applyDifficultToggle('fill', pool[i].idx, pool, i, null);
       show(true);
     });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm('Restart Fill in the blank from the beginning? Your progress in this set will be reset.')) return;
+      clearSession('fill');
+      pool = buildPracticePool('fill', fillBlank, false);
+      i = 0; score = 0;
+      show();
+    });
   }
   show();
 }
 
 /* Listening dictation */
 function renderListen(body){
-  let pool = buildPracticePool('listen', listenItems, false);
-  let i = 0, score = 0;
+  const resumed = resumeSession('listen', listenItems, false);
+  let pool = resumed ? resumed.pool : buildPracticePool('listen', listenItems, false);
+  let i = resumed ? resumed.i : 0;
+  let score = resumed ? resumed.score : 0;
+  function persist(){ saveSession('listen', { order: pool.map(p=>p.idx), i, score }); }
   function show(skipAnim){
-    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Listening dictation'); return; }
+    if(pool.length === 0){ clearSession('listen'); body.innerHTML = emptyPoolCard('Listening dictation'); return; }
     if(i >= pool.length){
+      clearSession('listen');
       body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>That's the set. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
       body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('listen', listenItems, false); i=0; score=0; show(); });
       return;
     }
     const [fr, en] = pool[i].item;
     const prevVal = skipAnim ? (body.querySelector('#dictIn')?.value || '') : '';
+    persist();
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
@@ -3252,6 +3526,7 @@ function renderListen(body){
         <div class="ex-btn-row">
           <button class="btn btn-primary" id="check">Check</button>
           <button class="btn btn-ghost" id="replay">Replay</button>
+          <button class="btn btn-primary" id="nextBtn" disabled>${i===pool.length-1? 'Finish':'Next'}</button>
         </div>
         <div class="feedback" id="fb"></div>
       </div>`;
@@ -3259,19 +3534,24 @@ function renderListen(body){
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(fr));
     body.querySelector('#replay').addEventListener('click', ()=> speak(fr));
     const input = body.querySelector('#dictIn');
+    const nextBtn = body.querySelector('#nextBtn');
+    let advanceTimer = null;
     body.querySelector('#check').addEventListener('click', ()=>{
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
       const fb = body.querySelector('#fb');
-      if(norm(input.value) === norm(fr)){
+      const correct = norm(input.value) === norm(fr);
+      if(correct){
         fb.textContent = `Correct! "${fr}" — ${en}`; fb.className='feedback ok'; score++;
       } else {
         fb.textContent = `Target: "${fr}" (${en})`; fb.className='feedback bad';
       }
       input.disabled = true;
       body.querySelector('#check').disabled = true;
-      setTimeout(()=>{ i++; show(); }, 1500);
+      nextBtn.disabled = false;
+      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1500);
     });
-    input.addEventListener('keydown', e=>{ if(e.key==='Enter') body.querySelector('#check').click(); });
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
+    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       celebrateMastered(body, ()=>{
@@ -3285,6 +3565,13 @@ function renderListen(body){
       applyDifficultToggle('listen', pool[i].idx, pool, i, null);
       show(true);
     });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm('Restart Listening dictation from the beginning? Your progress in this set will be reset.')) return;
+      clearSession('listen');
+      pool = buildPracticePool('listen', listenItems, false);
+      i = 0; score = 0;
+      show();
+    });
     if(!skipAnim) speak(fr);
   }
   show();
@@ -3292,13 +3579,17 @@ function renderListen(body){
 
 /* Sentence builder */
 function renderBuilder(body){
-  let qPool = buildPracticePool('build', builderSentences, false);
-  let i = 0, score = 0;
+  const resumed = resumeSession('build', builderSentences, false);
+  let qPool = resumed ? resumed.pool : buildPracticePool('build', builderSentences, false);
+  let i = resumed ? resumed.i : 0;
+  let score = resumed ? resumed.score : 0;
   let chosen = [];
   let bank = [];
+  function persist(){ saveSession('build', { order: qPool.map(p=>p.idx), i, score }); }
   function show(skipAnim){
-    if(qPool.length === 0){ body.innerHTML = emptyPoolCard('Sentence builder'); return; }
+    if(qPool.length === 0){ clearSession('build'); body.innerHTML = emptyPoolCard('Sentence builder'); return; }
     if(i >= qPool.length){
+      clearSession('build');
       body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, qPool.uniqueTotal)}/${qPool.uniqueTotal}</div><p>All done. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
       body.querySelector('#restart').addEventListener('click', ()=>{ qPool = buildPracticePool('build', builderSentences, false); i=0; score=0; show(); });
       return;
@@ -3310,6 +3601,8 @@ function renderBuilder(body){
       chosen = [];
       bank = q.parts.map((p, idx)=>({p, idx})).sort(()=>Math.random()-0.5);
     }
+    let answered = false;
+    persist();
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
@@ -3322,21 +3615,32 @@ function renderBuilder(body){
         <div class="ex-btn-row">
           <button class="btn btn-primary" id="check">Check</button>
           <button class="btn btn-ghost" id="clear">Clear</button>
+          <button class="btn btn-primary" id="nextBtn" disabled>${i===qPool.length-1? 'Finish':'Next'}</button>
         </div>
         <div class="feedback" id="fb"></div>
       </div>`;
     renderRows();
-    body.querySelector('#clear').addEventListener('click', ()=>{ chosen = []; bank = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
+    const nextBtn = body.querySelector('#nextBtn');
+    let advanceTimer = null;
+    body.querySelector('#clear').addEventListener('click', ()=>{ if(answered) return; chosen = []; bank = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
     body.querySelector('#check').addEventListener('click', ()=>{
+      if(answered) return;
       const built = chosen.map(c=>c.p).join(' ').replace(/\s+([,?!])/g,'$1');
       const fb = body.querySelector('#fb');
-      if(built.toLowerCase() === q.answer.toLowerCase()){
+      const correct = built.toLowerCase() === q.answer.toLowerCase();
+      if(correct){
         fb.textContent = 'Correct!'; fb.className='feedback ok'; score++;
       } else {
         fb.textContent = `Target: "${q.answer}"`; fb.className='feedback bad';
       }
-      setTimeout(()=>{ i++; show(); }, 1300);
+      answered = true;
+      body.querySelector('#check').disabled = true;
+      body.querySelector('#clear').disabled = true;
+      nextBtn.disabled = false;
+      // a wrong build stays put until Next is clicked — only a correct one auto-advances
+      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1300);
     });
+    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = qPool[i].idx;
       celebrateMastered(body, ()=>{
@@ -3350,11 +3654,19 @@ function renderBuilder(body){
       applyDifficultToggle('build', qPool[i].idx, qPool, i, null);
       show(true);
     });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm('Restart Sentence builder from the beginning? Your progress in this set will be reset.')) return;
+      clearSession('build');
+      qPool = buildPracticePool('build', builderSentences, false);
+      i = 0; score = 0;
+      show();
+    });
     function renderRows(){
       body.querySelector('#answerRow').innerHTML = chosen.map((c,ci)=>`<span class="chip" data-from="answer" data-ci="${ci}">${c.p}</span>`).join('') || '<span style="color:#9aa3a0; font-size:.85rem;">tap words below in order</span>';
       body.querySelector('#bankRow').innerHTML = bank.map((c,pi)=>`<span class="chip" data-from="bank" data-pi="${pi}">${c.p}</span>`).join('');
       body.querySelectorAll('[data-from="bank"]').forEach(chip=>{
         chip.addEventListener('click', ()=>{
+          if(answered) return;
           const pi = +chip.dataset.pi;
           chosen.push(bank[pi]);
           bank.splice(pi,1);
@@ -3363,6 +3675,7 @@ function renderBuilder(body){
       });
       body.querySelectorAll('[data-from="answer"]').forEach(chip=>{
         chip.addEventListener('click', ()=>{
+          if(answered) return;
           const ci = +chip.dataset.ci;
           bank.push(chosen[ci]);
           chosen.splice(ci,1);
@@ -3376,17 +3689,22 @@ function renderBuilder(body){
 
 /* Translate EN -> target language */
 function renderTranslate(body){
-  let pool = buildPracticePool('translate', translateItems, false);
-  let i = 0, score = 0;
+  const resumed = resumeSession('translate', translateItems, false);
+  let pool = resumed ? resumed.pool : buildPracticePool('translate', translateItems, false);
+  let i = resumed ? resumed.i : 0;
+  let score = resumed ? resumed.score : 0;
+  function persist(){ saveSession('translate', { order: pool.map(p=>p.idx), i, score }); }
   function show(skipAnim){
-    if(pool.length === 0){ body.innerHTML = emptyPoolCard('Translate'); return; }
+    if(pool.length === 0){ clearSession('translate'); body.innerHTML = emptyPoolCard('Translate'); return; }
     if(i >= pool.length){
+      clearSession('translate');
       body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>That's the set. Reset to try again.</p><button class="btn btn-primary" id="restart">Restart</button></div>`;
       body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('translate', translateItems, false); i=0; score=0; show(); });
       return;
     }
     const q = pool[i].item;
     const prevVal = skipAnim ? (body.querySelector('#trIn')?.value || '') : '';
+    persist();
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
@@ -3398,25 +3716,31 @@ function renderTranslate(body){
         <div class="ex-btn-row">
           <button class="btn btn-primary" id="check">Check</button>
           <button class="btn btn-ghost" id="playBtn">▶ Hear it</button>
+          <button class="btn btn-primary" id="nextBtn" disabled>${i===pool.length-1? 'Finish':'Next'}</button>
         </div>
         <div class="feedback" id="fb"></div>
       </div>`;
     if(prevVal) body.querySelector('#trIn').value = prevVal;
     const input = body.querySelector('#trIn');
+    const nextBtn = body.querySelector('#nextBtn');
+    let advanceTimer = null;
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.fr));
     body.querySelector('#check').addEventListener('click', ()=>{
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
       const fb = body.querySelector('#fb');
-      if(norm(input.value) === norm(q.fr)){
+      const correct = norm(input.value) === norm(q.fr);
+      if(correct){
         fb.textContent = 'Correct!'; fb.className='feedback ok'; score++;
       } else {
         fb.textContent = `Target: "${q.fr}"`; fb.className='feedback bad';
       }
       input.disabled = true;
       body.querySelector('#check').disabled = true;
-      setTimeout(()=>{ i++; show(); }, 1400);
+      nextBtn.disabled = false;
+      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1400);
     });
-    input.addEventListener('keydown', e=>{ if(e.key==='Enter') body.querySelector('#check').click(); });
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
+    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       celebrateMastered(body, ()=>{
@@ -3429,6 +3753,13 @@ function renderTranslate(body){
       toggleDifficult('translate', pool[i].idx);
       applyDifficultToggle('translate', pool[i].idx, pool, i, null);
       show(true);
+    });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm('Restart Translate from the beginning? Your progress in this set will be reset.')) return;
+      clearSession('translate');
+      pool = buildPracticePool('translate', translateItems, false);
+      i = 0; score = 0;
+      show();
     });
   }
   show();
@@ -3443,56 +3774,81 @@ function renderVocabDrill(body, list, opts){
     body.innerHTML = `<div class="card"><p>Not available for this course yet.</p></div>`;
     return;
   }
-  let pool = buildPracticePool(type, list, true);
+  const resumed = resumeSession(type, list, true);
+  let pool = resumed ? resumed.pool : buildPracticePool(type, list, true);
   if(!pool.length){
+    clearSession(type);
     body.innerHTML = emptyPoolCard(opts.tabLabel || opts.itemLabel);
     return;
   }
-  let i = 0;
-  let state = pool.map(()=>({ wrong: [], done:false, choices:null, answer:null }));
+  let i = resumed ? resumed.i : 0;
+  let state = resumed ? resumed.state : pool.map(()=>({ wrong: [], done:false, choices:null, answer:null }));
+  function persist(){ saveSession(type, { order: pool.map(p=>p.idx), state, i }); }
 
-  function buildChoices(idx){
+  // fr-en: word shown is the French entry (field 0), answer choices are English (field 1).
+  // en-fr: reversed — word shown is English (field 1), answer choices are French (field 0).
+  function buildChoices(idx, direction){
     const correct = list[idx];
+    const field = direction === 'fr-en' ? 1 : 0;
     const distractors = list
       .map((entry, k)=>({entry, k}))
       .filter(x=> x.k!==idx)
       .sort(()=>Math.random()-0.5)
       .slice(0, Math.min(2, list.length-1))
-      .map(x=> x.entry[1]);
-    const combined = [{c:correct[1], ok:true}, ...distractors.map(c=>({c, ok:false}))]
+      .map(x=> x.entry[field]);
+    const combined = [{c:correct[field], ok:true}, ...distractors.map(c=>({c, ok:false}))]
       .sort(()=>Math.random()-0.5);
     return { choices: combined.map(c=>c.c), answer: combined.findIndex(c=>c.ok) };
   }
 
   function score(){ return state.filter(s=>s.done).length; }
 
+  // Switching direction invalidates in-progress state (wrong/done + cached choices, which
+  // were built for the other direction), so treat it like a restart of this set.
+  function resetForDirection(){
+    clearSession(type);
+    pool = buildPracticePool(type, list, true);
+    state = pool.map(()=>({ wrong: [], done:false, choices:null, answer:null }));
+    i = 0;
+    show();
+  }
+
   function show(skipAnim){
-    if(pool.length === 0){ body.innerHTML = emptyPoolCard(opts.tabLabel || opts.itemLabel); return; }
+    if(pool.length === 0){ clearSession(type); body.innerHTML = emptyPoolCard(opts.tabLabel || opts.itemLabel); return; }
     if(i >= pool.length){
-      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${opts.doneText || "That's the full set. Reset to try again."}</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
+      clearSession(type);
+      body.innerHTML = `<div class="card">${dirToggleHtml(type)}<div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${opts.doneText || "That's the full set. Reset to try again."}</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
       body.querySelector('#restart').addEventListener('click', ()=> renderVocabDrill(body, list, opts));
       body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
+      wireDirToggle(body, type, resetForDirection);
       return;
     }
+    const direction = getDirection(type);
     const idx = pool[i].idx;
     const item = pool[i].item;
     const st = state[i];
     if(!st.choices){
-      const built = buildChoices(idx);
+      const built = buildChoices(idx, direction);
       st.choices = built.choices;
       st.answer = built.answer;
     }
+    persist();
     const posTag = item[2] ? `<span style="font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--rust);">${item[2].split('/')[0]}</span>` : '';
+    const promptWord = direction === 'fr-en' ? item[0] : item[1];
+    // Playing audio always speaks the French word — in EN→FR mode that would give away the
+    // answer, so the play button is hidden there until the question is answered.
+    const showPlay = direction === 'fr-en' || st.done;
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        ${dirToggleHtml(type)}
         <div class="q-topline">
           <div class="q-progress">${opts.itemLabel} ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote(type)}</div>
           ${qActionsHtml(type, idx)}
         </div>
-        <div class="q-instruction">${opts.qtext}</div>
+        <div class="q-instruction">${direction === 'fr-en' ? opts.qtext : (opts.qtextReverse || opts.qtext)}</div>
         <div class="q-word-row">
-          <span class="french q-word">${item[0]}</span>${posTag}
-          <button class="play-btn-inline" id="playBtn" aria-label="Play pronunciation">▶</button>
+          <span class="french q-word">${promptWord}</span>${posTag}
+          ${showPlay ? `<button class="play-btn-inline" id="playBtn" aria-label="Play pronunciation">▶</button>` : ''}
         </div>
         ${st.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
@@ -3501,10 +3857,24 @@ function renderVocabDrill(body, list, opts){
           <button class="btn btn-primary" id="nextBtn" ${st.done? '' : 'disabled'}>${i===pool.length-1? 'Finish':'Next'}</button>
         </div>
       </div>`;
-    body.querySelector('#playBtn').addEventListener('click', ()=> speak(item[0]));
+    const playBtnEl = body.querySelector('#playBtn');
+    if(playBtnEl) playBtnEl.addEventListener('click', ()=> speak(item[0]));
     const optBtns = body.querySelectorAll('.opt');
     const fb = body.querySelector('#fb');
     const nextBtn = body.querySelector('#nextBtn');
+
+    function revealPlayButtonIfHidden(){
+      if(body.querySelector('#playBtn')) return;
+      const wordRow = body.querySelector('.q-word-row');
+      if(!wordRow) return;
+      const btn = document.createElement('button');
+      btn.className = 'play-btn-inline';
+      btn.id = 'playBtn';
+      btn.setAttribute('aria-label', 'Play pronunciation');
+      btn.textContent = '▶';
+      btn.addEventListener('click', ()=> speak(item[0]));
+      wordRow.appendChild(btn);
+    }
 
     function renderState(){
       st.wrong.forEach(w=> optBtns[w].classList.add('wrong'));
@@ -3530,12 +3900,14 @@ function renderVocabDrill(body, list, opts){
           optBtns.forEach(o=> o.disabled = true);
           fb.textContent = 'Correct!'; fb.className = 'feedback ok';
           nextBtn.disabled = false;
+          revealPlayButtonIfHidden();
           setTimeout(()=>{ i++; show(); }, 700);
         } else {
           st.wrong.push(ci);
           opt.classList.add('wrong');
           opt.disabled = true;
           fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+          persist();
         }
       });
     });
@@ -3553,6 +3925,15 @@ function renderVocabDrill(body, list, opts){
       applyDifficultToggle(type, idx, pool, i, state);
       show(true);
     });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm(`Restart ${opts.tabLabel || opts.itemLabel} from the beginning? Your progress in this set will be reset.`)) return;
+      clearSession(type);
+      pool = buildPracticePool(type, list, true);
+      state = pool.map(()=>({ wrong: [], done:false, choices:null, answer:null }));
+      i = 0;
+      show();
+    });
+    wireDirToggle(body, type, resetForDirection);
   }
   show();
 }
@@ -3566,7 +3947,8 @@ function masteredTypeMeta(){
     build:     { label: 'Sentence builder',  getFr: it=> it.answer,       getEn: it=> it.en },
     translate: { label: 'Translate',         getFr: it=> it.fr,           getEn: it=> it.en },
     words:     { label: 'Top 200 words',     getFr: it=> it[0],           getEn: it=> it[1] },
-    verbs:     { label: 'Top 100 verbs',     getFr: it=> it[0],           getEn: it=> it[1] }
+    verbs:     { label: 'Top 100 verbs',     getFr: it=> it[0],           getEn: it=> it[1] },
+    phrases:   { label: 'Phrases',           getFr: it=> it[0],           getEn: it=> it[1] }
   };
 }
 function masteredSourceList(type){
@@ -3577,11 +3959,162 @@ function masteredSourceList(type){
   if(type==='translate') return translateItems;
   if(type==='words') return topWords;
   if(type==='verbs') return topVerbs;
+  if(type==='phrases') return phrasesFlat;
   return [];
+}
+/* ---------- MASTERED VIEW: REVIEW PRACTICE ---------- */
+/* A lightweight, read-only quiz over words already marked mastered — pure refresher, it
+   never touches the mastered/difficult sets. masteredPracticeScope is either a single
+   MASTERY_TYPES entry or 'all' (every mastered item across every type, combined); the
+   in-progress session lives in masteredPracticeSession so it survives a background
+   renderMastered() call (e.g. from mastering something elsewhere) without losing position. */
+let masteredPracticeScope = null;
+let masteredPracticeSession = null;
+/* Which type-groups are expanded to show every mastered word, instead of just the 2 latest.
+   In-memory only (resets on reload) — it just needs to survive renderMastered() re-renders
+   triggered by mastering/unmastering elsewhere while the view is open. */
+let expandedMasteredGroups = new Set();
+const MASTERED_COLLAPSE_SHOW = 2;
+function masteredPracticePairs(scope){
+  const meta = masteredTypeMeta();
+  const types = scope === 'all' ? MASTERY_TYPES : [scope];
+  const pairs = [];
+  types.forEach(type=>{
+    const m = meta[type];
+    const sourceList = masteredSourceList(type);
+    Object.keys(mastered[type] || {}).map(Number).forEach(idx=>{
+      const it = sourceList[idx];
+      if(!it) return;
+      try{ pairs.push({ fr: m.getFr(it), en: m.getEn(it) }); }catch(e){}
+    });
+  });
+  return pairs;
+}
+function startMasteredPractice(scope){
+  masteredPracticeScope = scope;
+  masteredPracticeSession = null;
+  renderMastered();
+}
+function exitMasteredPractice(){
+  masteredPracticeScope = null;
+  masteredPracticeSession = null;
+  renderMastered();
+}
+function renderMasteredPracticeBody(wrap, scope){
+  const meta = masteredTypeMeta();
+  const label = scope === 'all' ? 'all mastered words' : meta[scope].label;
+
+  if(!masteredPracticeSession || masteredPracticeSession.scope !== scope){
+    const pairs = masteredPracticePairs(scope);
+    const pool = pairs.map((p, idx)=>({idx, item:p}));
+    for(let k=pool.length-1; k>0; k--){ const j=Math.floor(Math.random()*(k+1)); [pool[k],pool[j]]=[pool[j],pool[k]]; }
+    masteredPracticeSession = {
+      scope, pairs, pool, i: 0,
+      state: pool.map(()=>({ wrong: [], done:false, choices:null, answer:null }))
+    };
+  }
+  const sess = masteredPracticeSession;
+  const pool = sess.pool, state = sess.state, pairs = sess.pairs;
+
+  function score(){ return state.filter(s=>s.done).length; }
+  function buildChoices(idx){
+    const correct = pairs[idx];
+    const distractors = pairs
+      .map((p,k)=>({p,k}))
+      .filter(x=> x.k!==idx)
+      .sort(()=>Math.random()-0.5)
+      .slice(0, Math.min(2, pairs.length-1))
+      .map(x=> x.p.en);
+    const combined = [{c:correct.en, ok:true}, ...distractors.map(c=>({c, ok:false}))]
+      .sort(()=>Math.random()-0.5);
+    return { choices: combined.map(c=>c.c), answer: combined.findIndex(c=>c.ok) };
+  }
+
+  function show(){
+    const i = sess.i;
+    if(pool.length === 0){
+      wrap.innerHTML = `<div class="card"><p style="margin:0;">Nothing mastered here yet.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="exitPractice">← Back to Mastered list</button></div></div>`;
+      wrap.querySelector('#exitPractice').addEventListener('click', exitMasteredPractice);
+      return;
+    }
+    if(i >= pool.length){
+      wrap.innerHTML = `<div class="card"><div class="score-pill mastered-total">Score: ${score()}/${pool.length}</div><p>That's ${label} reviewed — just a refresher, nothing changes in your Mastered list.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="exitPractice">← Back to Mastered list</button><button class="btn btn-primary" id="again">Practice again</button></div></div>`;
+      wrap.querySelector('#exitPractice').addEventListener('click', exitMasteredPractice);
+      wrap.querySelector('#again').addEventListener('click', ()=>{ masteredPracticeSession = null; renderMasteredPracticeBody(wrap, scope); });
+      return;
+    }
+    const idx = pool[i].idx;
+    const item = pool[i].item;
+    const st = state[i];
+    if(!st.choices){
+      const built = buildChoices(idx);
+      st.choices = built.choices;
+      st.answer = built.answer;
+    }
+    wrap.innerHTML = `
+      <div class="card question-card">
+        <div class="q-topline">
+          <div class="q-progress">Reviewing ${label} — ${i+1} of ${pool.length}</div>
+          <button type="button" class="icon-toggle restart" id="exitPractice" title="Back to Mastered list" aria-label="Back to Mastered list">✕</button>
+        </div>
+        <div class="q-prompt">What does this mean?<br><span class="french">«${item.fr}»</span></div>
+        ${st.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
+        <div class="feedback" id="fb"></div>
+        <div class="ex-btn-row">
+          <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>Back</button>
+          <button class="btn btn-primary" id="nextBtn" ${st.done? '' : 'disabled'}>${i===pool.length-1? 'Finish':'Next'}</button>
+        </div>
+      </div>`;
+    const opts = wrap.querySelectorAll('.opt');
+    const fb = wrap.querySelector('#fb');
+    const nextBtn = wrap.querySelector('#nextBtn');
+
+    function renderState(){
+      st.wrong.forEach(w=> opts[w].classList.add('wrong'));
+      st.wrong.forEach(w=> opts[w].disabled = true);
+      if(st.done){
+        opts[st.answer].classList.add('correct');
+        opts.forEach(o=> o.disabled = true);
+        fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+        nextBtn.disabled = false;
+      } else if(st.wrong.length){
+        fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+      }
+    }
+    renderState();
+
+    opts.forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        if(st.done || opt.disabled) return;
+        const ci = +opt.dataset.idx;
+        if(ci === st.answer){
+          st.done = true;
+          opts[ci].classList.add('correct');
+          opts.forEach(o=> o.disabled = true);
+          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+          nextBtn.disabled = false;
+          setTimeout(()=>{ sess.i++; show(); }, 700);
+        } else {
+          st.wrong.push(ci);
+          opt.classList.add('wrong');
+          opt.disabled = true;
+          fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+        }
+      });
+    });
+    wrap.querySelector('#prevBtn').addEventListener('click', ()=>{ sess.i--; show(); });
+    nextBtn.addEventListener('click', ()=>{ sess.i++; show(); });
+    wrap.querySelector('#exitPractice').addEventListener('click', exitMasteredPractice);
+  }
+  show();
 }
 function renderMastered(){
   const wrap = document.getElementById('masteredBody');
   if(!wrap) return;
+  if(masteredPracticeScope){
+    renderMasteredPracticeBody(wrap, masteredPracticeScope);
+    return;
+  }
   const meta = masteredTypeMeta();
   // newest-mastered-first: sort each group's items by timestamp descending, then order the
   // groups themselves by their own most-recently-mastered item, also descending
@@ -3600,10 +4133,13 @@ function renderMastered(){
   }
 
   const totalCount = groups.reduce((sum,g)=> sum + g.idxs.length, 0);
-  wrap.innerHTML = `<div class="score-pill mastered-total">${totalCount} mastered</div>` + groups.map(g=>{
+  wrap.innerHTML = `<div class="mastered-toolbar"><div class="score-pill mastered-total">${totalCount} mastered</div><button class="btn btn-ghost btn-sm" id="practiceAllBtn">▶ Practice all mastered</button></div>` + groups.map(g=>{
     const m = meta[g.type];
     const sourceList = masteredSourceList(g.type);
-    const rows = g.idxs.map(idx=>{
+    const expanded = expandedMasteredGroups.has(g.type);
+    const hiddenCount = g.idxs.length - MASTERED_COLLAPSE_SHOW;
+    const visibleIdxs = expanded ? g.idxs : g.idxs.slice(0, MASTERED_COLLAPSE_SHOW);
+    const rows = visibleIdxs.map(idx=>{
       const it = sourceList[idx];
       if(!it) return '';
       let fr, en;
@@ -3613,12 +4149,27 @@ function renderMastered(){
         <button class="unmaster-btn" data-type="${g.type}" data-idx="${idx}">↩ Practice again</button>
       </div>`;
     }).join('');
-    return `<div class="card"><h3 style="display:flex; align-items:center; gap:8px; font-size:1rem;">${m.label} <span class="mastered-count">${g.idxs.length}</span></h3>${rows}</div>`;
+    const expandToggle = hiddenCount > 0
+      ? `<button class="mastered-expand-btn" data-type="${g.type}">${expanded ? 'Show less ▲' : `Show ${hiddenCount} more ▼`}</button>`
+      : '';
+    return `<div class="card"><h3 style="display:flex; align-items:center; gap:8px; font-size:1rem;">${m.label} <span class="mastered-count">${g.idxs.length}</span><button class="practice-group-btn" data-type="${g.type}" title="Practice these ${g.idxs.length} mastered words">▶ Practice</button></h3>${rows}${expandToggle}</div>`;
   }).join('');
 
   wrap.querySelectorAll('.unmaster-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       setMastered(btn.dataset.type, +btn.dataset.idx, false);
+    });
+  });
+  wrap.querySelector('#practiceAllBtn').addEventListener('click', ()=> startMasteredPractice('all'));
+  wrap.querySelectorAll('.practice-group-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> startMasteredPractice(btn.dataset.type));
+  });
+  wrap.querySelectorAll('.mastered-expand-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const type = btn.dataset.type;
+      if(expandedMasteredGroups.has(type)) expandedMasteredGroups.delete(type);
+      else expandedMasteredGroups.add(type);
+      renderMastered();
     });
   });
 }
@@ -3650,6 +4201,7 @@ function loadCourse(langId, levelId){
   weeks = c.weeks;
   PHRASE_CATS = c.PHRASE_CATS;
   phrases = c.phrases;
+  buildPhrasesFlat();
   RES_TYPES = c.RES_TYPES;
   resources = c.resources;
   mcq = c.mcq;
@@ -3675,7 +4227,7 @@ function loadCourse(langId, levelId){
   }
 
   weekChecks = store.get('weekChecks_'+currentStoreKey, {});
-  quizBest = store.get('quizBest_'+currentStoreKey, {});
+  quizBest = store.get(QUIZ_BEST_KEY_PREFIX+currentStoreKey, {});
   loadMastered();
   loadDifficult();
   activeCat = PHRASE_CATS[0];
