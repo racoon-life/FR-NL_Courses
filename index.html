@@ -231,6 +231,23 @@
     cursor:pointer;
   }
   .ex-tab.active{ background: var(--rust); color:#fff; border-color:var(--rust); }
+  .ex-cat-tabs{ display:flex; border:1px solid var(--teal); border-radius:14px; overflow:hidden; margin-bottom:12px; }
+  .ex-cat-tab{
+    flex:1 1 0;
+    background:none;
+    border:none;
+    border-right:1px solid var(--teal);
+    padding:9px 4px;
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    color: var(--teal);
+    cursor:pointer;
+  }
+  .ex-cat-tab:last-child{ border-right:none; }
+  .ex-cat-tab.active{ background: var(--teal); color: var(--cream); }
+  .ex-cat-tab:not(.active):active{ background: var(--line); }
   .q-block{ display:none; }
   .q-block.active{ display:block; }
   .question-card{ }
@@ -750,6 +767,10 @@
   .sync-pill .sp-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .sync-pill.is-synced{ background: rgba(15,33,71,.94); border-color: var(--mustard); }
   .sync-pill:active{ filter:brightness(1.15); }
+
+  /* 1000-words goal bar */
+  .goal-bar{ height:10px; border-radius:6px; background: rgba(22,33,58,.09); overflow:hidden; }
+  .goal-fill{ height:100%; background: var(--mustard); border-radius:6px; transition: width .4s ease; }
 </style>
 </head>
 <body>
@@ -764,12 +785,12 @@
   } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyBx9D9KJZJ7BZxSoLwCTfnfpudqXcCy2SQ",
-    authDomain: "language-learner-fr.firebaseapp.com",
-    projectId: "language-learner-fr",
-    storageBucket: "language-learner-fr.firebasestorage.app",
-    messagingSenderId: "537377470695",
-    appId: "1:537377470695:web:10f4efdd4404f4c5bdca42"
+    apiKey: "AIzaSyALOE57LKQ7-BF4eOEi9wi9Vi4tfYpsJxY",
+    authDomain: "language-learner-app-1.firebaseapp.com",
+    projectId: "language-learner-app-1",
+    storageBucket: "language-learner-app-1.firebasestorage.app",
+    messagingSenderId: "732627373966",
+    appId: "1:732627373966:web:426845065bea64bbaa1edf"
   };
 
   const fbApp = initializeApp(firebaseConfig);
@@ -852,6 +873,7 @@
 
   <!-- PLAN -->
   <section id="plan" class="active">
+    <div class="card" id="wordsGoalCard"></div>
     <div class="card" style="background:var(--mustard); border:none;">
       <h3 style="margin-bottom:6px;">How this works</h3>
       <p style="margin:0; font-size:.88rem; line-height:1.5; color:var(--teal-deep);">
@@ -872,6 +894,7 @@
   <!-- EXERCISES -->
   <section id="exercises">
     <h2>Exercises</h2>
+    <div class="ex-cat-tabs" id="exCatTabs"></div>
     <div class="ex-tabs" id="exTabs"></div>
     <div id="exBody"></div>
   </section>
@@ -1533,7 +1556,1341 @@ const COURSES = {
   ["détester","to hate"],
   ["adorer","to adore / to love"],
   ["se rappeler","to remember"],
-  ["s'amuser","to have fun"]
+  ["s'amuser","to have fun"],
+  /* --- extended set: everyday verbs beyond the original top 100 (see note below) ---
+     Appended, never inserted earlier in the array, so any already-saved "mastered"/
+     "difficult" progress (keyed by array index) for the original 100 stays valid. These
+     carry a 3rd field (CEFR level) the first 100 don't, which is fine — renderVocabDrill
+     only shows the level badge when item[2] is present. */
+  ["habiter","to live (reside)","A1"],
+  ["entendre","to hear","A2"],
+  ["continuer","to continue","A2"],
+  ["marcher","to walk","A2"],
+  ["préparer","to prepare","A2"],
+  ["servir","to serve","B1"],
+  ["préférer","to prefer","B1"],
+  ["gagner","to win / to earn","B1"],
+  ["tomber","to fall","B1"],
+  ["décider","to decide","B1"],
+  ["expliquer","to explain","B1"],
+  ["choisir","to choose","B1"],
+  ["offrir","to offer / to give (a gift)","B1"],
+  ["rappeler","to call back / to remind","B1"],
+  ["compter","to count / to plan to","B1"],
+  ["se laver","to wash oneself","B2"],
+  ["s'arrêter","to stop (oneself)","B2"],
+  ["s'occuper","to take care (of)","B2"],
+  ["se doucher","to take a shower","B2"],
+  ["se dépêcher","to hurry","B2"],
+  ["se sentir","to feel (emotionally)","B2"],
+  ["se demander","to wonder","B2"],
+  ["se rendre compte","to realize","B2"],
+  ["voyager","to travel","B2"],
+  ["conseiller","to advise","B2"],
+  ["inviter","to invite","B2"],
+  ["réussir","to succeed","B2"],
+  ["espérer","to hope","B2"],
+  ["remercier","to thank","B2"],
+  ["souhaiter","to wish","B2"],
+  ["rigoler","to laugh (informal)","B2"],
+  ["se marier","to get married","B2"],
+  ["se plaindre","to complain","B2"],
+  ["mourir","to die","B2"],
+  ["jeter","to throw","B2"],
+  ["ajouter","to add","B2"],
+  ["manquer","to miss / to lack","B2"],
+  ["retrouver","to find again / to meet up with","B2"],
+  ["s'apercevoir","to notice / to realize","B2"],
+  ["tourner","to turn","B2"],
+  ["permettre","to allow / to permit","B2"],
+  ["présenter","to present / to introduce","B2"],
+  ["agir","to act","B2"],
+  ["reprendre","to resume / to take back","B2"],
+  ["envoyer","to send","B2"],
+  ["quitter","to leave (a place/person)","B2"],
+  ["toucher","to touch","B2"],
+  ["raconter","to tell / to recount (a story)","B2"],
+  ["sauver","to save","B2"],
+  ["valoir","to be worth","B2"],
+  ["bouger","to move","B2"],
+  ["emmener","to take (someone) along","B2"],
+  ["rentrer","to go home / to return","B2"],
+  ["tirer","to pull / to shoot","B2"],
+  ["s'excuser","to apologize","B2"],
+  ["sourire","to smile","B2"]
+    ],
+
+    /* Verb-tenses drill data: the 50 most-used everyday verbs (same ranking as topVerbs
+       above; "falloir" is skipped since it's impersonal — only "il faut" exists, so it has
+       no je/tu/nous/vous/ils forms to drill — and "boire" takes its place at #50 instead).
+       Each entry stores just enough to derive all 3 tenses for je/tu/il/nous/vous/ils:
+         pres: the present-tense form for each pronoun (bare form, no pronoun attached)
+         aux:  'avoir' or 'etre' — which auxiliary this verb's passé composé takes
+         pp:   the past participle
+       Near future ("aller" + infinitive) and passé composé (auxiliary + participle) are
+       then computed on the fly — see buildTenseItems(). */
+    tenseVerbs: [
+  {inf:"être", en:"to be", aux:"avoir", pp:"été",
+    pres:{je:"suis", tu:"es", il:"est", nous:"sommes", vous:"êtes", ils:"sont"}},
+  {inf:"avoir", en:"to have", aux:"avoir", pp:"eu",
+    pres:{je:"ai", tu:"as", il:"a", nous:"avons", vous:"avez", ils:"ont"}},
+  {inf:"faire", en:"to do / to make", aux:"avoir", pp:"fait",
+    pres:{je:"fais", tu:"fais", il:"fait", nous:"faisons", vous:"faites", ils:"font"}},
+  {inf:"aller", en:"to go", aux:"etre", pp:"allé",
+    pres:{je:"vais", tu:"vas", il:"va", nous:"allons", vous:"allez", ils:"vont"}},
+  {inf:"mettre", en:"to put", aux:"avoir", pp:"mis",
+    pres:{je:"mets", tu:"mets", il:"met", nous:"mettons", vous:"mettez", ils:"mettent"}},
+  {inf:"vouloir", en:"to want", aux:"avoir", pp:"voulu",
+    pres:{je:"veux", tu:"veux", il:"veut", nous:"voulons", vous:"voulez", ils:"veulent"}},
+  {inf:"pouvoir", en:"to be able to / can", aux:"avoir", pp:"pu",
+    pres:{je:"peux", tu:"peux", il:"peut", nous:"pouvons", vous:"pouvez", ils:"peuvent"}},
+  {inf:"devoir", en:"to have to / must", aux:"avoir", pp:"dû",
+    pres:{je:"dois", tu:"dois", il:"doit", nous:"devons", vous:"devez", ils:"doivent"}},
+  {inf:"dire", en:"to say", aux:"avoir", pp:"dit",
+    pres:{je:"dis", tu:"dis", il:"dit", nous:"disons", vous:"dites", ils:"disent"}},
+  {inf:"comprendre", en:"to understand", aux:"avoir", pp:"compris",
+    pres:{je:"comprends", tu:"comprends", il:"comprend", nous:"comprenons", vous:"comprenez", ils:"comprennent"}},
+  {inf:"croire", en:"to believe", aux:"avoir", pp:"cru",
+    pres:{je:"crois", tu:"crois", il:"croit", nous:"croyons", vous:"croyez", ils:"croient"}},
+  {inf:"parler", en:"to speak", aux:"avoir", pp:"parlé",
+    pres:{je:"parle", tu:"parles", il:"parle", nous:"parlons", vous:"parlez", ils:"parlent"}},
+  {inf:"prendre", en:"to take", aux:"avoir", pp:"pris",
+    pres:{je:"prends", tu:"prends", il:"prend", nous:"prenons", vous:"prenez", ils:"prennent"}},
+  {inf:"venir", en:"to come", aux:"etre", pp:"venu",
+    pres:{je:"viens", tu:"viens", il:"vient", nous:"venons", vous:"venez", ils:"viennent"}},
+  {inf:"tenir", en:"to hold", aux:"avoir", pp:"tenu",
+    pres:{je:"tiens", tu:"tiens", il:"tient", nous:"tenons", vous:"tenez", ils:"tiennent"}},
+  {inf:"savoir", en:"to know", aux:"avoir", pp:"su",
+    pres:{je:"sais", tu:"sais", il:"sait", nous:"savons", vous:"savez", ils:"savent"}},
+  {inf:"aimer", en:"to love / to like", aux:"avoir", pp:"aimé",
+    pres:{je:"aime", tu:"aimes", il:"aime", nous:"aimons", vous:"aimez", ils:"aiment"}},
+  {inf:"donner", en:"to give", aux:"avoir", pp:"donné",
+    pres:{je:"donne", tu:"donnes", il:"donne", nous:"donnons", vous:"donnez", ils:"donnent"}},
+  {inf:"demander", en:"to ask", aux:"avoir", pp:"demandé",
+    pres:{je:"demande", tu:"demandes", il:"demande", nous:"demandons", vous:"demandez", ils:"demandent"}},
+  {inf:"passer", en:"to pass / to spend (time)", aux:"avoir", pp:"passé",
+    pres:{je:"passe", tu:"passes", il:"passe", nous:"passons", vous:"passez", ils:"passent"}},
+  {inf:"rester", en:"to stay", aux:"etre", pp:"resté",
+    pres:{je:"reste", tu:"restes", il:"reste", nous:"restons", vous:"restez", ils:"restent"}},
+  {inf:"arriver", en:"to arrive / to happen", aux:"etre", pp:"arrivé",
+    pres:{je:"arrive", tu:"arrives", il:"arrive", nous:"arrivons", vous:"arrivez", ils:"arrivent"}},
+  {inf:"entrer", en:"to enter", aux:"etre", pp:"entré",
+    pres:{je:"entre", tu:"entres", il:"entre", nous:"entrons", vous:"entrez", ils:"entrent"}},
+  {inf:"sortir", en:"to go out / to leave", aux:"etre", pp:"sorti",
+    pres:{je:"sors", tu:"sors", il:"sort", nous:"sortons", vous:"sortez", ils:"sortent"}},
+  {inf:"partir", en:"to leave", aux:"etre", pp:"parti",
+    pres:{je:"pars", tu:"pars", il:"part", nous:"partons", vous:"partez", ils:"partent"}},
+  {inf:"penser", en:"to think", aux:"avoir", pp:"pensé",
+    pres:{je:"pense", tu:"penses", il:"pense", nous:"pensons", vous:"pensez", ils:"pensent"}},
+  {inf:"connaître", en:"to know (be familiar with)", aux:"avoir", pp:"connu",
+    pres:{je:"connais", tu:"connais", il:"connaît", nous:"connaissons", vous:"connaissez", ils:"connaissent"}},
+  {inf:"appeler", en:"to call", aux:"avoir", pp:"appelé",
+    pres:{je:"appelle", tu:"appelles", il:"appelle", nous:"appelons", vous:"appelez", ils:"appellent"}},
+  {inf:"trouver", en:"to find", aux:"avoir", pp:"trouvé",
+    pres:{je:"trouve", tu:"trouves", il:"trouve", nous:"trouvons", vous:"trouvez", ils:"trouvent"}},
+  {inf:"recevoir", en:"to receive", aux:"avoir", pp:"reçu",
+    pres:{je:"reçois", tu:"reçois", il:"reçoit", nous:"recevons", vous:"recevez", ils:"reçoivent"}},
+  {inf:"sentir", en:"to feel / to smell", aux:"avoir", pp:"senti",
+    pres:{je:"sens", tu:"sens", il:"sent", nous:"sentons", vous:"sentez", ils:"sentent"}},
+  {inf:"suivre", en:"to follow", aux:"avoir", pp:"suivi",
+    pres:{je:"suis", tu:"suis", il:"suit", nous:"suivons", vous:"suivez", ils:"suivent"}},
+  {inf:"écrire", en:"to write", aux:"avoir", pp:"écrit",
+    pres:{je:"écris", tu:"écris", il:"écrit", nous:"écrivons", vous:"écrivez", ils:"écrivent"}},
+  {inf:"lire", en:"to read", aux:"avoir", pp:"lu",
+    pres:{je:"lis", tu:"lis", il:"lit", nous:"lisons", vous:"lisez", ils:"lisent"}},
+  {inf:"voir", en:"to see", aux:"avoir", pp:"vu",
+    pres:{je:"vois", tu:"vois", il:"voit", nous:"voyons", vous:"voyez", ils:"voient"}},
+  {inf:"ouvrir", en:"to open", aux:"avoir", pp:"ouvert",
+    pres:{je:"ouvre", tu:"ouvres", il:"ouvre", nous:"ouvrons", vous:"ouvrez", ils:"ouvrent"}},
+  {inf:"porter", en:"to wear / to carry", aux:"avoir", pp:"porté",
+    pres:{je:"porte", tu:"portes", il:"porte", nous:"portons", vous:"portez", ils:"portent"}},
+  {inf:"chercher", en:"to search / to look for", aux:"avoir", pp:"cherché",
+    pres:{je:"cherche", tu:"cherches", il:"cherche", nous:"cherchons", vous:"cherchez", ils:"cherchent"}},
+  {inf:"perdre", en:"to lose", aux:"avoir", pp:"perdu",
+    pres:{je:"perds", tu:"perds", il:"perd", nous:"perdons", vous:"perdez", ils:"perdent"}},
+  {inf:"finir", en:"to finish", aux:"avoir", pp:"fini",
+    pres:{je:"finis", tu:"finis", il:"finit", nous:"finissons", vous:"finissez", ils:"finissent"}},
+  {inf:"rendre", en:"to give back / to return", aux:"avoir", pp:"rendu",
+    pres:{je:"rends", tu:"rends", il:"rend", nous:"rendons", vous:"rendez", ils:"rendent"}},
+  {inf:"attendre", en:"to wait", aux:"avoir", pp:"attendu",
+    pres:{je:"attends", tu:"attends", il:"attend", nous:"attendons", vous:"attendez", ils:"attendent"}},
+  {inf:"revenir", en:"to come back", aux:"etre", pp:"revenu",
+    pres:{je:"reviens", tu:"reviens", il:"revient", nous:"revenons", vous:"revenez", ils:"reviennent"}},
+  {inf:"monter", en:"to go up", aux:"etre", pp:"monté",
+    pres:{je:"monte", tu:"montes", il:"monte", nous:"montons", vous:"montez", ils:"montent"}},
+  {inf:"descendre", en:"to go down", aux:"etre", pp:"descendu",
+    pres:{je:"descends", tu:"descends", il:"descend", nous:"descendons", vous:"descendez", ils:"descendent"}},
+  {inf:"vivre", en:"to live", aux:"avoir", pp:"vécu",
+    pres:{je:"vis", tu:"vis", il:"vit", nous:"vivons", vous:"vivez", ils:"vivent"}},
+  {inf:"apprendre", en:"to learn", aux:"avoir", pp:"appris",
+    pres:{je:"apprends", tu:"apprends", il:"apprend", nous:"apprenons", vous:"apprenez", ils:"apprennent"}},
+  {inf:"travailler", en:"to work", aux:"avoir", pp:"travaillé",
+    pres:{je:"travaille", tu:"travailles", il:"travaille", nous:"travaillons", vous:"travaillez", ils:"travaillent"}},
+  {inf:"manger", en:"to eat", aux:"avoir", pp:"mangé",
+    pres:{je:"mange", tu:"manges", il:"mange", nous:"mangeons", vous:"mangez", ils:"mangent"}},
+  {inf:"boire", en:"to drink", aux:"avoir", pp:"bu",
+    pres:{je:"bois", tu:"bois", il:"boit", nous:"buvons", vous:"buvez", ils:"boivent"}}
+    ],
+
+    /* 820 high-frequency nouns, CEFR-leveled A1-B2 (3rd field = level, shown as a badge) */
+    nouns: [
+  ["temps","time / weather","A1"],
+  ["jour","day","A1"],
+  ["an","year","A1"],
+  ["année","year","A1"],
+  ["heure","hour / time (o'clock)","A1"],
+  ["moment","moment","A1"],
+  ["fois","time (occurrence)","A1"],
+  ["matin","morning","A1"],
+  ["soir","evening","A1"],
+  ["nuit","night","A1"],
+  ["semaine","week","A1"],
+  ["mois","month","A1"],
+  ["minute","minute","A1"],
+  ["homme","man","A1"],
+  ["femme","woman","A1"],
+  ["enfant","child","A1"],
+  ["fille","girl / daughter","A1"],
+  ["garçon","boy","A1"],
+  ["ami","friend","A1"],
+  ["famille","family","A1"],
+  ["père","father","A1"],
+  ["mère","mother","A1"],
+  ["frère","brother","A1"],
+  ["sœur","sister","A1"],
+  ["monsieur","Mr. / sir","A1"],
+  ["madame","Mrs. / ma'am","A1"],
+  ["gens","people","A1"],
+  ["personne","person","A1"],
+  ["bébé","baby","A1"],
+  ["maison","house / home","A1"],
+  ["ville","city / town","A1"],
+  ["pays","country","A1"],
+  ["monde","world","A1"],
+  ["rue","street","A1"],
+  ["école","school","A1"],
+  ["magasin","shop / store","A1"],
+  ["bureau","office / desk","A1"],
+  ["chambre","bedroom","A1"],
+  ["chose","thing","A1"],
+  ["truc","thing (informal) / trick","A1"],
+  ["porte","door","A1"],
+  ["table","table","A1"],
+  ["voiture","car","A1"],
+  ["livre","book","A1"],
+  ["argent","money","A1"],
+  ["téléphone","phone","A1"],
+  ["sac","bag","A1"],
+  ["clé","key","A1"],
+  ["eau","water","A1"],
+  ["pain","bread","A1"],
+  ["café","coffee / café","A1"],
+  ["repas","meal","A1"],
+  ["main","hand","A1"],
+  ["tête","head","A1"],
+  ["yeux","eyes","A1"],
+  ["pied","foot","A1"],
+  ["cœur","heart","A1"],
+  ["voix","voice","A1"],
+  ["vie","life","A1"],
+  ["travail","work / job","A1"],
+  ["problème","problem","A1"],
+  ["idée","idea","A1"],
+  ["question","question","A1"],
+  ["façon","way / manner","A1"],
+  ["raison","reason","A1"],
+  ["chance","luck","A1"],
+  ["air","air / look","A1"],
+  ["terre","earth / ground","A1"],
+  ["ciel","sky","A1"],
+  ["soleil","sun","A1"],
+  ["place","place / seat / square","A1"],
+  ["nom","name","A1"],
+  ["mot","word","A1"],
+  ["fenêtre","window","A1"],
+  ["lit","bed","A1"],
+  ["cuisine","kitchen","A1"],
+  ["jardin","garden","A1"],
+  ["nombre","number","A1"],
+  ["pluie","rain","A1"],
+  ["neige","snow","A1"],
+  ["vent","wind","A1"],
+  ["fleur","flower","A1"],
+  ["arbre","tree","A1"],
+  ["animal","animal","A1"],
+  ["chien","dog","A1"],
+  ["chat","cat","A1"],
+  ["fête","party / holiday","A1"],
+  ["musique","music","A1"],
+  ["film","movie","A1"],
+  ["photo","photo","A1"],
+  ["jeu","game","A1"],
+  ["sport","sport","A1"],
+  ["classe","class (school)","A1"],
+  ["leçon","lesson","A1"],
+  ["prix","price","A1"],
+  ["route","road","A1"],
+  ["papier","paper","A1"],
+  ["histoire","story / history","A1"],
+  ["vêtement","clothing","A1"],
+  ["lettre","letter","A1"],
+  ["grand-père","grandfather","A2"],
+  ["grand-mère","grandmother","A2"],
+  ["cousin","cousin","A2"],
+  ["oncle","uncle","A2"],
+  ["tante","aunt","A2"],
+  ["voisin","neighbor","A2"],
+  ["copain","friend / boyfriend","A2"],
+  ["copine","friend / girlfriend","A2"],
+  ["collègue","colleague","A2"],
+  ["patron","boss","A2"],
+  ["employé","employee","A2"],
+  ["mari","husband","A2"],
+  ["époux","spouse (husband)","A2"],
+  ["épouse","spouse (wife)","A2"],
+  ["adulte","adult","A2"],
+  ["adolescent","teenager","A2"],
+  ["couple","couple","A2"],
+  ["invité","guest","A2"],
+  ["étranger","foreigner / stranger","A2"],
+  ["corps","body","A2"],
+  ["bras","arm","A2"],
+  ["jambe","leg","A2"],
+  ["oreille","ear","A2"],
+  ["nez","nose","A2"],
+  ["bouche","mouth","A2"],
+  ["dent","tooth","A2"],
+  ["cheveux","hair","A2"],
+  ["visage","face","A2"],
+  ["doigt","finger","A2"],
+  ["dos","back","A2"],
+  ["ventre","stomach / belly","A2"],
+  ["peau","skin","A2"],
+  ["appartement","apartment","A2"],
+  ["pièce","room","A2"],
+  ["salon","living room","A2"],
+  ["salle de bain","bathroom","A2"],
+  ["mur","wall","A2"],
+  ["sol","floor / ground","A2"],
+  ["toit","roof","A2"],
+  ["escalier","stairs","A2"],
+  ["chaise","chair","A2"],
+  ["canapé","sofa","A2"],
+  ["armoire","wardrobe","A2"],
+  ["miroir","mirror","A2"],
+  ["lampe","lamp","A2"],
+  ["meuble","piece of furniture","A2"],
+  ["immeuble","building","A2"],
+  ["quartier","neighborhood","A2"],
+  ["loyer","rent","A2"],
+  ["propriétaire","owner / landlord","A2"],
+  ["thé","tea","A2"],
+  ["lait","milk","A2"],
+  ["sucre","sugar","A2"],
+  ["sel","salt","A2"],
+  ["beurre","butter","A2"],
+  ["fromage","cheese","A2"],
+  ["viande","meat","A2"],
+  ["poisson","fish","A2"],
+  ["légume","vegetable","A2"],
+  ["fruit","fruit","A2"],
+  ["pomme","apple","A2"],
+  ["œuf","egg","A2"],
+  ["riz","rice","A2"],
+  ["soupe","soup","A2"],
+  ["petit déjeuner","breakfast","A2"],
+  ["déjeuner","lunch","A2"],
+  ["dîner","dinner","A2"],
+  ["dessert","dessert","A2"],
+  ["gâteau","cake","A2"],
+  ["vin","wine","A2"],
+  ["bière","beer","A2"],
+  ["jus","juice","A2"],
+  ["verre","glass","A2"],
+  ["tasse","cup","A2"],
+  ["assiette","plate","A2"],
+  ["couteau","knife","A2"],
+  ["fourchette","fork","A2"],
+  ["cuillère","spoon","A2"],
+  ["goût","taste","A2"],
+  ["faim","hunger","A2"],
+  ["soif","thirst","A2"],
+  ["robe","dress","A2"],
+  ["pantalon","pants","A2"],
+  ["chemise","shirt","A2"],
+  ["jupe","skirt","A2"],
+  ["veste","jacket","A2"],
+  ["manteau","coat","A2"],
+  ["chaussure","shoe","A2"],
+  ["chaussette","sock","A2"],
+  ["pull","sweater","A2"],
+  ["ceinture","belt","A2"],
+  ["chapeau","hat","A2"],
+  ["lunettes","glasses","A2"],
+  ["montre","watch","A2"],
+  ["village","village","A2"],
+  ["région","region","A2"],
+  ["campagne","countryside","A2"],
+  ["montagne","mountain","A2"],
+  ["mer","sea","A2"],
+  ["plage","beach","A2"],
+  ["forêt","forest","A2"],
+  ["rivière","river","A2"],
+  ["lac","lake","A2"],
+  ["île","island","A2"],
+  ["lune","moon","A2"],
+  ["étoile","star","A2"],
+  ["nuage","cloud","A2"],
+  ["supermarché","supermarket","A2"],
+  ["marché","market","A2"],
+  ["restaurant","restaurant","A2"],
+  ["hôtel","hotel","A2"],
+  ["gare","train station","A2"],
+  ["aéroport","airport","A2"],
+  ["hôpital","hospital","A2"],
+  ["université","university","A2"],
+  ["banque","bank","A2"],
+  ["église","church","A2"],
+  ["musée","museum","A2"],
+  ["parc","park","A2"],
+  ["pont","bridge","A2"],
+  ["bâtiment","building","A2"],
+  ["pharmacie","pharmacy","A2"],
+  ["train","train","A2"],
+  ["avion","plane","A2"],
+  ["bus","bus","A2"],
+  ["métro","subway","A2"],
+  ["vélo","bike","A2"],
+  ["moto","motorcycle","A2"],
+  ["bateau","boat","A2"],
+  ["taxi","taxi","A2"],
+  ["billet","ticket","A2"],
+  ["chemin","path / way","A2"],
+  ["voyage","trip","A2"],
+  ["arrêt","stop","A2"],
+  ["emploi","job","A2"],
+  ["métier","profession / trade","A2"],
+  ["entreprise","company","A2"],
+  ["réunion","meeting","A2"],
+  ["projet","project","A2"],
+  ["réponse","answer","A2"],
+  ["examen","exam","A2"],
+  ["cours","class / course","A2"],
+  ["professeur","teacher","A2"],
+  ["étudiant","student","A2"],
+  ["élève","pupil","A2"],
+  ["note","grade","A2"],
+  ["devoir","homework","A2"],
+  ["cahier","notebook","A2"],
+  ["stylo","pen","A2"],
+  ["crayon","pencil","A2"],
+  ["salaire","salary","A2"],
+  ["portable","cell phone","A2"],
+  ["ordinateur","computer","A2"],
+  ["message","message","A2"],
+  ["appel","phone call","A2"],
+  ["écran","screen","A2"],
+  ["vidéo","video","A2"],
+  ["télévision","television","A2"],
+  ["radio","radio","A2"],
+  ["journal","newspaper","A2"],
+  ["nouvelle","news item","A2"],
+  ["site","website","A2"],
+  ["amour","love","A2"],
+  ["bonheur","happiness","A2"],
+  ["joie","joy","A2"],
+  ["peur","fear","A2"],
+  ["colère","anger","A2"],
+  ["surprise","surprise","A2"],
+  ["rêve","dream","A2"],
+  ["souvenir","memory","A2"],
+  ["cadeau","gift","A2"],
+  ["visite","visit","A2"],
+  ["promenade","walk / stroll","A2"],
+  ["numéro","number (phone etc.)","A2"],
+  ["adresse","address","A2"],
+  ["date","date","A2"],
+  ["anniversaire","birthday","A2"],
+  ["rendez-vous","appointment","A2"],
+  ["weekend","weekend","A2"],
+  ["saison","season","A2"],
+  ["été","summer","A2"],
+  ["hiver","winter","A2"],
+  ["printemps","spring","A2"],
+  ["automne","autumn","A2"],
+  ["panier","basket","A2"],
+  ["boîte","box","A2"],
+  ["valise","suitcase","A2"],
+  ["robinet","tap / faucet","A2"],
+  ["ordre","order","A2"],
+  ["secret","secret","A2"],
+  ["étage","floor / story","A2"],
+  ["carte","card / map","A2"],
+  ["gant","glove","A2"],
+  ["casquette","cap","A2"],
+  ["oreiller","pillow","A2"],
+  ["couverture","blanket","A2"],
+  ["serviette","towel","A2"],
+  ["balcon","balcony","A2"],
+  ["douche","shower","A2"],
+  ["poche","pocket","A2"],
+  ["santé","health","B1"],
+  ["maladie","illness","B1"],
+  ["médecin","doctor","B1"],
+  ["infirmier","nurse","B1"],
+  ["médicament","medicine","B1"],
+  ["douleur","pain","B1"],
+  ["fièvre","fever","B1"],
+  ["rhume","cold (illness)","B1"],
+  ["blessure","injury","B1"],
+  ["traitement","treatment","B1"],
+  ["symptôme","symptom","B1"],
+  ["équipe","team","B1"],
+  ["joueur","player","B1"],
+  ["match","match / game","B1"],
+  ["ballon","ball","B1"],
+  ["compétition","competition","B1"],
+  ["entraînement","training","B1"],
+  ["loisir","hobby / leisure","B1"],
+  ["spectacle","show","B1"],
+  ["concert","concert","B1"],
+  ["théâtre","theater","B1"],
+  ["cinéma","cinema","B1"],
+  ["peinture","painting","B1"],
+  ["danse","dance","B1"],
+  ["chanson","song","B1"],
+  ["roman","novel","B1"],
+  ["poème","poem","B1"],
+  ["tristesse","sadness","B1"],
+  ["honte","shame","B1"],
+  ["fierté","pride","B1"],
+  ["espoir","hope","B1"],
+  ["pensée","thought","B1"],
+  ["sentiment","feeling","B1"],
+  ["émotion","emotion","B1"],
+  ["envie","desire / craving","B1"],
+  ["besoin","need","B1"],
+  ["désir","desire","B1"],
+  ["volonté","willpower","B1"],
+  ["courage","courage","B1"],
+  ["confiance","confidence / trust","B1"],
+  ["doute","doubt","B1"],
+  ["stress","stress","B1"],
+  ["souci","worry","B1"],
+  ["destin","fate","B1"],
+  ["sens","sense / meaning","B1"],
+  ["vérité","truth","B1"],
+  ["mensonge","lie","B1"],
+  ["mystère","mystery","B1"],
+  ["gouvernement","government","B1"],
+  ["état","state","B1"],
+  ["loi","law","B1"],
+  ["droit","right / law","B1"],
+  ["justice","justice","B1"],
+  ["politique","politics","B1"],
+  ["économie","economy","B1"],
+  ["guerre","war","B1"],
+  ["paix","peace","B1"],
+  ["liberté","freedom","B1"],
+  ["système","system","B1"],
+  ["culture","culture","B1"],
+  ["religion","religion","B1"],
+  ["tradition","tradition","B1"],
+  ["cérémonie","ceremony","B1"],
+  ["mariage","marriage / wedding","B1"],
+  ["naissance","birth","B1"],
+  ["enfance","childhood","B1"],
+  ["jeunesse","youth","B1"],
+  ["génération","generation","B1"],
+  ["population","population","B1"],
+  ["communauté","community","B1"],
+  ["nature","nature","B1"],
+  ["plante","plant","B1"],
+  ["herbe","grass","B1"],
+  ["feuille","leaf","B1"],
+  ["feu","fire","B1"],
+  ["glace","ice","B1"],
+  ["pierre","stone","B1"],
+  ["sable","sand","B1"],
+  ["désert","desert","B1"],
+  ["océan","ocean","B1"],
+  ["environnement","environment","B1"],
+  ["climat","climate","B1"],
+  ["pollution","pollution","B1"],
+  ["énergie","energy","B1"],
+  ["planète","planet","B1"],
+  ["objet","object","B1"],
+  ["affaire","matter / deal","B1"],
+  ["manière","manner","B1"],
+  ["moyen","means / way","B1"],
+  ["méthode","method","B1"],
+  ["exemple","example","B1"],
+  ["cas","case","B1"],
+  ["type","type","B1"],
+  ["sorte","sort / kind","B1"],
+  ["genre","kind / genre","B1"],
+  ["niveau","level","B1"],
+  ["partie","part","B1"],
+  ["morceau","piece","B1"],
+  ["côté","side","B1"],
+  ["milieu","middle","B1"],
+  ["centre","center","B1"],
+  ["coin","corner","B1"],
+  ["bord","edge","B1"],
+  ["fond","bottom / back","B1"],
+  ["différence","difference","B1"],
+  ["qualité","quality","B1"],
+  ["quantité","quantity","B1"],
+  ["chiffre","digit / figure","B1"],
+  ["taille","size","B1"],
+  ["poids","weight","B1"],
+  ["forme","shape","B1"],
+  ["couleur","color","B1"],
+  ["image","image / picture","B1"],
+  ["signe","sign","B1"],
+  ["marque","brand","B1"],
+  ["valeur","value","B1"],
+  ["coût","cost","B1"],
+  ["somme","sum","B1"],
+  ["montant","amount","B1"],
+  ["facture","bill / invoice","B1"],
+  ["dette","debt","B1"],
+  ["dépense","expense","B1"],
+  ["achat","purchase","B1"],
+  ["vente","sale","B1"],
+  ["commande","order","B1"],
+  ["livraison","delivery","B1"],
+  ["service","service","B1"],
+  ["produit","product","B1"],
+  ["langue","language","B1"],
+  ["conversation","conversation","B1"],
+  ["discussion","discussion","B1"],
+  ["discours","speech","B1"],
+  ["avis","opinion","B1"],
+  ["conseil","advice","B1"],
+  ["remarque","remark","B1"],
+  ["critique","criticism","B1"],
+  ["compliment","compliment","B1"],
+  ["plainte","complaint","B1"],
+  ["promesse","promise","B1"],
+  ["excuse","excuse / apology","B1"],
+  ["accord","agreement","B1"],
+  ["dispute","argument","B1"],
+  ["décision","decision","B1"],
+  ["choix","choice","B1"],
+  ["réseau","network","B1"],
+  ["compte","account","B1"],
+  ["application","app","B1"],
+  ["permis","license","B1"],
+  ["essence","gas / fuel","B1"],
+  ["circulation","traffic","B1"],
+  ["trajet","journey / trip","B1"],
+  ["formation","training","B1"],
+  ["entretien","interview","B1"],
+  ["congé","leave / vacation","B1"],
+  ["diplôme","diploma","B1"],
+  ["carrière","career","B1"],
+  ["usine","factory","B1"],
+  ["société","company / society","B1"],
+  ["grève","strike","B1"],
+  ["syndicat","union","B1"],
+  ["client","customer","B1"],
+  ["vendeur","salesperson","B1"],
+  ["facteur","factor / postman","B1"],
+  ["panne","breakdown (mechanical)","B1"],
+  ["réparation","repair","B1"],
+  ["dégât","damage","B1"],
+  ["accident","accident","B1"],
+  ["danger","danger","B1"],
+  ["risque","risk","B1"],
+  ["sécurité","security / safety","B1"],
+  ["solution","solution","B1"],
+  ["habitude","habit","B1"],
+  ["relation","relationship","B1"],
+  ["avenir","future","B1"],
+  ["passé","past","B1"],
+  ["présent","present","B1"],
+  ["retard","lateness","B1"],
+  ["délai","deadline","B1"],
+  ["horaire","schedule","B1"],
+  ["calendrier","calendar","B1"],
+  ["occasion","opportunity / occasion","B1"],
+  ["ingénieur","engineer","B1"],
+  ["architecte","architect","B1"],
+  ["pompier","firefighter","B1"],
+  ["policier","police officer","B1"],
+  ["agriculteur","farmer","B1"],
+  ["cuisinier","cook / chef","B1"],
+  ["boulanger","baker","B1"],
+  ["coiffeur","hairdresser","B1"],
+  ["mécanicien","mechanic","B1"],
+  ["électricien","electrician","B1"],
+  ["plombier","plumber","B1"],
+  ["comptable","accountant","B1"],
+  ["directeur","director / manager","B1"],
+  ["secrétaire","secretary","B1"],
+  ["ouvrier","laborer / worker","B1"],
+  ["fonctionnaire","civil servant","B1"],
+  ["retraité","retiree","B1"],
+  ["colline","hill","B1"],
+  ["vallée","valley","B1"],
+  ["volcan","volcano","B1"],
+  ["continent","continent","B1"],
+  ["source","spring / source","B1"],
+  ["orage","storm","B1"],
+  ["tempête","storm","B1"],
+  ["brouillard","fog","B1"],
+  ["chaleur","heat","B1"],
+  ["humidité","humidity","B1"],
+  ["température","temperature","B1"],
+  ["ménage","housework","B1"],
+  ["poubelle","trash can","B1"],
+  ["aspirateur","vacuum cleaner","B1"],
+  ["frigo","fridge","B1"],
+  ["four","oven","B1"],
+  ["micro-ondes","microwave","B1"],
+  ["placard","cupboard","B1"],
+  ["ingrédient","ingredient","B1"],
+  ["épice","spice","B1"],
+  ["sauce","sauce","B1"],
+  ["plat","dish","B1"],
+  ["tranche","slice","B1"],
+  ["bouteille","bottle","B1"],
+  ["pot","jar / pot","B1"],
+  ["caisse","checkout / cash register","B1"],
+  ["monnaie","change / currency","B1"],
+  ["réduction","discount","B1"],
+  ["solde","sale (reduced price)","B1"],
+  ["étiquette","price tag / label","B1"],
+  ["panneau","sign / board","B1"],
+  ["clavier","keyboard","B1"],
+  ["souris","mouse (computer)","B1"],
+  ["imprimante","printer","B1"],
+  ["batterie","battery","B1"],
+  ["chargeur","charger","B1"],
+  ["casque","headphones / helmet","B1"],
+  ["câble","cable","B1"],
+  ["instrument","instrument","B1"],
+  ["guitare","guitar","B1"],
+  ["piano","piano","B1"],
+  ["dessin","drawing","B1"],
+  ["sculpture","sculpture","B1"],
+  ["photographie","photography","B1"],
+  ["collection","collection","B1"],
+  ["rupture","breakup","B1"],
+  ["séparation","separation","B1"],
+  ["divorce","divorce","B1"],
+  ["jalousie","jealousy","B1"],
+  ["muscle","muscle","B1"],
+  ["os","bone","B1"],
+  ["allergie","allergy","B1"],
+  ["grippe","flu","B1"],
+  ["vaccin","vaccine","B1"],
+  ["mairie","town hall","B1"],
+  ["mathématiques","mathematics","B1"],
+  ["sciences","science","B1"],
+  ["grammaire","grammar","B1"],
+  ["vocabulaire","vocabulary","B1"],
+  ["résultat","result","B1"],
+  ["moyenne","average / grade average","B1"],
+  ["bulletin","report card","B1"],
+  ["crise","crisis","B2"],
+  ["chômage","unemployment","B2"],
+  ["inflation","inflation","B2"],
+  ["impôt","tax","B2"],
+  ["budget","budget","B2"],
+  ["investissement","investment","B2"],
+  ["croissance","growth","B2"],
+  ["consommation","consumption","B2"],
+  ["concurrence","competition (business)","B2"],
+  ["industrie","industry","B2"],
+  ["secteur","sector","B2"],
+  ["ressource","resource","B2"],
+  ["production","production","B2"],
+  ["commerce","trade / commerce","B2"],
+  ["exportation","export","B2"],
+  ["importation","import","B2"],
+  ["mondialisation","globalization","B2"],
+  ["inégalité","inequality","B2"],
+  ["pauvreté","poverty","B2"],
+  ["richesse","wealth","B2"],
+  ["classe sociale","social class","B2"],
+  ["citoyen","citizen","B2"],
+  ["électeur","voter","B2"],
+  ["élection","election","B2"],
+  ["parti","(political) party","B2"],
+  ["réforme","reform","B2"],
+  ["manifestation","demonstration / protest","B2"],
+  ["conflit","conflict","B2"],
+  ["négociation","negotiation","B2"],
+  ["traité","treaty","B2"],
+  ["frontière","border","B2"],
+  ["territoire","territory","B2"],
+  ["puissance","power (nation)","B2"],
+  ["diplomatie","diplomacy","B2"],
+  ["armée","army","B2"],
+  ["soldat","soldier","B2"],
+  ["terrorisme","terrorism","B2"],
+  ["menace","threat","B2"],
+  ["catastrophe","catastrophe","B2"],
+  ["réchauffement","warming (climate)","B2"],
+  ["biodiversité","biodiversity","B2"],
+  ["espèce","species","B2"],
+  ["déchet","waste / trash","B2"],
+  ["recyclage","recycling","B2"],
+  ["ressource naturelle","natural resource","B2"],
+  ["émission","emission / broadcast","B2"],
+  ["carburant","fuel","B2"],
+  ["technologie","technology","B2"],
+  ["innovation","innovation","B2"],
+  ["intelligence artificielle","artificial intelligence","B2"],
+  ["algorithme","algorithm","B2"],
+  ["donnée","data","B2"],
+  ["logiciel","software","B2"],
+  ["appareil","device","B2"],
+  ["réseau social","social network","B2"],
+  ["plateforme","platform","B2"],
+  ["utilisateur","user","B2"],
+  ["abonnement","subscription","B2"],
+  ["publicité","advertising","B2"],
+  ["marque déposée","trademark","B2"],
+  ["consommateur","consumer","B2"],
+  ["éducation","education","B2"],
+  ["enseignement","teaching","B2"],
+  ["apprentissage","learning","B2"],
+  ["compétence","skill","B2"],
+  ["connaissance","knowledge","B2"],
+  ["intelligence","intelligence","B2"],
+  ["mémoire","memory (faculty)","B2"],
+  ["attention","attention","B2"],
+  ["concentration","concentration","B2"],
+  ["personnalité","personality","B2"],
+  ["caractère","character","B2"],
+  ["comportement","behavior","B2"],
+  ["attitude","attitude","B2"],
+  ["psychologie","psychology","B2"],
+  ["thérapie","therapy","B2"],
+  ["anxiété","anxiety","B2"],
+  ["dépression","depression","B2"],
+  ["bien-être","well-being","B2"],
+  ["équilibre","balance","B2"],
+  ["identité","identity","B2"],
+  ["valeur morale","moral value","B2"],
+  ["éthique","ethics","B2"],
+  ["morale","morality","B2"],
+  ["philosophie","philosophy","B2"],
+  ["croyance","belief","B2"],
+  ["foi","faith","B2"],
+  ["spiritualité","spirituality","B2"],
+  ["civilisation","civilization","B2"],
+  ["patrimoine","heritage","B2"],
+  ["héritage","inheritance / legacy","B2"],
+  ["ancêtre","ancestor","B2"],
+  ["descendant","descendant","B2"],
+  ["origine","origin","B2"],
+  ["identité culturelle","cultural identity","B2"],
+  ["diversité","diversity","B2"],
+  ["intégration","integration","B2"],
+  ["discrimination","discrimination","B2"],
+  ["préjugé","prejudice","B2"],
+  ["stéréotype","stereotype","B2"],
+  ["tolérance","tolerance","B2"],
+  ["solidarité","solidarity","B2"],
+  ["bénévolat","volunteering","B2"],
+  ["association","association","B2"],
+  ["organisation","organization","B2"],
+  ["institution","institution","B2"],
+  ["administration","administration","B2"],
+  ["bureaucratie","bureaucracy","B2"],
+  ["procédure","procedure","B2"],
+  ["règlement","regulation","B2"],
+  ["contrat","contract","B2"],
+  ["clause","clause","B2"],
+  ["responsabilité","responsibility","B2"],
+  ["obligation","obligation","B2"],
+  ["garantie","guarantee / warranty","B2"],
+  ["assurance","insurance","B2"],
+  ["réclamation","claim / complaint","B2"],
+  ["recours","recourse / appeal","B2"],
+  ["tribunal","court","B2"],
+  ["avocat","lawyer","B2"],
+  ["procès","trial","B2"],
+  ["preuve","proof / evidence","B2"],
+  ["témoin","witness","B2"],
+  ["victime","victim","B2"],
+  ["coupable","the guilty party","B2"],
+  ["crime","crime","B2"],
+  ["délit","offense","B2"],
+  ["peine","penalty / sentence","B2"],
+  ["prison","prison","B2"],
+  ["sécurité sociale","social security","B2"],
+  ["retraite","retirement","B2"],
+  ["pension","pension","B2"],
+  ["prestation","benefit","B2"],
+  ["indemnité","compensation","B2"],
+  ["subvention","subsidy / grant","B2"],
+  ["financement","funding","B2"],
+  ["investissement immobilier","real-estate investment","B2"],
+  ["patrimoine financier","financial assets","B2"],
+  ["épargne","savings","B2"],
+  ["dividende","dividend","B2"],
+  ["action","stock / share","B2"],
+  ["bourse","stock exchange","B2"],
+  ["taux","rate","B2"],
+  ["intérêt","interest","B2"],
+  ["emprunt","loan","B2"],
+  ["hypothèque","mortgage","B2"],
+  ["assemblée","assembly","B2"],
+  ["débat","debate","B2"],
+  ["argument","argument (reasoning)","B2"],
+  ["point de vue","point of view","B2"],
+  ["contexte","context","B2"],
+  ["enjeu","stake / issue","B2"],
+  ["défi","challenge","B2"],
+  ["perspective","perspective","B2"],
+  ["tendance","trend","B2"],
+  ["phénomène","phenomenon","B2"],
+  ["évolution","evolution / development","B2"],
+  ["progrès","progress","B2"],
+  ["échec","failure","B2"],
+  ["réussite","success / achievement","B2"],
+  ["objectif","objective / goal","B2"],
+  ["stratégie","strategy","B2"],
+  ["initiative","initiative","B2"],
+  ["investisseur","investor","B2"],
+  ["actionnaire","shareholder","B2"],
+  ["dirigeant","executive / leader","B2"],
+  ["cadre","executive / manager","B2"],
+  ["main d'œuvre","workforce","B2"],
+  ["productivité","productivity","B2"],
+  ["rentabilité","profitability","B2"],
+  ["bénéfice","profit","B2"],
+  ["perte financière","financial loss","B2"],
+  ["faillite","bankruptcy","B2"],
+  ["impression","impression","B2"],
+  ["ambiance","atmosphere / mood","B2"],
+  ["atmosphère","atmosphere","B2"],
+  ["situation","situation","B2"],
+  ["circonstance","circumstance","B2"],
+  ["aspect","aspect","B2"],
+  ["élément","element","B2"],
+  ["caractéristique","characteristic","B2"],
+  ["particularité","particularity","B2"],
+  ["principe","principle","B2"],
+  ["notion","notion","B2"],
+  ["concept","concept","B2"],
+  ["théorie","theory","B2"],
+  ["hypothèse","hypothesis","B2"],
+  ["approche","approach","B2"],
+  ["démarche","approach / process (steps taken)","B2"],
+  ["processus","process","B2"],
+  ["mécanisme","mechanism","B2"],
+  ["structure","structure","B2"],
+  ["fonction","function","B2"],
+  ["rôle","role","B2"],
+  ["mission","mission","B2"],
+  ["tâche","task","B2"],
+  ["activité","activity","B2"],
+  ["opération","operation","B2"],
+  ["réaction","reaction","B2"],
+  ["conséquence","consequence","B2"],
+  ["cause","cause","B2"],
+  ["effet","effect","B2"],
+  ["impact","impact","B2"],
+  ["influence","influence","B2"],
+  ["changement","change","B2"],
+  ["transformation","transformation","B2"],
+  ["adaptation","adaptation","B2"],
+  ["amélioration","improvement","B2"],
+  ["dégradation","deterioration","B2"],
+  ["développement","development","B2"],
+  ["expansion","expansion","B2"],
+  ["diminution","decrease","B2"],
+  ["augmentation","increase","B2"],
+  ["hausse","rise / increase","B2"],
+  ["baisse","drop / decrease","B2"],
+  ["variation","variation","B2"],
+  ["fluctuation","fluctuation","B2"],
+  ["stabilité","stability","B2"],
+  ["actualité","current events","B2"],
+  ["média","media (outlet)","B2"],
+  ["chaîne","channel","B2"],
+  ["presse","press (media)","B2"],
+  ["reportage","news report","B2"],
+  ["journaliste","journalist","B2"],
+  ["rédaction","editorial staff / drafting","B2"],
+  ["rubrique","section / column","B2"],
+  ["audience","audience / ratings","B2"],
+  ["sondage","poll / survey","B2"],
+  ["enquête","investigation / survey","B2"],
+  ["statistique","statistic","B2"],
+  ["graphique","graph / chart","B2"],
+  ["tableau","table / chart","B2"],
+  ["hiérarchie","hierarchy","B2"],
+  ["collaborateur","co-worker","B2"],
+  ["supérieur","superior / boss","B2"],
+  ["promotion","promotion","B2"],
+  ["licenciement","layoff","B2"],
+  ["démission","resignation","B2"],
+  ["embauche","hiring","B2"],
+  ["recrutement","recruitment","B2"],
+  ["candidat","candidate","B2"],
+  ["entourage","circle of friends / family","B2"],
+  ["lien","bond / link","B2"],
+  ["attachement","attachment","B2"],
+  ["engagement","commitment","B2"],
+  ["méfiance","distrust","B2"],
+  ["hostilité","hostility","B2"],
+  ["sympathie","liking / sympathy","B2"],
+  ["admiration","admiration","B2"],
+  ["respect","respect","B2"],
+  ["mépris","contempt","B2"],
+  ["indifférence","indifference","B2"],
+  ["inquiétude","worry / anxiety","B2"],
+  ["angoisse","anguish / anxiety","B2"],
+  ["enthousiasme","enthusiasm","B2"],
+  ["passion","passion","B2"],
+  ["ennui","boredom","B2"],
+  ["satisfaction","satisfaction","B2"],
+  ["frustration","frustration","B2"],
+  ["soulagement","relief","B2"]
+    ],
+
+    /* 200 high-frequency adjectives, CEFR-leveled A1-B2 */
+    adjectives: [
+  ["bon","good","A1"],
+  ["grand","big / tall","A1"],
+  ["petit","small","A1"],
+  ["beau","beautiful / handsome","A1"],
+  ["nouveau","new","A1"],
+  ["jeune","young","A1"],
+  ["vieux","old","A1"],
+  ["autre","other","A1"],
+  ["même","same","A1"],
+  ["premier","first","A1"],
+  ["dernier","last","A1"],
+  ["mauvais","bad","A1"],
+  ["vrai","true","A1"],
+  ["content","happy / pleased","A1"],
+  ["facile","easy","A1"],
+  ["difficile","difficult","A1"],
+  ["chaud","hot","A1"],
+  ["froid","cold","A1"],
+  ["fatigué","tired","A1"],
+  ["triste","sad","A1"],
+  ["noir","black","A1"],
+  ["blanc","white","A1"],
+  ["rouge","red","A1"],
+  ["bleu","blue","A1"],
+  ["vert","green","A1"],
+  ["jaune","yellow","A1"],
+  ["gros","big / fat","A1"],
+  ["long","long","A1"],
+  ["cher","expensive / dear","A1"],
+  ["joli","pretty","A1"],
+  ["faux","false / fake","A2"],
+  ["doux","soft / gentle","A2"],
+  ["seul","alone / only","A2"],
+  ["fort","strong","A2"],
+  ["propre","clean / own","A2"],
+  ["possible","possible","A2"],
+  ["sympa","nice","A2"],
+  ["occupé","busy","A2"],
+  ["libre","free","A2"],
+  ["prêt","ready","A2"],
+  ["malade","sick","A2"],
+  ["drôle","funny","A2"],
+  ["bizarre","strange","A2"],
+  ["clair","clear / light","A2"],
+  ["plein","full","A2"],
+  ["vide","empty","A2"],
+  ["sûr","sure / safe","A2"],
+  ["rapide","fast","A2"],
+  ["gris","grey","A2"],
+  ["rose","pink","A2"],
+  ["orange","orange","A2"],
+  ["violet","purple","A2"],
+  ["marron","brown","A2"],
+  ["léger","light (weight)","A2"],
+  ["lourd","heavy","A2"],
+  ["gentil","kind / nice","A2"],
+  ["méchant","mean / naughty","A2"],
+  ["désolé","sorry","A2"],
+  ["utile","useful","A2"],
+  ["parfait","perfect","A2"],
+  ["simple","simple","A2"],
+  ["important","important","A2"],
+  ["sérieux","serious","A2"],
+  ["calme","calm","A2"],
+  ["heureux","happy","A2"],
+  ["malheureux","unhappy","A2"],
+  ["nerveux","nervous","A2"],
+  ["inquiet","worried","A2"],
+  ["stupide","stupid","A2"],
+  ["intelligent","smart","A2"],
+  ["intéressant","interesting","A2"],
+  ["ennuyeux","boring","A2"],
+  ["super","great","A2"],
+  ["génial","brilliant / awesome","A2"],
+  ["mignon","cute","A2"],
+  ["laid","ugly","A2"],
+  ["poli","polite","A2"],
+  ["impoli","rude","A2"],
+  ["curieux","curious","A2"],
+  ["patient","patient","A2"],
+  ["impatient","impatient","B1"],
+  ["complexe","complex","B1"],
+  ["agréable","pleasant","B1"],
+  ["désagréable","unpleasant","B1"],
+  ["énorme","huge","B1"],
+  ["immense","immense","B1"],
+  ["profond","deep","B1"],
+  ["large","wide","B1"],
+  ["étroit","narrow","B1"],
+  ["élevé","high","B1"],
+  ["bas","low","B1"],
+  ["dur","hard / tough","B1"],
+  ["mou","soft / limp","B1"],
+  ["solide","solid / sturdy","B1"],
+  ["fragile","fragile","B1"],
+  ["étrange","strange","B1"],
+  ["étonnant","surprising","B1"],
+  ["surprenant","surprising","B1"],
+  ["inattendu","unexpected","B1"],
+  ["évident","obvious","B1"],
+  ["certain","certain","B1"],
+  ["incertain","uncertain","B1"],
+  ["confus","confused","B1"],
+  ["confiant","confident","B1"],
+  ["fier","proud","B1"],
+  ["honteux","ashamed","B1"],
+  ["jaloux","jealous","B1"],
+  ["amoureux","in love","B1"],
+  ["déçu","disappointed","B1"],
+  ["déprimé","depressed","B1"],
+  ["stressé","stressed","B1"],
+  ["épuisé","exhausted","B1"],
+  ["débordé","overwhelmed (busy)","B1"],
+  ["motivé","motivated","B1"],
+  ["déterminé","determined","B1"],
+  ["courageux","brave","B1"],
+  ["timide","shy","B1"],
+  ["sensible","sensitive","B1"],
+  ["aimable","likeable / kind","B1"],
+  ["sympathique","likeable / friendly","B1"],
+  ["chaleureux","warm (personality)","B1"],
+  ["distant","distant / aloof","B1"],
+  ["honnête","honest","B1"],
+  ["malhonnête","dishonest","B1"],
+  ["fidèle","loyal / faithful","B1"],
+  ["loyal","loyal","B1"],
+  ["généreux","generous","B1"],
+  ["égoïste","selfish","B1"],
+  ["avare","stingy","B1"],
+  ["ambitieux","ambitious","B1"],
+  ["paresseux","lazy","B1"],
+  ["travailleur","hard-working","B1"],
+  ["organisé","organized","B1"],
+  ["désordonné","disorganized","B1"],
+  ["efficace","efficient","B1"],
+  ["compétent","competent","B1"],
+  ["expérimenté","experienced","B1"],
+  ["responsable","responsible","B1"],
+  ["mature","mature","B1"],
+  ["réaliste","realistic","B1"],
+  ["nécessaire","necessary","B2"],
+  ["inutile","useless","B2"],
+  ["essentiel","essential","B2"],
+  ["fondamental","fundamental","B2"],
+  ["principal","main","B2"],
+  ["secondaire","secondary","B2"],
+  ["précis","precise","B2"],
+  ["vague","vague","B2"],
+  ["logique","logical","B2"],
+  ["illogique","illogical","B2"],
+  ["raisonnable","reasonable","B2"],
+  ["déraisonnable","unreasonable","B2"],
+  ["juste","fair / just","B2"],
+  ["injuste","unfair","B2"],
+  ["égal","equal","B2"],
+  ["inégal","unequal","B2"],
+  ["pareil","the same / similar","B2"],
+  ["différent","different","B2"],
+  ["semblable","similar","B2"],
+  ["unique","unique","B2"],
+  ["rare","rare","B2"],
+  ["fréquent","frequent","B2"],
+  ["habituel","usual","B2"],
+  ["exceptionnel","exceptional","B2"],
+  ["typique","typical","B2"],
+  ["classique","classic","B2"],
+  ["moderne","modern","B2"],
+  ["traditionnel","traditional","B2"],
+  ["ancien","old / former","B2"],
+  ["actuel","current","B2"],
+  ["récent","recent","B2"],
+  ["futur","future","B2"],
+  ["mondial","global","B2"],
+  ["national","national","B2"],
+  ["local","local","B2"],
+  ["régional","regional","B2"],
+  ["international","international","B2"],
+  ["politique","political","B2"],
+  ["économique","economic","B2"],
+  ["social","social","B2"],
+  ["culturel","cultural","B2"],
+  ["professionnel","professional","B2"],
+  ["personnel","personal","B2"],
+  ["privé","private","B2"],
+  ["public","public","B2"],
+  ["officiel","official","B2"],
+  ["légal","legal","B2"],
+  ["illégal","illegal","B2"],
+  ["gratuit","free (no cost)","B2"],
+  ["payant","paid / not free","B2"],
+  ["disponible","available","B2"],
+  ["indisponible","unavailable","B2"],
+  ["productif","productive","B2"],
+  ["stable","stable","B2"],
+  ["instable","unstable","B2"],
+  ["flexible","flexible","B2"],
+  ["strict","strict","B2"],
+  ["sévère","strict / severe","B2"],
+  ["tolérant","tolerant","B2"],
+  ["compliqué","complicated","B2"]
+    ],
+
+    /* 100 function words (pronouns, determiners, prepositions, conjunctions, degree/frequency adverbs), CEFR-leveled A1-B2 */
+    functionWords: [
+  ["je","I","A1"],
+  ["tu","you (informal)","A1"],
+  ["il","he / it","A1"],
+  ["elle","she / it","A1"],
+  ["on","one / we (informal)","A1"],
+  ["nous","we","A1"],
+  ["vous","you (formal/plural)","A1"],
+  ["ils","they (m.)","A1"],
+  ["elles","they (f.)","A1"],
+  ["le","the (m.) / him / it","A1"],
+  ["la","the (f.) / her / it","A1"],
+  ["les","the (pl.) / them","A1"],
+  ["un","a / one (m.)","A1"],
+  ["une","a / one (f.)","A1"],
+  ["des","some (pl.)","A1"],
+  ["de","of / from / some","A1"],
+  ["à","to / at / in","A1"],
+  ["et","and","A1"],
+  ["mais","but","A1"],
+  ["ou","or","A1"],
+  ["ce","this / that","A1"],
+  ["cette","this / that (f.)","A1"],
+  ["ne...pas","not","A1"],
+  ["qui","who","A1"],
+  ["que","that / what","A1"],
+  ["dans","in / into","A2"],
+  ["sur","on","A2"],
+  ["avec","with","A2"],
+  ["pour","for","A2"],
+  ["par","by / through","A2"],
+  ["si","if","A2"],
+  ["plus","more","A2"],
+  ["comme","like / as","A2"],
+  ["me","me / myself","A2"],
+  ["te","you / yourself","A2"],
+  ["se","himself / herself / oneself","A2"],
+  ["lui","him / to him/her","A2"],
+  ["y","there / to it","A2"],
+  ["en","in / of it / some","A2"],
+  ["ça","this / that (informal)","A2"],
+  ["quand","when","A2"],
+  ["sans","without","A2"],
+  ["aussi","also / too","A2"],
+  ["chez","at the place of","A2"],
+  ["vers","towards","A2"],
+  ["moins","less","A2"],
+  ["depuis","since / for","A2"],
+  ["mon","my (m.)","A2"],
+  ["ton","your (informal, m.)","A2"],
+  ["son","his / her (m.)","A2"],
+  ["parce que","because","B1"],
+  ["donc","so / therefore","B1"],
+  ["sous","under","B1"],
+  ["pendant","during","B1"],
+  ["alors","then / so","B1"],
+  ["presque","almost","B1"],
+  ["toujours","always","B1"],
+  ["jamais","never","B1"],
+  ["souvent","often","B1"],
+  ["trop","too much","B1"],
+  ["très","very","B1"],
+  ["assez","enough / quite","B1"],
+  ["celui","the one (m.)","B1"],
+  ["celle","the one (f.)","B1"],
+  ["leur","their / to them","B1"],
+  ["notre","our","B1"],
+  ["votre","your","B1"],
+  ["ni","nor","B1"],
+  ["car","because / for","B1"],
+  ["entre","between","B1"],
+  ["contre","against","B1"],
+  ["devant","in front of","B1"],
+  ["derrière","behind","B1"],
+  ["autour","around","B1"],
+  ["chacun","each one","B1"],
+  ["même si","even if","B2"],
+  ["malgré","despite","B2"],
+  ["pourtant","yet / however","B2"],
+  ["déjà","already","B2"],
+  ["quoique","although","B2"],
+  ["bien que","although","B2"],
+  ["tandis que","whereas / while","B2"],
+  ["lorsque","when","B2"],
+  ["puisque","since / as","B2"],
+  ["néanmoins","nevertheless","B2"],
+  ["cependant","however","B2"],
+  ["toutefois","however / nonetheless","B2"],
+  ["ainsi","thus / this way","B2"],
+  ["désormais","from now on","B2"],
+  ["dès","from / as of","B2"],
+  ["jusqu'à","until","B2"],
+  ["auprès","near / with","B2"],
+  ["parmi","among","B2"],
+  ["envers","towards (attitude)","B2"],
+  ["sauf","except","B2"],
+  ["quel que soit","whatever ... may be","B2"],
+  ["voire","or even","B2"],
+  ["or","yet / now (then)","B2"],
+  ["soit","that is / either","B2"],
+  ["dont","whose / of which","B2"]
+    ],
+
+    /* 25 spoken discourse markers & fillers, CEFR-leveled A1-B2 */
+    discourseMarkers: [
+  ["oui","yes","A1"],
+  ["non","no","A1"],
+  ["d'accord","okay / agreed","A1"],
+  ["alors","so / then","A1"],
+  ["voilà","there you go / there it is","A1"],
+  ["bon","well / okay (filler)","A1"],
+  ["euh","um / uh","A1"],
+  ["en fait","actually / in fact","A2"],
+  ["du coup","so / as a result","A2"],
+  ["tu sais","you know","A2"],
+  ["bref","anyway / in short","A2"],
+  ["hein","huh? / right? (tag)","A2"],
+  ["ouais","yeah (informal)","A2"],
+  ["genre","like / kind of","B1"],
+  ["franchement","honestly / frankly","B1"],
+  ["quand même","still / even so","B1"],
+  ["tiens","hey / here you go","B1"],
+  ["en tout cas","in any case","B1"],
+  ["bah","well / meh (filler)","B1"],
+  ["dis donc","wow / hey now","B2"],
+  ["voyons","let's see / come on","B2"],
+  ["grave","totally / really (slang)","B2"],
+  ["n'importe quoi","nonsense / whatever","B2"],
+  ["à la limite","if anything / at a stretch","B2"],
+  ["carrément","totally / completely (informal)","B2"]
     ],
 
     /* weekly quizzes — themed to each week's focus */
@@ -2750,7 +4107,7 @@ const COURSES = {
 
 /* ---------- ACTIVE COURSE STATE ---------- */
 let currentCourseId = null;
-let weeks, PHRASE_CATS, phrases, RES_TYPES, resources, mcq, fillBlank, listenItems, builderSentences, translateItems, quizWeeks, topWords, topVerbs;
+let weeks, PHRASE_CATS, phrases, RES_TYPES, resources, mcq, fillBlank, listenItems, builderSentences, translateItems, quizWeeks, topWords, topVerbs, tenseVerbs, tenseItems, nouns, adjectives, functionWords, discourseMarkers;
 
 /* One-time reverse-migration: the (now removed) 3-profile picker had namespaced everything
    under "u1_"/"u2_"/"u3_" prefixes. Copy User 1's data back to the plain keys the app used
@@ -2924,6 +4281,9 @@ document.querySelectorAll('nav.bottom button').forEach(btn=>{
       phrasesStale = false;
       renderPhraseList();
     }
+    // the words goal is per-language but spans every level of that language, so it can
+    // change while you're off on a different tab — refresh it on the way back in
+    if(btn.dataset.target === 'plan' && typeof renderWordsGoal === 'function') renderWordsGoal();
     window.scrollTo({top:0});
   });
 });
@@ -3230,7 +4590,7 @@ function renderQuizBody(){
    gets an extra shuffled-in repeat each pass, so it comes up more often. Both are tracked
    per exercise type, keyed by each item's original (stable) index in its source array, and
    persisted per course/level. */
-const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs','phrases'];
+const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs','phrases','tenses','nouns','adjectives','funcwords','discourse'];
 let mastered = {};
 let difficult = {};
 let exBodyStale = false; // set true whenever mastery/difficulty changes; tells nav to refresh Practice on next visit
@@ -3252,6 +4612,7 @@ function setMastered(type, idx, val){
   if(val) mastered[type][idx] = Date.now(); else delete mastered[type][idx];
   saveMastered();
   renderMastered();
+  if(WORDS_GOAL_TYPES.includes(type)) renderWordsGoal();
   if(type === 'phrases'){
     phrasesStale = true;
     return;
@@ -3441,28 +4802,114 @@ function wireDirToggle(body, type, onSwitch){
   });
 }
 
+/* ---------- VERB TENSES (present / near future / passé composé) ----------
+   Each tenseVerbs entry only stores the present-tense forms, the auxiliary, and the past
+   participle (see the data comment above tenseVerbs). The other two tenses are derived: */
+const ALLER_FORM = {je:'vais', tu:'vas', il:'va', nous:'allons', vous:'allez', ils:'vont'};
+const AUX_FORM = {
+  avoir: {je:'ai', tu:'as', il:'a', nous:'avons', vous:'avez', ils:'ont'},
+  etre:  {je:'suis', tu:'es', il:'est', nous:'sommes', vous:'êtes', ils:'sont'}
+};
+const TENSE_PRONOUNS = ['je','tu','il','nous','vous','ils'];
+const TENSE_PRONOUN_LABELS = {je:'je', tu:'tu', il:'il / elle', nous:'nous', vous:'vous', ils:'ils / elles'};
+const TENSE_DEFS = [
+  {key:'pres',  label:'Present',                    build:(v,p)=> v.pres[p]},
+  {key:'futur', label:'Near future',                 build:(v,p)=> ALLER_FORM[p] + ' ' + v.inf},
+  {key:'passe', label:'Past (passé composé)',        build:(v,p)=> AUX_FORM[v.aux][p] + ' ' + v.pp}
+];
+/* Flattens a course's tenseVerbs list into one item per (verb, tense, pronoun) combo —
+   50 verbs × 3 tenses × 6 pronouns = 900 drillable items, each with a stable idx (its
+   position here) so mastery/difficulty/practice-pool all work exactly like every other
+   exercise type. Recomputed in loadCourse() whenever tenseVerbs changes. */
+function buildTenseItems(verbs){
+  const items = [];
+  (verbs || []).forEach((v, verbIdx)=>{
+    TENSE_DEFS.forEach(t=>{
+      TENSE_PRONOUNS.forEach(p=>{
+        items.push({
+          verbIdx, verb: v.inf, en: v.en,
+          tenseKey: t.key, tenseLabel: t.label,
+          pronoun: p, pronounLabel: TENSE_PRONOUN_LABELS[p],
+          answer: t.build(v, p)
+        });
+      });
+    });
+  });
+  return items;
+}
+
 /* ---------- EXERCISES ---------- */
+/* Exercises are grouped into 3 categories so the tab row doesn't turn into a 12-button
+   wall: Core practice (the weekly-phrase-based drills), Grammar (conjugation/tense drills),
+   and Vocabulary (the standalone word lists). A category is only shown if at least one of
+   its tabs is available for the current course (see availableExCategories). */
+const EX_CATEGORIES = [
+  {id:'core', label:'Core practice'},
+  {id:'grammar', label:'Grammar'},
+  {id:'vocab', label:'Vocabulary'}
+];
 const exTabs = [
-  {id:'mcq', label:'Multiple choice'},
-  {id:'fill', label:'Fill in the blank'},
-  {id:'listen', label:'Listening dictation'},
-  {id:'build', label:'Sentence builder'},
-  {id:'translate', label:'Translate'},
-  {id:'words', label:'Top 200 words'},
-  {id:'verbs', label:'Top 100 verbs'}
+  {id:'mcq', label:'Multiple choice', cat:'core'},
+  {id:'fill', label:'Fill in the blank', cat:'core'},
+  {id:'listen', label:'Listening dictation', cat:'core'},
+  {id:'build', label:'Sentence builder', cat:'core'},
+  {id:'translate', label:'Translate', cat:'core'},
+  {id:'tenses', label:'Verb tenses', cat:'grammar'},
+  {id:'words', label:'Top 200 words', cat:'vocab'},
+  {id:'verbs', label:'Top verbs', cat:'vocab'},
+  {id:'nouns', label:'Nouns', cat:'vocab'},
+  {id:'adjectives', label:'Adjectives', cat:'vocab'},
+  {id:'funcwords', label:'Function words', cat:'vocab'},
+  {id:'discourse', label:'Discourse markers', cat:'vocab'}
 ];
 let activeEx = 'mcq';
+let activeExCat = 'core';
 function availableExTabs(){
   return exTabs.filter(t=>{
     if(t.id==='words') return topWords && topWords.length > 0;
     if(t.id==='verbs') return topVerbs && topVerbs.length > 0;
+    if(t.id==='tenses') return tenseItems && tenseItems.length > 0;
+    if(t.id==='nouns') return nouns && nouns.length > 0;
+    if(t.id==='adjectives') return adjectives && adjectives.length > 0;
+    if(t.id==='funcwords') return functionWords && functionWords.length > 0;
+    if(t.id==='discourse') return discourseMarkers && discourseMarkers.length > 0;
     return true;
   });
 }
+function availableExCategories(){
+  const avail = availableExTabs();
+  return EX_CATEGORIES.filter(c=> avail.some(t=> t.cat === c.id));
+}
+function renderExCatTabs(){
+  const wrap = document.getElementById('exCatTabs');
+  if(!wrap) return;
+  const cats = availableExCategories();
+  if(!cats.some(c=>c.id===activeExCat)) activeExCat = cats[0] ? cats[0].id : 'core';
+  wrap.innerHTML = '';
+  // A single-category course (e.g. Dutch, which has no Grammar/Vocabulary tabs yet) has
+  // nothing to switch between, so skip the segmented control entirely rather than show a
+  // pointless one-button row.
+  if(cats.length <= 1){ wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  cats.forEach(c=>{
+    const b = document.createElement('button');
+    b.className = 'ex-cat-tab' + (c.id===activeExCat ? ' active' : '');
+    b.textContent = c.label;
+    b.addEventListener('click', ()=>{
+      if(activeExCat === c.id) return;
+      activeExCat = c.id;
+      activeEx = null; // force renderExTabs to pick this category's first available tab
+      renderExTabs(); // also re-renders the category row so its active state updates
+      renderExBody();
+    });
+    wrap.appendChild(b);
+  });
+}
 function renderExTabs(){
+  renderExCatTabs();
   const wrap = document.getElementById('exTabs');
   wrap.innerHTML = '';
-  const tabs = availableExTabs();
+  const tabs = availableExTabs().filter(t=> t.cat === activeExCat);
   if(!tabs.some(t=>t.id===activeEx)) activeEx = tabs[0] ? tabs[0].id : 'mcq';
   tabs.forEach(t=>{
     const b = document.createElement('button');
@@ -3480,7 +4927,12 @@ function renderExBody(){
   if(activeEx==='build') return renderBuilder(body);
   if(activeEx==='translate') return renderTranslate(body);
   if(activeEx==='words') return renderVocabDrill(body, topWords, {type:'words', tabLabel:'Top 200 words', itemLabel:'Word', qtext:'What does this word mean?', qtextReverse:'How do you say this word?', doneText:"That's all 200 words. Reset to go again — the order and answer choices reshuffle each time."});
-  if(activeEx==='verbs') return renderVocabDrill(body, topVerbs, {type:'verbs', tabLabel:'Top 100 verbs', itemLabel:'Verb', qtext:'What does this verb mean?', qtextReverse:'How do you say this verb?', doneText:"That's all 100 verbs. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='verbs') return renderVocabDrill(body, topVerbs, {type:'verbs', tabLabel:'Top verbs', itemLabel:'Verb', qtext:'What does this verb mean?', qtextReverse:'How do you say this verb?', doneText:"That's all "+topVerbs.length+" verbs. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='tenses') return renderTenses(body);
+  if(activeEx==='nouns') return renderVocabDrill(body, nouns, {type:'nouns', tabLabel:'Nouns', itemLabel:'Noun', qtext:'What does this noun mean?', qtextReverse:'How do you say this noun?', doneText:"That's all the nouns. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='adjectives') return renderVocabDrill(body, adjectives, {type:'adjectives', tabLabel:'Adjectives', itemLabel:'Adjective', qtext:'What does this adjective mean?', qtextReverse:'How do you say this adjective?', doneText:"That's all the adjectives. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='funcwords') return renderVocabDrill(body, functionWords, {type:'funcwords', tabLabel:'Function words', itemLabel:'Word', qtext:'What does this word mean?', qtextReverse:'How do you say this word?', doneText:"That's all the function words. Reset to go again — the order and answer choices reshuffle each time."});
+  if(activeEx==='discourse') return renderVocabDrill(body, discourseMarkers, {type:'discourse', tabLabel:'Discourse markers', itemLabel:'Expression', qtext:'What does this expression mean?', qtextReverse:'How do you say this expression?', doneText:"That's all the discourse markers. Reset to go again — the order and answer choices reshuffle each time."});
 }
 
 /* MCQ */
@@ -3708,6 +5160,292 @@ function renderFill(body){
       i = 0; score = 0;
       show();
     });
+  }
+  show();
+}
+
+/* Verb tenses — conjugation drill over tenseItems (present / near future / passé composé
+   for the 50 most common verbs). Each question is randomly either multiple-choice (pick the
+   right form from 4 options) or type-the-answer, mixing both styles across the set. */
+/* Which tense(s) to draw from — 'all' or one of TENSE_DEFS' keys. Persisted per course/level
+   like the direction toggle, and rebuilds the pool (via a sparse "sourceList" that only has
+   entries at the indices matching the filter — buildPracticePool/resumeSession's forEach
+   skips the gaps) so idx still always means the same thing in tenseItems either way. */
+function getTenseFilter(){ return store.get('tenseFilter_'+currentStoreKey, 'all'); }
+function setTenseFilter(val){ store.set('tenseFilter_'+currentStoreKey, val); }
+function tenseFilterLabel(key){ return key==='all' ? 'All tenses' : (TENSE_DEFS.find(t=>t.key===key) || {}).label; }
+function filteredTenseSourceList(){
+  const filter = getTenseFilter();
+  if(filter === 'all') return tenseItems;
+  const sparse = new Array(tenseItems.length);
+  tenseItems.forEach((it, idx)=>{ if(it.tenseKey === filter) sparse[idx] = it; });
+  return sparse;
+}
+function tenseFilterHtml(){
+  const active = getTenseFilter();
+  const opts = [{key:'all', label:'All'}, ...TENSE_DEFS.map(t=>({key:t.key, label:t.label}))];
+  return `<div class="dir-row">
+    <div class="dir-switch" id="tenseFilterSwitch">
+      ${opts.map(o=>`<button type="button" class="dir-opt${active===o.key? ' active':''}" data-tf="${o.key}">${o.label}</button>`).join('')}
+    </div>
+  </div>`;
+}
+function wireTenseFilter(body, onSwitch){
+  const wrap = body.querySelector('#tenseFilterSwitch');
+  if(!wrap) return;
+  wrap.querySelectorAll('.dir-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const val = btn.dataset.tf;
+      if(val === getTenseFilter()) return;
+      setTenseFilter(val);
+      onSwitch();
+    });
+  });
+}
+/* Each tense filter keeps its own separate, resumable position — switching from "All" to
+   "Present" and back is like switching exercise tabs, not restarting: whatever you were on
+   in "Present" last time is still right there. Mirrors sessionKey/loadSession/saveSession/
+   clearSession and resumeSession (see near buildPracticePool above), just keyed by filter too
+   since plain 'tenses' can't hold four separate positions at once. Mastery/difficulty stay
+   on the real 'tenses' type throughout — only the saved position is filter-specific. */
+function tensesSessionKey(filter){ return 'session_tenses_'+filter+'_'+currentStoreKey; }
+function loadTensesSession(filter){ return store.get(tensesSessionKey(filter), null); }
+function saveTensesSession(filter, data){ store.set(tensesSessionKey(filter), data); }
+function clearTensesSession(filter){ store.set(tensesSessionKey(filter), null); }
+function freshTenseState(){ return { format: Math.random() < 0.5 ? 'mcq' : 'fill', wrong: [], done: false, revealed: false, choices: null, answer: null }; }
+function resumeTensesSession(filter, sourceList){
+  const saved = loadTensesSession(filter);
+  if(!saved || !Array.isArray(saved.order) || !saved.order.length) return null;
+  const pool = [], state = [];
+  saved.order.forEach((idx, k)=>{
+    if(isMastered('tenses', idx) || !sourceList[idx]) return;
+    pool.push({idx, item: sourceList[idx]});
+    state.push((saved.state && saved.state[k]) || freshTenseState());
+  });
+  if(!pool.length) return null;
+  pool.uniqueTotal = new Set(pool.map(p=>p.idx)).size;
+  let i = typeof saved.i === 'number' ? saved.i : 0;
+  if(i >= pool.length) i = pool.length - 1;
+  if(i < 0) i = 0;
+  return { pool, state, i };
+}
+
+function renderTenses(body){
+  function currentSourceList(){ return filteredTenseSourceList(); }
+  let filter = getTenseFilter();
+  const resumed = resumeTensesSession(filter, currentSourceList());
+  let pool = resumed ? resumed.pool : buildPracticePool('tenses', currentSourceList(), false);
+  let i = resumed ? resumed.i : 0;
+  let state = resumed ? resumed.state : pool.map(()=> freshTenseState());
+  // a resumed state slot can come back without a format (e.g. the fallback used when the
+  // pool's shape changed since the session was saved) — give it one so show() never sees undefined
+  state.forEach(s=>{ if(!s.format) s.format = Math.random() < 0.5 ? 'mcq' : 'fill'; });
+
+  function score(){ return state.filter(s=>s.done).length; }
+  function persist(){ saveTensesSession(filter, { order: pool.map(p=>p.idx), state, i }); }
+
+  // Switching the tense filter swaps to THAT filter's own saved position (or starts it fresh
+  // if it doesn't have one yet) — it never clears or restarts anything, on either side of the
+  // switch, same as leaving one exercise tab for another and coming back later.
+  function resetForTenseFilter(){
+    filter = getTenseFilter();
+    const r = resumeTensesSession(filter, currentSourceList());
+    pool = r ? r.pool : buildPracticePool('tenses', currentSourceList(), false);
+    state = r ? r.state : pool.map(()=> freshTenseState());
+    i = r ? r.i : 0;
+    show();
+  }
+
+  // Distractors are other pronouns of the SAME verb + SAME tense — that's what actually
+  // tests whether you know which form goes with which person, instead of just spotting a
+  // wrong tense. Falls back to any other item of the same tense if a verb somehow doesn't
+  // have enough (never happens with the 6-pronoun sets here, but cheap to guard anyway).
+  function buildChoicesFor(idx){
+    const correct = tenseItems[idx];
+    let candidates = tenseItems.filter((entry,k)=> k!==idx && entry.verbIdx===correct.verbIdx && entry.tenseKey===correct.tenseKey && entry.answer !== correct.answer);
+    if(candidates.length < 3){
+      const seen = new Set(candidates);
+      const fallback = tenseItems.filter((entry,k)=> k!==idx && entry.tenseKey===correct.tenseKey && entry.answer !== correct.answer && !seen.has(entry));
+      candidates = candidates.concat(fallback);
+    }
+    const distractors = candidates.sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.answer);
+    const combined = [{c:correct.answer, ok:true}, ...distractors.map(c=>({c, ok:false}))].sort(()=>Math.random()-0.5);
+    return { choices: combined.map(c=>c.c), answer: combined.findIndex(c=>c.ok) };
+  }
+
+  function promptHtml(q){
+    return `<div class="q-prompt">Conjugate <span class="french">${q.verb}</span> <span style="opacity:.65;">(${q.en})</span><br>${q.tenseLabel} — <strong>${q.pronounLabel}</strong> ___</div>`;
+  }
+
+  function wireCommonButtons(idx){
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      celebrateMastered(body, ()=>{
+        setMastered('tenses', idx, true);
+        removeUpcomingOccurrences(pool, state, i, idx);
+        show();
+      });
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult('tenses', idx);
+      applyDifficultToggle('tenses', idx, pool, i, state);
+      show(true);
+    });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm('Restart Verb tenses from the beginning? Your progress in this set will be reset.')) return;
+      clearTensesSession(filter);
+      pool = buildPracticePool('tenses', currentSourceList(), false);
+      state = pool.map(()=> freshTenseState());
+      i = 0;
+      show();
+    });
+  }
+
+  function show(skipAnim){
+    if(pool.length === 0){
+      clearTensesSession(filter);
+      body.innerHTML = `<div class="card">${tenseFilterHtml()}<p style="margin:0;">🎉 Nothing left to practice in <strong>${tenseFilterLabel(getTenseFilter())}</strong> for now. Try a different tense above, or find it in the <strong>Mastered</strong> tab.</p></div>`;
+      wireTenseFilter(body, resetForTenseFilter);
+      return;
+    }
+    if(i >= pool.length){
+      clearTensesSession(filter);
+      body.innerHTML = `<div class="card">${tenseFilterHtml()}<div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>Nice work. Reset to try again.</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('tenses', currentSourceList(), false); state = pool.map(()=> freshTenseState()); i=0; show(); });
+      body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
+      wireTenseFilter(body, resetForTenseFilter);
+      return;
+    }
+    const idx = pool[i].idx;
+    const q = tenseItems[idx];
+    const st = state[i];
+    persist();
+
+    if(st.format === 'mcq'){
+      if(!st.choices){
+        const built = buildChoicesFor(idx);
+        st.choices = built.choices;
+        st.answer = built.answer;
+      }
+      body.innerHTML = `
+        <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+          ${tenseFilterHtml()}
+          <div class="q-topline">
+            <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('tenses')}</div>
+            ${qActionsHtml('tenses', idx)}
+          </div>
+          ${promptHtml(q)}
+          ${st.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
+          <div class="feedback" id="fb"></div>
+          <div class="ex-btn-row">
+            <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>Back</button>
+            <button class="btn btn-primary" id="nextBtn">${i===pool.length-1? 'Finish':'Next'}</button>
+          </div>
+        </div>`;
+      const opts = body.querySelectorAll('.opt');
+      const fb = body.querySelector('#fb');
+      const nextBtn = body.querySelector('#nextBtn');
+      if(st.wrong.length) st.wrong.forEach(w=>{ opts[w].classList.add('wrong'); opts[w].disabled = true; });
+      if(st.done){
+        opts[st.answer].classList.add('correct');
+        opts.forEach(o=> o.disabled = true);
+        fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+        nextBtn.disabled = false;
+      } else if(st.wrong.length){
+        fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+      }
+      opts.forEach(opt=>{
+        opt.addEventListener('click', ()=>{
+          if(st.done || opt.disabled) return;
+          const ci = +opt.dataset.idx;
+          if(ci === st.answer){
+            st.done = true;
+            opts[ci].classList.add('correct');
+            opts.forEach(o=> o.disabled = true);
+            fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+            nextBtn.disabled = false;
+            persist();
+            setTimeout(()=>{ i++; show(); }, 700);
+          } else {
+            st.wrong.push(ci);
+            opt.classList.add('wrong');
+            opt.disabled = true;
+            fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+            persist();
+          }
+        });
+      });
+      body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
+      nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    } else {
+      const prevVal = skipAnim ? (body.querySelector('#tenseIn')?.value || '') : '';
+      body.innerHTML = `
+        <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+          ${tenseFilterHtml()}
+          <div class="q-topline">
+            <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('tenses')}</div>
+            ${qActionsHtml('tenses', idx)}
+          </div>
+          ${promptHtml(q)}
+          <input class="fill-input" id="tenseIn" placeholder="Type the missing form" autocomplete="off" autocapitalize="off">
+          <div class="ex-btn-row">
+            <button class="btn btn-primary" id="check">Check</button>
+            <button class="btn btn-ghost" id="revealBtn">Reveal answer</button>
+            <button class="btn btn-primary" id="nextBtn">${i===pool.length-1? 'Finish':'Next'}</button>
+          </div>
+          <div class="feedback" id="fb"></div>
+        </div>`;
+      const input = body.querySelector('#tenseIn');
+      const nextBtn = body.querySelector('#nextBtn');
+      const fb = body.querySelector('#fb');
+      const checkBtn = body.querySelector('#check');
+      const revealBtn = body.querySelector('#revealBtn');
+      if(prevVal) input.value = prevVal;
+
+      function lock(){ input.disabled = true; checkBtn.disabled = true; revealBtn.disabled = true; }
+
+      if(st.done){
+        input.value = q.answer;
+        lock();
+        fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+      } else if(st.revealed){
+        input.value = q.answer;
+        lock();
+        fb.textContent = `Answer: "${q.answer}"`; fb.className = 'feedback';
+      }
+
+      let advanceTimer = null;
+      // A wrong guess just says so and lets you try again — it never gives the answer away.
+      // Only Reveal shows it (and, like giving up, locks the question); Next always works so
+      // you're never stuck on one you don't know.
+      checkBtn.addEventListener('click', ()=>{
+        if(st.done || st.revealed) return;
+        const val = input.value.trim().toLowerCase();
+        if(!val){ fb.textContent = 'Type an answer, or tap Reveal answer.'; fb.className = 'feedback bad'; return; }
+        const correct = val === q.answer.toLowerCase();
+        if(correct){
+          st.done = true;
+          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+          lock();
+          persist();
+          advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
+        } else {
+          fb.textContent = 'Not quite — try again.'; fb.className = 'feedback bad';
+          input.select();
+        }
+      });
+      revealBtn.addEventListener('click', ()=>{
+        if(st.done || st.revealed) return;
+        st.revealed = true;
+        input.value = q.answer;
+        lock();
+        fb.textContent = `Answer: "${q.answer}"`; fb.className = 'feedback';
+        persist();
+      });
+      input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) checkBtn.click(); });
+      nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
+    }
+    wireCommonButtons(idx);
+    wireTenseFilter(body, resetForTenseFilter);
   }
   show();
 }
@@ -3981,8 +5719,9 @@ function renderTranslate(body){
   show();
 }
 
-/* Vocab drill — used for "Top 200 words" and "Top 100 verbs" practice.
-   list entries are [target, english] or [target, english, partOfSpeech].
+/* Vocab drill — used for "Top 200 words", "Top verbs", Nouns, Adjectives, Function words,
+   and Discourse markers.
+   list entries are [target, english] or [target, english, partOfSpeechOrCefrLevel].
    Multiple-choice options are generated on the fly from the rest of the list. */
 function renderVocabDrill(body, list, opts){
   const type = opts.type;
@@ -4163,8 +5902,13 @@ function masteredTypeMeta(){
     build:     { label: 'Sentence builder',  getFr: it=> it.answer,       getEn: it=> it.en },
     translate: { label: 'Translate',         getFr: it=> it.fr,           getEn: it=> it.en },
     words:     { label: 'Top 200 words',     getFr: it=> it[0],           getEn: it=> it[1] },
-    verbs:     { label: 'Top 100 verbs',     getFr: it=> it[0],           getEn: it=> it[1] },
-    phrases:   { label: 'Phrases',           getFr: it=> it[0],           getEn: it=> it[1] }
+    verbs:     { label: 'Top verbs',         getFr: it=> it[0],           getEn: it=> it[1] },
+    phrases:   { label: 'Phrases',           getFr: it=> it[0],           getEn: it=> it[1] },
+    tenses:    { label: 'Verb tenses',       getFr: it=> `${it.pronounLabel} ___ · ${it.verb} (${it.tenseLabel})`, getEn: it=> `${it.pronounLabel} ${it.answer}` },
+    nouns:       { label: 'Nouns',           getFr: it=> it[0],           getEn: it=> it[1] },
+    adjectives:  { label: 'Adjectives',      getFr: it=> it[0],           getEn: it=> it[1] },
+    funcwords:   { label: 'Function words',  getFr: it=> it[0],           getEn: it=> it[1] },
+    discourse:   { label: 'Discourse markers', getFr: it=> it[0],         getEn: it=> it[1] }
   };
 }
 function masteredSourceList(type){
@@ -4176,8 +5920,79 @@ function masteredSourceList(type){
   if(type==='words') return topWords;
   if(type==='verbs') return topVerbs;
   if(type==='phrases') return phrasesFlat;
+  if(type==='tenses') return tenseItems;
+  if(type==='nouns') return nouns;
+  if(type==='adjectives') return adjectives;
+  if(type==='funcwords') return functionWords;
+  if(type==='discourse') return discourseMarkers;
   return [];
 }
+
+/* ---------- WORDS GOAL ----------
+   A PER-LANGUAGE goal: master individual words — counting every dictionary-word list (Top
+   200 words, Top verbs, Nouns, Adjectives, Function words, Discourse markers — see
+   WORDS_GOAL_TYPES) but never phrases (multi-word chunks) or the grammar drills like
+   MCQ/Fill/Tenses, which test sentences or conjugated forms rather than dictionary words.
+   French and Dutch each get their OWN goal, tallied only from that language's course+level
+   store keys (languageStoreKeys) — mastering French words never moves Dutch's bar or vice
+   versa. The target starts at 1,000 and steps up to 2,000 once 1,000 is reached
+   (WORDS_GOAL_TIERS), independently per language. The card shown in the Plan tab always
+   reflects whichever language/course is currently loaded (currentCourseId). */
+const WORDS_GOAL_TIERS = [1000, 2000];
+const WORDS_GOAL_TYPES = ['words','verbs','nouns','adjectives','funcwords','discourse'];
+function languageStoreKeys(langId){
+  const lang = COURSES[langId];
+  if(!lang) return [];
+  if(lang.levels) return Object.keys(lang.levels).map(levelId=> langId+'_'+levelId);
+  return [langId];
+}
+function languageWordsMasteredCount(langId){
+  let total = 0;
+  languageStoreKeys(langId).forEach(key=>{
+    const m = store.get('mastered_'+key, {});
+    WORDS_GOAL_TYPES.forEach(t=>{
+      if(m[t] && typeof m[t] === 'object') total += Object.keys(m[t]).length;
+    });
+  });
+  return total;
+}
+/* Which tier this count is currently working toward: 1,000 until reached, then 2,000 and
+   capped there (2,000 is comfortably above what either language's word pool can supply). */
+function wordsGoalTargetFor(count){
+  for(const tier of WORDS_GOAL_TIERS){ if(count < tier) return tier; }
+  return WORDS_GOAL_TIERS[WORDS_GOAL_TIERS.length - 1];
+}
+function renderWordsGoal(){
+  const el = document.getElementById('wordsGoalCard');
+  if(!el) return;
+  const langId = currentCourseId;
+  const lang = COURSES[langId];
+  if(!lang){ el.innerHTML = ''; return; }
+  const count = languageWordsMasteredCount(langId);
+  const target = wordsGoalTargetFor(count);
+  const maxTier = WORDS_GOAL_TIERS[WORDS_GOAL_TIERS.length - 1];
+  const justLeveledUp = target > WORDS_GOAL_TIERS[0]; // true once the 1,000 tier has been cleared
+  const shown = Math.min(count, target);
+  const exactPct = Math.min(100, (count / target) * 100);
+  // Below 10% a whole-number percentage rounds to "0%" for a long stretch (the first 4
+  // words all show 0%), which reads as "not updating" even though the count above it is
+  // moving — show one decimal there so the number visibly ticks up every single word.
+  const pctDisplay = exactPct > 0 && exactPct < 10 ? (Math.round(exactPct * 10) / 10) : Math.round(exactPct);
+  // the bar itself has the same problem in pixels (0.4% of its width can be under a pixel) —
+  // floor it at a sliver so the very first mastered word is actually visible, not just implied
+  const barPct = count > 0 ? Math.max(exactPct, 1.2) : 0;
+  const done = count >= maxTier;
+  const heading = done
+    ? `🎉 Goal reached — ${maxTier.toLocaleString()} ${lang.name} words!`
+    : `Goal: master ${target.toLocaleString()} ${lang.name} words`;
+  const milestoneNote = (justLeveledUp && !done) ? ` 🎉 1,000-word milestone reached — now aiming for ${target.toLocaleString()}.` : '';
+  el.innerHTML = `
+    <h3 style="margin-bottom:6px;">${heading}</h3>
+    <p style="margin:0 0 10px 0; color:#5b6664; font-size:.85rem;">${shown.toLocaleString()} of ${target.toLocaleString()} individual ${lang.name} words mastered — words, verbs, nouns, adjectives, function words & discourse markers, across every level of this course.${milestoneNote}</p>
+    <div class="goal-bar"><div class="goal-fill" style="width:${Math.min(barPct,100)}%;"></div></div>
+    <div style="text-align:right; font-size:.76rem; color:#5b6664; margin-top:4px;">${pctDisplay}%</div>`;
+}
+
 /* ---------- MASTERED VIEW: REVIEW PRACTICE ---------- */
 /* A lightweight, read-only quiz over words already marked mastered — pure refresher, it
    never touches the mastered/difficult sets. masteredPracticeScope is either a single
@@ -4427,6 +6242,12 @@ function loadCourse(langId, levelId){
   quizWeeks = c.quizWeeks;
   topWords = c.topWords || [];
   topVerbs = c.topVerbs || [];
+  tenseVerbs = c.tenseVerbs || [];
+  tenseItems = buildTenseItems(tenseVerbs);
+  nouns = c.nouns || [];
+  adjectives = c.adjectives || [];
+  functionWords = c.functionWords || [];
+  discourseMarkers = c.discourseMarkers || [];
   listenItems = Object.values(phrases).flat();
   currentLangCode = lang.langCode;
 
@@ -4450,6 +6271,7 @@ function loadCourse(langId, levelId){
   activeResType = 'All';
   activeQuizWeek = 0;
   activeEx = 'mcq';
+  activeExCat = 'core';
   exBodyStale = false;
 
   // clear dynamic containers first so no stale duplicate-id elements (e.g. #prevBtn)
@@ -4469,6 +6291,7 @@ function loadCourse(langId, levelId){
   renderExTabs();
   renderExBody();
   renderMastered();
+  renderWordsGoal();
 
   // reset nav to the Plan tab
   document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.remove('active'));
