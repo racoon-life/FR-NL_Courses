@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Parle — 2-Month Spoken French Plan</title>
+<title>Parle — CEFR-Leveled Spoken French Plan</title>
 <style>
   :root{
     --ink:#16213a;
@@ -174,6 +174,45 @@
   }
   .week.done .week-mark{ background:var(--mustard); border-color:var(--mustard); color:var(--teal-deep); }
 
+  /* Plan: CEFR-level tabs, month grouping, pillar tags */
+  .plan-level-card{ background:#523f76; border:none; }
+  .plan-level-card h3{ color:#fff; margin-bottom:6px; }
+  .plan-level-card p{ margin:0 0 4px; font-size:.85rem; line-height:1.5; color:#fff; }
+  .plan-level-card p:last-child{ margin-bottom:0; }
+  .plan-level-card .syllabus-note{ font-size:.74rem; color:#d8d2ea; margin-top:8px; }
+  .plan-level-card ul{ margin:6px 0 0; padding-left:1.1rem; font-size:.85rem; line-height:1.55; color:#fff; }
+  .month-header{ margin:22px 0 10px; padding-top:14px; border-top:2px solid var(--line); }
+  .month-header:first-of-type{ margin-top:2px; border-top:none; padding-top:0; }
+  .month-header h3{ font-size:1.05rem; margin-bottom:2px; }
+  .month-header p{ margin:0; font-size:.85rem; color:#5b6664; line-height:1.45; }
+  .pillar-tag{
+    display:inline-block;
+    font-size:.64rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color: var(--teal);
+    background: rgba(29,58,110,0.09);
+    border-radius:7px;
+    padding:2px 7px;
+    margin-right:6px;
+    white-space:nowrap;
+  }
+  /* Same plain-text style as the inline CEFR/POS tag already used next to nouns, verbs,
+     adjectives, function words and discourse markers — kept as one class so every badge
+     in the app (vocab rows, exercise questions, phrases) reads as the same visual language. */
+  .cefr-tag{
+    display:inline-block;
+    font-size:.65rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color: var(--rust);
+    margin-right:6px;
+    white-space:nowrap;
+    vertical-align:middle;
+  }
+
   /* Phrase bank */
   .cat-tabs{
     display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom: 6px;
@@ -319,6 +358,7 @@
   }
   .feedback.ok{ color:#3f6e38; }
   .feedback.bad{ color: var(--rust); }
+  .answer-note{ margin-top:4px; font-size:.8rem; font-weight:500; color:#5b6664; line-height:1.4; }
   .score-pill{
     display:inline-block;
     background: var(--mustard);
@@ -837,9 +877,9 @@
       <button class="course-card" data-course="fr">
         <div class="flag">🇫🇷</div>
         <div class="course-info">
-          <div class="course-level">Conversational</div>
+          <div class="course-level">CEFR-leveled · A1–B2</div>
           <div class="course-name">French</div>
-          <div class="course-desc">Go from basics to real, casual conversation in two months.</div>
+          <div class="course-desc">A speaking-first plan built on the CEFR/DELF syllabus — pick a phase inside the Plan tab, starting with A1.</div>
         </div>
         <div class="chev">›</div>
       </button>
@@ -888,12 +928,8 @@
   <!-- PLAN -->
   <section id="plan" class="active">
     <div class="card" id="wordsGoalCard"></div>
-    <div class="card" style="background:#523f76; border:none;">
-      <h3 style="margin-bottom:6px; color:#fff;">How this works</h3>
-      <p style="margin:0; font-size:.88rem; line-height:1.5; color:#fff;">
-        ~30–40 min/day, six days a week. Listening and speaking lead every week. Reading and writing only show up when they directly support speaking. Tap a week to expand it, and mark it done as you go — your progress is saved on this device.
-      </p>
-    </div>
+    <div class="cat-tabs" id="planLevelTabs"></div>
+    <div class="card plan-level-card" id="planLevelInfo"></div>
     <div id="weeks"></div>
   </section>
 
@@ -959,185 +995,186 @@ const COURSES = {
     id: "fr",
     name: "French",
     appName: "Parle.",
-    pageTitle: "Parle — 2-Month Spoken French Plan",
-    eyebrow: "Two-month plan",
+    pageTitle: "Parle — CEFR-Leveled Spoken French Plan",
+    eyebrow: "CEFR-leveled plan",
     langCode: "fr-FR",
-    weeks: [
-  {
-    title: "Get your ear moving",
-    focus: "Listening + sounds",
-    summary: "Stop collecting words. Start hearing how French actually sounds and flows.",
-    details: [
-      "Pimsleur French (or Coffee Break French) — Lessons 1–3, out loud, every day.",
-      "5–10 min passive listening daily: InnerFrench podcast (slow, beginner-aimed).",
-      "Learn the core verbs by sound, not spelling: être, avoir, aller, faire — just present tense.",
-      "In this app: go through the 'Greetings & basics' and 'Everyday verbs' phrase categories, play every audio."
-    ]
-  },
-  {
-    title: "Survival phrases",
-    focus: "Speaking",
-    summary: "Build the chunks you'd actually need in the first minute of a real conversation.",
-    details: [
-      "Pimsleur/CBF Lessons 4–6, repeating out loud until it feels automatic, not read.",
-      "Memorise 'Asking & saying things' phrase category here — these are reusable templates.",
-      "Start narrating your day out loud in French for 5 min (even badly): 'je mange... je vais...'.",
-      "Do the Multiple Choice exercises in this app daily, 5 min."
-    ]
-  },
-  {
-    title: "Questions & connecting",
-    focus: "Speaking + listening",
-    summary: "Conversation is mostly questions and reactions. Get fluent in asking, not just answering.",
-    details: [
-      "Pimsleur/CBF Lessons 7–9.",
-      "Add: Français Authentique podcast (free) for natural, slightly faster listening.",
-      "Drill the 'Questions' phrase category — comment, pourquoi, où, quand, combien.",
-      "Try your first short exchange on Tandem or HelloTalk (free language exchange apps) — even 5 minutes."
-    ]
-  },
-  {
-    title: "Near future & near past",
-    focus: "Sentence building",
-    summary: "Two constructions unlock most casual conversation: 'je vais + verbe' and 'je viens de + verbe'.",
-    details: [
-      "Pimsleur/CBF Lessons 10–12.",
-      "This app: Sentence Builder exercises — focus on future/past chunks.",
-      "Listening: pick one InnerFrench or Français Authentique episode, listen twice, no subtitles second time.",
-      "Conversation check-in #2 on Tandem/HelloTalk, try using je vais / je viens de at least 3 times."
-    ]
-  },
-  {
-    title: "Midpoint review",
-    focus: "Consolidation",
-    summary: "No new material — fill the gaps and notice what's actually sticking.",
-    details: [
-      "Re-listen to Pimsleur Lessons 1–6 without looking anything up.",
-      "Go through every phrase category in this app and re-test yourself with Listening Dictation exercises.",
-      "Light reading support only: try Le Français Facile (free, graded easy texts) for 10 min if curious — not required.",
-      "Have one longer (10–15 min) voice chat on Tandem/HelloTalk."
-    ]
-  },
-  {
-    title: "Everyday situations",
-    focus: "Speaking",
-    summary: "Café, shopping, making plans — the scenarios that come up with friends constantly.",
-    details: [
-      "Pimsleur/CBF Lessons 13–15.",
-      "Add 'Making plans' and 'Food & café' phrase categories here, audio-first.",
-      "Watch one short French YouTube clip with French subtitles on (not English) — train ear+eye together.",
-      "Practice ordering/making plans out loud, then try it for real on Tandem/HelloTalk."
-    ]
-  },
-  {
-    title: "Opinions & feelings",
-    focus: "Speaking + listening",
-    summary: "Friendship-level talk needs opinions: j'aime, je pense que, ça me plaît, ça m'énerve.",
-    details: [
-      "Pimsleur/CBF Lessons 16–18.",
-      "Drill 'Opinions & feelings' phrase category.",
-      "Listening: a full InnerFrench/Français Authentique episode with zero subtitles.",
-      "Conversation goal: express a real opinion about something (a film, food, your week) unscripted."
-    ]
-  },
-  {
-    title: "Put it together",
-    focus: "Free conversation",
-    summary: "Less new input, more producing language freely. This week is about output.",
-    details: [
-      "Free-talk for at least 20 min total across 2+ Tandem/HelloTalk sessions, no script.",
-      "Replay every phrase category here once, aiming for instant recall before the English shows.",
-      "Take the Listening Dictation and Sentence Builder exercises again — compare to week 1 scores.",
-      "Decide your next 2 months: more Pimsleur volume, a tutor on iTalki, or a French-speaking community."
-    ]
-  }
+    /* ---------- PLAN, restructured per CEFR level ----------
+       Built from: the Council of Europe CEFR A1 "can-do" descriptors, the official
+       DELF A1 exam syllabus (France Éducation international — 4 papers, ~25 grammar
+       points, 15 vocab themes, ~500 words, 60–80 guided hours), Alliance Française's
+       classroom sequencing for A1.1/A1.2 (Cosmopolite 1 — greetings/ID → daily life/
+       description → location/family/health), and the university-backed "Vivre en
+       France A1" MOOC (Alliance Française Paris Île-de-France, hosted on FUN-MOOC,
+       France's national university MOOC platform) — 17 real-life scenario modules
+       from arrival to healthcare to job-hunting.
+       Every week is built around 5 pillars: Vocabulary · Verb mechanics & tenses
+       (présent, futur proche, passé composé + pronoun placement) · Phonetics &
+       spoken rules · Slang & reductions · Syntax & sentence structure. */
+    planLevels: [
+      {
+        level: "A1",
+        label: "A1 · Phase 1 — Beginner",
+        tagline: "The real CEFR/DELF A1 core, built for speaking first: être/avoir, the present tense, your first questions, and enough survival French to get through a day in France.",
+        syllabusNote: "Sources: CEFR A1 self-assessment grid (Council of Europe) · DELF A1 syllabus (France Éducation international) · Alliance Française A1.1/A1.2 sequencing (Cosmopolite 1) · \"Vivre en France A1\" MOOC (Alliance Française Paris IDF / FUN-MOOC).",
+        months: [
+          {
+            title: "Month 1 · Foundations",
+            summary: "Everything DELF A1 actually tests, in speaking order: sounds → identity → daily life → getting around town — with your first taste of the passé composé by week 4.",
+            weeks: [
+              {
+                title: "Bonjour — the sound of French",
+                focus: "Listening + sounds + first verbs",
+                summary: "Before you memorise anything, train your ear and mouth on how French actually sounds — then attach être and avoir to it, the two verbs everything else leans on.",
+                details: [
+                  { pillar: "Vocabulary", text: "The alphabet, numbers 0–20, and the 'Greetings & sounds' phrase category here — play every audio clip before reading the English translation." },
+                  { pillar: "Verb mechanics", text: "Présent of être and avoir, all 6 pronouns (je / tu / il-elle-on / nous / vous / ils-elles). These two verbs alone unlock 'je suis…', 'j'ai…', 'tu es…' — drill them in <strong>Practice → Grammar & structure → Verb tenses</strong>." },
+                  { pillar: "Phonetics & spoken rules", text: "French vowels are pure, with no glide like English 'oh'. Final consonants are usually silent (vous, deux, chat), and nasal vowels (on, en, in) have no real English equivalent — listen for them in every phrase you play." },
+                  { pillar: "Slang & reductions", text: "'Salut' is the everyday hello among friends; 'bonjour' is the neutral, polite default. 'Ça va ?' is often asked and answered without 'comment' or 'tu' at all. Just notice this for now — you don't need to produce it yet. Start recognising more in <strong>Practice → Slang & reductions</strong>." },
+                  { pillar: "Syntax", text: "Simple statements follow Subject + Verb + Complement, same as English: 'Je suis fatigué', 'J'ai faim'. Negation wraps around the verb: ne + verb + pas — 'Je ne sais pas'. Try it in <strong>Practice → Grammar & structure → Sentence structure</strong>." }
+                ]
+              },
+              {
+                title: "Qui es-tu ? Your life, your family",
+                focus: "Speaking + description",
+                summary: "Move from reacting to introducing — who you are, your family, and what people are like.",
+                details: [
+                  { pillar: "Vocabulary", text: "Family members, professions, personality/appearance adjectives, days & months — use the CEFR-leveled Nouns and Adjectives lists (A1 badge) plus the 'Family & identity' phrase category." },
+                  { pillar: "Verb mechanics", text: "Présent of regular -er verbs across all 6 persons (parler, habiter, aimer), plus the high-frequency irregulars aller and faire. Add possessive adjectives (mon/ma/mes, ton/ta/tes) and adjective agreement (un ami sympa / une amie sympa) — drill conjugation in <strong>Practice → Verb tenses</strong>." },
+                  { pillar: "Phonetics & spoken rules", text: "Liaison basics: 'les amis' and 'nous avons' link with a /z/ sound. A final -e often makes the consonant before it audible (grande vs. grand). Word stress always lands on the last syllable of a word or phrase." },
+                  { pillar: "Slang & reductions", text: "'On' replaces 'nous' in almost all spoken French ('on va', never 'nous allons' out loud). 'Chais pas' = 'je sais pas' (the 'ne' of 'je ne sais pas' is dropped); same drop in 'c'est pas grave'. Drill these in <strong>Practice → Slang & reductions</strong>." },
+                  { pillar: "Syntax", text: "Three ways to ask a question: rising intonation ('Tu es français ?'), est-ce que ('Est-ce que tu es français ?'), and formal inversion ('Es-tu français ?'). Also: 'c'est + noun' vs. 'il/elle est + adjective/profession' — practise both in <strong>Practice → Sentence structure</strong>." }
+                ]
+              },
+              {
+                title: "Le quotidien — daily life & near future",
+                focus: "Sentence building + futur proche",
+                summary: "Attach real verbs to your day, tell the time, order food — and start using 'aller + infinitif' to talk about what's coming next.",
+                details: [
+                  { pillar: "Vocabulary", text: "Daily-routine verbs (se lever, se doucher, manger, travailler), time expressions, numbers 20–100, and food/café vocabulary via the 'Daily routine & food' phrase category." },
+                  { pillar: "Verb mechanics & pronoun placement", text: "Reflexive verbs in the présent (je me lève, tu te laves) — the reflexive pronoun sits before the conjugated verb. Same rule for direct object pronouns le/la/les ('Je le vois', never 'Je vois le'). Futur proche in full: aller (conjugated) + infinitif ('Je vais manger'). New this week: <strong>Practice → Grammar & structure → Pronoun placement</strong>." },
+                  { pillar: "Phonetics & spoken rules", text: "Elision: je → j' before a vowel (j'aime, j'habite), le/la → l' (l'ami). The 'e caduc' (mute e) commonly disappears in fast speech: 'je ne sais pas' → 'j'sais pas'." },
+                  { pillar: "Slang & reductions", text: "'Y a' for 'il y a', 'chuis' for 'je suis', 't'as' for 'tu as' — all extremely common in spoken French. Practise hearing them, not just the textbook forms, in <strong>Practice → Slang & reductions</strong>." },
+                  { pillar: "Syntax", text: "Futur proche is the sentence pattern that replaces most spoken future tense. Pronoun placement rule with two verbs: the pronoun goes before whichever verb it belongs to ('Je vais le voir'). Add connectors et / mais / parce que / donc to link ideas — try it in <strong>Practice → Sentence structure</strong>." }
+                ]
+              },
+              {
+                title: "Se débrouiller en ville — your first past tense",
+                focus: "Consolidation + passé composé",
+                summary: "Get around a French town, ask for directions, and take your first steps into the passé composé — the tense you need to tell anyone what you did yesterday.",
+                details: [
+                  { pillar: "Vocabulary", text: "City, transport and directions; housing vocabulary; weather — via the 'Getting around town' phrase category, plus a full review of weeks 1–3 via Practice and Mastered." },
+                  { pillar: "Verb mechanics & tenses", text: "Passé composé introduced: avoir + past participle for most verbs (j'ai mangé, j'ai fini, j'ai vu), être + past participle for the 'maison d'être' movement verbs with agreement (je suis allé(e), je suis venu(e)). Impératif for directions (Tournez à gauche, Continuez tout droit, Prenez la deuxième rue). Add passé composé to <strong>Practice → Verb tenses</strong>." },
+                  { pillar: "Phonetics & spoken rules", text: "Review liaison and elision from weeks 1–3 inside longer sentences. Question intonation (rising) vs. statement intonation (falling); the even, syllable-timed rhythm of spoken French with a slightly longer final syllable." },
+                  { pillar: "Slang & reductions", text: "'J'ai pas' — dropping 'ne' with the passé composé, very common in speech ('j'ai pas eu le temps'). Review every reduction from weeks 1–3 together, out loud, in <strong>Practice → Slang & reductions</strong>." },
+                  { pillar: "Syntax", text: "Negation with the passé composé wraps around the auxiliary, not the participle: 'Je n'ai pas mangé' (spoken: 'j'ai pas mangé'). Pronoun placement with the passé composé: the object pronoun goes before the auxiliary ('Je l'ai vu'). This week ties vocabulary + all 3 tenses + pronoun placement into full sentences — practise all of it in <strong>Practice → Pronoun placement</strong> and <strong>→ Sentence structure</strong>." }
+                ]
+              }
+            ]
+          }
+        ],
+        comingSoonNote: "Month 2 (A1.2-equivalent: housing & health in depth, more storytelling in the passé composé, and the DELF A1 exam formats) is next — this app builds it one phase at a time."
+      },
+      {
+        level: "A2",
+        label: "A2 · Phase 2 — Elementary",
+        tagline: "Past and future in full: describing your life, giving opinions, comparing things, and handling simple everyday transactions without a script.",
+        comingSoon: true,
+        topics: [
+          "Imparfait (description, habits, 'used to') alongside passé composé (narration) — and the difference between them",
+          "Comparatives & superlatives (plus/moins/aussi... que, le plus/le moins)",
+          "Si + présent for simple conditions and suggestions",
+          "Opinions and reasoning: je pense que, à mon avis, parce que / donc / pourtant",
+          "Relative pronouns qui/que, indirect object pronouns (lui/leur)",
+          "DELF A2 vocabulary themes: travel, workplace, shopping, health, environment",
+          "Wider slang & reductions for casual storytelling"
+        ]
+      },
+      {
+        level: "B1",
+        label: "B1 · Phase 3 — Intermediate",
+        tagline: "Independent-speaker range: justify opinions, handle unplanned situations, and follow everyday news, aligned with DELF B1.",
+        comingSoon: true,
+        topics: [
+          "Subjonctif présent — core triggers (il faut que, je veux que, avant que)",
+          "Conditionnel — polite requests and hypotheses with si + imparfait",
+          "Reported speech basics (il a dit que...)",
+          "Register range: formal vs. familiar French, and when to switch",
+          "Connectors for argumentation (cependant, en revanche, du coup)",
+          "Faster, more authentic listening — real conversations, not textbook audio"
+        ]
+      },
+      {
+        level: "B2",
+        label: "B2 · Phase 4 — Upper-Intermediate",
+        tagline: "Fluent, nuanced expression: debate, nuance, and near-native rhythm, aligned with the rigor of DALF B2.",
+        comingSoon: true,
+        topics: [
+          "Subjonctif expanded — doubt, emotion, necessity, judgment",
+          "Full range of past tenses, including plus-que-parfait",
+          "Nuanced connectors and idiomatic, colloquial register",
+          "Register-shifting: moving fluidly between formal and very informal French",
+          "Fast, native-speed listening across accents and contexts"
+        ]
+      }
     ],
-    PHRASE_CATS: ["Greetings & basics","Everyday verbs","Asking & saying things","Questions","Making plans","Food & café","Opinions & feelings"],
+    // All exercise/phrase content below is currently Month-1 A1 material only (A2+ isn't
+    // authored yet — see the comingSoon stubs above), so every item across the Phrases and
+    // Exercises tabs is tagged with this single level badge, same visual language as the
+    // per-item A1–B2 badges on nouns/verbs/adjectives/function words/discourse markers.
+    contentLevel: "A1",
+    /* Phrase bank, restructured to mirror the A1 Month 1 plan 1:1 — one category per week,
+       same order as planLevels.A1.months[0].weeks, so the Phrases tab reads as that week's
+       companion phrase set rather than a generic, plan-independent list. */
+    PHRASE_CATS: ["Greetings & sounds","Family & identity","Daily routine & food","Getting around town"],
     phrases: {
-  "Greetings & basics": [
-    ["Salut, ça va ?","Hey, how's it going?"],
+  "Greetings & sounds": [
+    ["Bonjour, comment allez-vous ?","Hello, how are you? (formal)"],
+    ["Salut, ça va ?","Hey, how's it going? (casual)"],
     ["Ça va, et toi ?","I'm good, and you?"],
     ["Comment tu t'appelles ?","What's your name?"],
     ["Je m'appelle...","My name is..."],
     ["Enchanté(e).","Nice to meet you."],
-    ["À plus tard !","See you later!"],
-    ["À bientôt.","See you soon."],
     ["Merci beaucoup.","Thank you very much."],
     ["De rien.","You're welcome."],
-    ["Désolé(e), je ne comprends pas.","Sorry, I don't understand."]
+    ["Je suis désolé(e), je ne comprends pas.","I'm sorry, I don't understand."],
+    ["À bientôt !","See you soon!"]
   ],
-  "Everyday verbs": [
-    ["Je suis fatigué(e).","I'm tired."],
-    ["J'ai faim.","I'm hungry."],
-    ["J'ai soif.","I'm thirsty."],
-    ["Je vais bien.","I'm doing well."],
-    ["Je fais des courses.","I'm running errands."],
-    ["J'ai envie de sortir.","I feel like going out."],
-    ["Je n'ai pas le temps.","I don't have time."],
-    ["Je peux t'aider.","I can help you."],
-    ["Je veux essayer.","I want to try."],
-    ["Je dois partir.","I have to leave."]
+  "Family & identity": [
+    ["Voici ma sœur.","This is my sister."],
+    ["J'ai deux frères.","I have two brothers."],
+    ["Elle est médecin.","She's a doctor."],
+    ["Il est sympa.","He's nice."],
+    ["Je suis marié(e).","I'm married."],
+    ["J'habite à Paris.","I live in Paris."],
+    ["Quel âge as-tu ?","How old are you?"],
+    ["J'ai trente ans.","I'm thirty years old."],
+    ["Tu es français(e) ?","Are you French?"],
+    ["On est amis depuis longtemps.","We've been friends for a long time."]
   ],
-  "Asking & saying things": [
-    ["Est-ce que tu peux répéter ?","Can you repeat that?"],
-    ["Je voudrais...","I would like..."],
-    ["Tu peux m'aider ?","Can you help me?"],
-    ["Qu'est-ce que tu fais ?","What are you doing?"],
-    ["Je ne sais pas.","I don't know."],
-    ["Ça dépend.","It depends."],
-    ["Tu as raison.","You're right."],
-    ["C'est pas grave.","It's no big deal."],
-    ["Laisse-moi réfléchir.","Let me think."],
-    ["Je suis d'accord.","I agree."]
-  ],
-  "Questions": [
-    ["Comment ça s'est passé ?","How did it go?"],
-    ["Pourquoi pas ?","Why not?"],
-    ["Où est-ce qu'on se retrouve ?","Where should we meet?"],
-    ["Quand est-ce que tu es libre ?","When are you free?"],
-    ["Combien ça coûte ?","How much does it cost?"],
-    ["C'est loin d'ici ?","Is it far from here?"],
-    ["Tu en penses quoi ?","What do you think about it?"],
-    ["Il est quelle heure ?","What time is it?"],
-    ["Tu fais quoi ce soir ?","What are you doing tonight?"],
-    ["C'est combien de temps ?","How long does it take?"]
-  ],
-  "Making plans": [
-    ["On se voit quand ?","When are we seeing each other?"],
-    ["Ça te dit d'aller boire un verre ?","Want to go grab a drink?"],
-    ["Je suis libre vendredi.","I'm free on Friday."],
-    ["On peut se retrouver chez moi.","We can meet at my place."],
-    ["Je viens de finir le travail.","I just finished work."],
-    ["Je vais arriver en retard.","I'm going to be late."],
-    ["On y va à pied ou en voiture ?","Are we walking or driving?"],
-    ["Tu veux venir avec nous ?","Do you want to come with us?"],
-    ["On se rejoint à quelle heure ?","What time should we meet up?"],
-    ["Je confirme demain.","I'll confirm tomorrow."]
-  ],
-  "Food & café": [
+  "Daily routine & food": [
+    ["Je me lève à sept heures.","I get up at seven o'clock."],
+    ["Je travaille jusqu'à dix-huit heures.","I work until six p.m."],
     ["Je voudrais un café, s'il vous plaît.","I'd like a coffee, please."],
     ["L'addition, s'il vous plaît.","The check, please."],
-    ["C'est délicieux !","It's delicious!"],
-    ["Je n'aime pas trop ça.","I don't really like that."],
     ["On partage ?","Shall we split it?"],
-    ["Pour moi, ce sera...","For me, it'll be..."],
-    ["Avez-vous une table pour deux ?","Do you have a table for two?"],
     ["Je suis végétarien(ne).","I'm vegetarian."],
     ["Ça sent très bon.","That smells really good."],
-    ["On prend un dessert ?","Shall we get a dessert?"]
+    ["Je vais faire les courses.","I'm going to do the grocery shopping."],
+    ["Qu'est-ce que vous me conseillez ?","What do you recommend?"],
+    ["Je n'ai pas encore mangé.","I haven't eaten yet."]
   ],
-  "Opinions & feelings": [
-    ["J'aime beaucoup ça.","I like that a lot."],
-    ["Je pense que c'est une bonne idée.","I think it's a good idea."],
-    ["Ça me plaît.","I like it (it pleases me)."],
-    ["Ça m'énerve un peu.","It annoys me a little."],
-    ["Je suis content(e) de te voir.","I'm happy to see you."],
-    ["Ça ne me dérange pas.","I don't mind."],
-    ["J'ai hâte !","I can't wait!"],
-    ["Je suis un peu stressé(e).","I'm a bit stressed."],
-    ["C'est vraiment sympa.","That's really nice."],
-    ["Ça me fait plaisir.","That makes me happy."]
-    ]
+  "Getting around town": [
+    ["Excusez-moi, où est la gare ?","Excuse me, where is the train station?"],
+    ["Tournez à gauche.","Turn left."],
+    ["Continuez tout droit.","Go straight ahead."],
+    ["C'est loin d'ici ?","Is it far from here?"],
+    ["On y va à pied ou en voiture ?","Are we walking or driving?"],
+    ["Hier, j'ai visité le musée.","Yesterday, I visited the museum."],
+    ["Je suis allé(e) au marché.","I went to the market."],
+    ["Il fait beau aujourd'hui.","The weather is nice today."],
+    ["Je cherche un appartement.","I'm looking for an apartment."],
+    ["J'ai pris le bus ce matin.","I took the bus this morning."]
+  ]
     },
     RES_TYPES: ["All","Podcast","App","Website","Tutor"],
     resources: [
@@ -1471,111 +1508,109 @@ const COURSES = {
 
     /* 100 most common French verbs (infinitive + English meaning) */
     topVerbs: [
-  ["être","to be"],
-  ["avoir","to have"],
-  ["faire","to do / to make"],
-  ["aller","to go"],
-  ["falloir","to be necessary"],
-  ["mettre","to put"],
-  ["vouloir","to want"],
-  ["pouvoir","to be able to / can"],
-  ["devoir","to have to / must"],
-  ["dire","to say"],
-  ["comprendre","to understand"],
-  ["croire","to believe"],
-  ["parler","to speak"],
-  ["prendre","to take"],
-  ["venir","to come"],
-  ["tenir","to hold"],
-  ["savoir","to know"],
-  ["aimer","to love / to like"],
-  ["donner","to give"],
-  ["demander","to ask"],
-  ["passer","to pass / to spend (time)"],
-  ["rester","to stay"],
-  ["arriver","to arrive / to happen"],
-  ["entrer","to enter"],
-  ["sortir","to go out / to leave"],
-  ["partir","to leave"],
-  ["penser","to think"],
-  ["connaître","to know (be familiar with)"],
-  ["appeler","to call"],
-  ["trouver","to find"],
-  ["recevoir","to receive"],
-  ["sentir","to feel / to smell"],
-  ["suivre","to follow"],
-  ["écrire","to write"],
-  ["lire","to read"],
-  ["voir","to see"],
-  ["ouvrir","to open"],
-  ["porter","to wear / to carry"],
-  ["chercher","to search / to look for"],
-  ["perdre","to lose"],
-  ["finir","to finish"],
-  ["rendre","to give back / to return"],
-  ["attendre","to wait"],
-  ["revenir","to come back"],
-  ["monter","to go up"],
-  ["descendre","to go down"],
-  ["vivre","to live"],
-  ["apprendre","to learn"],
-  ["travailler","to work"],
-  ["manger","to eat"],
-  ["boire","to drink"],
-  ["dormir","to sleep"],
-  ["se lever","to get up"],
-  ["s'asseoir","to sit down"],
-  ["écouter","to listen"],
-  ["regarder","to watch / to look at"],
-  ["répondre","to answer"],
-  ["oublier","to forget"],
-  ["courir","to run"],
-  ["arrêter","to stop"],
-  ["commencer","to start / to begin"],
-  ["devenir","to become"],
-  ["fermer","to close"],
-  ["utiliser","to use"],
-  ["essayer","to try"],
-  ["changer","to change"],
-  ["se coucher","to go to bed"],
-  ["s'habiller","to get dressed"],
-  ["étudier","to study"],
-  ["jouer","to play"],
-  ["rire","to laugh"],
-  ["pleurer","to cry"],
-  ["réfléchir","to think it over / to reflect"],
-  ["se souvenir","to remember"],
-  ["payer","to pay"],
-  ["acheter","to buy"],
-  ["vendre","to sell"],
-  ["conduire","to drive"],
-  ["aider","to help"],
-  ["montrer","to show"],
-  ["sauter","to jump"],
-  ["crier","to shout"],
-  ["éteindre","to turn off"],
-  ["allumer","to turn on"],
-  ["nettoyer","to clean"],
-  ["laver","to wash"],
-  ["cuisiner","to cook"],
-  ["sembler","to seem"],
-  ["reconnaître","to recognize"],
-  ["rencontrer","to meet"],
-  ["garder","to keep"],
-  ["laisser","to leave / to let"],
-  ["construire","to build"],
-  ["apporter","to bring"],
-  ["souffrir","to suffer"],
-  ["couvrir","to cover"],
-  ["détester","to hate"],
-  ["adorer","to adore / to love"],
-  ["se rappeler","to remember"],
-  ["s'amuser","to have fun"],
+  ["être","to be","A1"],
+  ["avoir","to have","A1"],
+  ["faire","to do / to make","A1"],
+  ["aller","to go","A1"],
+  ["falloir","to be necessary","A2"],
+  ["mettre","to put","A2"],
+  ["vouloir","to want","A1"],
+  ["pouvoir","to be able to / can","A1"],
+  ["devoir","to have to / must","A1"],
+  ["dire","to say","A1"],
+  ["comprendre","to understand","A2"],
+  ["croire","to believe","A2"],
+  ["parler","to speak","A1"],
+  ["prendre","to take","A1"],
+  ["venir","to come","A1"],
+  ["tenir","to hold","A2"],
+  ["savoir","to know","A1"],
+  ["aimer","to love / to like","A1"],
+  ["donner","to give","A1"],
+  ["demander","to ask","A1"],
+  ["passer","to pass / to spend (time)","A2"],
+  ["rester","to stay","A1"],
+  ["arriver","to arrive / to happen","A1"],
+  ["entrer","to enter","A1"],
+  ["sortir","to go out / to leave","A1"],
+  ["partir","to leave","A1"],
+  ["penser","to think","A2"],
+  ["connaître","to know (be familiar with)","A2"],
+  ["appeler","to call","A1"],
+  ["trouver","to find","A1"],
+  ["recevoir","to receive","B1"],
+  ["sentir","to feel / to smell","A2"],
+  ["suivre","to follow","B1"],
+  ["écrire","to write","A1"],
+  ["lire","to read","A1"],
+  ["voir","to see","A1"],
+  ["ouvrir","to open","A1"],
+  ["porter","to wear / to carry","A2"],
+  ["chercher","to search / to look for","A1"],
+  ["perdre","to lose","A2"],
+  ["finir","to finish","A1"],
+  ["rendre","to give back / to return","B1"],
+  ["attendre","to wait","A1"],
+  ["revenir","to come back","A2"],
+  ["monter","to go up","A1"],
+  ["descendre","to go down","A1"],
+  ["vivre","to live","A2"],
+  ["apprendre","to learn","A2"],
+  ["travailler","to work","A1"],
+  ["manger","to eat","A1"],
+  ["boire","to drink","A1"],
+  ["dormir","to sleep","A1"],
+  ["se lever","to get up","A1"],
+  ["s'asseoir","to sit down","A2"],
+  ["écouter","to listen","A1"],
+  ["regarder","to watch / to look at","A1"],
+  ["répondre","to answer","A1"],
+  ["oublier","to forget","A2"],
+  ["courir","to run","A2"],
+  ["arrêter","to stop","A1"],
+  ["commencer","to start / to begin","A1"],
+  ["devenir","to become","A2"],
+  ["fermer","to close","A1"],
+  ["utiliser","to use","A2"],
+  ["essayer","to try","A2"],
+  ["changer","to change","A2"],
+  ["se coucher","to go to bed","A1"],
+  ["s'habiller","to get dressed","A1"],
+  ["étudier","to study","A2"],
+  ["jouer","to play","A1"],
+  ["rire","to laugh","A2"],
+  ["pleurer","to cry","A2"],
+  ["réfléchir","to think it over / to reflect","B1"],
+  ["se souvenir","to remember","B1"],
+  ["payer","to pay","A2"],
+  ["acheter","to buy","A1"],
+  ["vendre","to sell","A2"],
+  ["conduire","to drive","B1"],
+  ["aider","to help","A1"],
+  ["montrer","to show","A1"],
+  ["sauter","to jump","A2"],
+  ["crier","to shout","A2"],
+  ["éteindre","to turn off","A2"],
+  ["allumer","to turn on","A2"],
+  ["nettoyer","to clean","A2"],
+  ["laver","to wash","A2"],
+  ["cuisiner","to cook","A2"],
+  ["sembler","to seem","B1"],
+  ["reconnaître","to recognize","B1"],
+  ["rencontrer","to meet","A2"],
+  ["garder","to keep","A2"],
+  ["laisser","to leave / to let","A2"],
+  ["construire","to build","B1"],
+  ["apporter","to bring","A2"],
+  ["souffrir","to suffer","B1"],
+  ["couvrir","to cover","B1"],
+  ["détester","to hate","A2"],
+  ["adorer","to adore / to love","A1"],
+  ["se rappeler","to remember","B1"],
+  ["s'amuser","to have fun","A2"],
   /* --- extended set: everyday verbs beyond the original top 100 (see note below) ---
      Appended, never inserted earlier in the array, so any already-saved "mastered"/
-     "difficult" progress (keyed by array index) for the original 100 stays valid. These
-     carry a 3rd field (CEFR level) the first 100 don't, which is fine — renderVocabDrill
-     only shows the level badge when item[2] is present. */
+     "difficult" progress (keyed by array index) for the original 100 stays valid. */
   ["habiter","to live (reside)","A1"],
   ["entendre","to hear","A2"],
   ["continuer","to continue","A2"],
@@ -2907,105 +2942,134 @@ const COURSES = {
   ["carrément","totally / completely (informal)","B2"]
     ],
 
-    /* weekly quizzes — themed to each week's focus */
-    quizWeeks: [
-  [ // Week 1: Greetings & sounds
-    {fr:"Salut, ça va ?", choices:["Goodbye!","Hey, how's it going?","Thank you."], answer:1},
-    {fr:"Comment tu t'appelles ?", choices:["What's your name?","Where do you live?","How old are you?"], answer:0},
-    {fr:"Je m'appelle...", choices:["I live in...","My name is...","I am from..."], answer:1},
-    {fr:"Merci beaucoup.", choices:["You're welcome.","Thank you very much.","Excuse me."], answer:1},
-    {fr:"Je suis fatigué(e).", choices:["I'm tired.","I'm happy.","I'm hungry."], answer:0},
-    {fr:"J'ai faim.", choices:["I'm thirsty.","I'm hungry.","I'm tired."], answer:1},
-    {fr:"Bonsoir !", choices:["Good morning!","Good evening!","Good night!"], answer:1},
-    {fr:"À bientôt !", choices:["See you soon!","Goodbye forever!","Good night!"], answer:0},
-    {fr:"Ça va, et toi ?", choices:["I'm fine, and you?","What's that?","Where are you?"], answer:0},
-    {fr:"J'ai soif.", choices:["I'm hungry.","I'm thirsty.","I'm tired."], answer:1}
-  ],
-  [ // Week 2: Survival phrases / speaking
-    {fr:"Je voudrais...", choices:["I would like...","I have...","I want to leave..."], answer:0},
-    {fr:"Tu peux m'aider ?", choices:["Can you help me?","Are you free?","Can I help you?"], answer:0},
-    {fr:"Je ne sais pas.", choices:["I don't know.","I don't understand.","I don't have time."], answer:0},
-    {fr:"Je suis d'accord.", choices:["I disagree.","I agree.","I'm not sure."], answer:1},
-    {fr:"C'est pas grave.", choices:["It's serious.","It's no big deal.","It's expensive."], answer:1},
-    {fr:"Qu'est-ce que tu fais ?", choices:["What are you doing?","Where are you?","Who is that?"], answer:0},
-    {fr:"Je suis perdu(e).", choices:["I'm lost.","I'm late.","I'm tired."], answer:0},
-    {fr:"Pouvez-vous m'aider, s'il vous plaît ?", choices:["Can you help me, please?","Can I sit here?","Where is the help desk?"], answer:0},
-    {fr:"Je suis désolé(e).", choices:["I'm happy.","I'm sorry.","I'm hungry."], answer:1},
-    {fr:"Comment dit-on ça en français ?", choices:["How do you say that in French?","What does that mean?","Where can I learn French?"], answer:0}
-  ],
-  [ // Week 3: Questions
-    {fr:"Pourquoi pas ?", choices:["Why not?","Why is that?","What for?"], answer:0},
-    {fr:"Où est-ce qu'on se retrouve ?", choices:["When do we meet?","Where should we meet?","Why do we meet?"], answer:1},
-    {fr:"Combien ça coûte ?", choices:["How much does it cost?","How long does it take?","How far is it?"], answer:0},
-    {fr:"Tu en penses quoi ?", choices:["What do you think about it?","What are you doing?","What time is it?"], answer:0},
-    {fr:"Il est quelle heure ?", choices:["What day is it?","What time is it?","How long is it?"], answer:1},
-    {fr:"Quand est-ce que tu es libre ?", choices:["When are you free?","Are you busy?","Where are you?"], answer:0},
-    {fr:"Qui est-ce ?", choices:["Who is it?","What is it?","Where is it?"], answer:0},
-    {fr:"Comment ça marche ?", choices:["How does it work?","Where does it go?","Why is it broken?"], answer:0},
-    {fr:"Qu'est-ce qui se passe ?", choices:["What's happening?","Who's coming?","Where are we going?"], answer:0},
-    {fr:"Depuis quand ?", choices:["Since when?","Until when?","How long?"], answer:0}
-  ],
-  [ // Week 4: Near future & near past
-    {fr:"Je viens de finir le travail.", choices:["I'm about to finish work.","I just finished work.","I will finish work."], answer:1},
-    {fr:"Je vais arriver en retard.", choices:["I just arrived late.","I'm going to be late.","I was late yesterday."], answer:1},
-    {fr:"On se voit quand ?", choices:["When are we seeing each other?","Did we see each other?","Why see each other?"], answer:0},
-    {fr:"Je suis libre vendredi.", choices:["I worked on Friday.","I'm free on Friday.","I'm busy on Friday."], answer:1},
-    {fr:"Tu peux répéter ?", choices:["Can you repeat that?","Did you understand?","Can you wait?"], answer:0},
-    {fr:"Je pense que c'est une bonne idée.", choices:["I think it's a good idea.","I had a good idea.","I don't have an idea."], answer:0},
-    {fr:"On va sortir ce soir.", choices:["We went out last night.","We're going out tonight.","We never go out."], answer:1},
-    {fr:"Je viens d'arriver.", choices:["I'm about to arrive.","I just arrived.","I arrived yesterday."], answer:1},
-    {fr:"Tu vas voir.", choices:["You'll see.","You saw it.","You see it now."], answer:0},
-    {fr:"Je n'ai pas encore commencé.", choices:["I haven't started yet.","I just started.","I already finished."], answer:0}
-  ],
-  [ // Week 5: Midpoint review (mix of weeks 1-4)
-    {fr:"Enchanté(e).", choices:["Nice to meet you.","See you later.","Good night."], answer:0},
-    {fr:"Je peux t'aider.", choices:["I need your help.","I can help you.","Help me, please."], answer:1},
-    {fr:"Comment ça s'est passé ?", choices:["How did it go?","How are you?","What happened next?"], answer:0},
-    {fr:"Je viens de finir le travail.", choices:["I'm finishing work now.","I just finished work.","I never finish work."], answer:1},
-    {fr:"C'est loin d'ici ?", choices:["Is it close by?","Is it far from here?","Where is it?"], answer:1},
-    {fr:"Je suis d'accord.", choices:["I agree.","I'm not sure.","I disagree."], answer:0},
-    {fr:"Tu peux m'aider ?", choices:["Can you help me?","Are you free?","Can I help you?"], answer:0},
-    {fr:"Merci beaucoup.", choices:["You're welcome.","Thank you very much.","Excuse me."], answer:1},
-    {fr:"Combien ça coûte ?", choices:["How much does it cost?","How long does it take?","How far is it?"], answer:0},
-    {fr:"Je vais arriver en retard.", choices:["I just arrived late.","I'm going to be late.","I was late yesterday."], answer:1}
-  ],
-  [ // Week 6: Everyday situations (plans, food/café)
-    {fr:"Ça te dit d'aller boire un verre ?", choices:["Do you want a glass of water?","Want to go grab a drink?","Is the glass empty?"], answer:1},
-    {fr:"On peut se retrouver chez moi.", choices:["We can meet at my place.","We can't meet today.","Let's meet at a café."], answer:0},
-    {fr:"L'addition, s'il vous plaît.", choices:["The menu, please.","A table, please.","The check, please."], answer:2},
-    {fr:"Je suis végétarien(ne).", choices:["I'm vegetarian.","I'm allergic.","I'm hungry."], answer:0},
-    {fr:"On partage ?", choices:["Shall we split it?","Are you sharing?","Is it shared already?"], answer:0},
-    {fr:"On y va à pied ou en voiture ?", choices:["Are we walking or driving?","Where are we going?","When do we leave?"], answer:0},
-    {fr:"Avez-vous une table pour deux ?", choices:["Do you have a table for two?","Is the table free?","Can I sit here?"], answer:0},
-    {fr:"Qu'est-ce que vous me conseillez ?", choices:["What do you recommend?","What did you order?","What's the price?"], answer:0},
-    {fr:"On prend un dessert ?", choices:["Did you eat dessert?","Shall we get a dessert?","Is there dessert?"], answer:1},
-    {fr:"C'est très bon !", choices:["It's very good!","It's too much!","It's too spicy!"], answer:0}
-  ],
-  [ // Week 7: Opinions & feelings
-    {fr:"J'aime beaucoup ça.", choices:["I don't like that.","I like that a lot.","I've never tried that."], answer:1},
-    {fr:"Ça m'énerve un peu.", choices:["It annoys me a little.","It makes me happy.","It surprises me."], answer:0},
-    {fr:"J'ai hâte !", choices:["I'm exhausted!","I can't wait!","I'm worried!"], answer:1},
-    {fr:"Ça me fait plaisir.", choices:["That makes me happy.","That bothers me.","That confuses me."], answer:0},
-    {fr:"Je suis un peu stressé(e).", choices:["I'm a bit stressed.","I'm very relaxed.","I'm a bit tired."], answer:0},
-    {fr:"C'est vraiment sympa.", choices:["That's really hard.","That's really nice.","That's really far."], answer:1},
-    {fr:"Ça m'inquiète un peu.", choices:["It worries me a little.","It bores me.","It delights me."], answer:0},
-    {fr:"Je suis fier/fière de toi.", choices:["I'm proud of you.","I'm afraid of you.","I'm tired of you."], answer:0},
-    {fr:"Ça me dérange pas du tout.", choices:["It doesn't bother me at all.","It bothers me a lot.","I don't understand at all."], answer:0},
-    {fr:"J'en ai marre.", choices:["I'm fed up.","I'm delighted.","I'm curious."], answer:0}
-  ],
-  [ // Week 8: Full mix, hardest review
-    {fr:"Je viens de finir le travail.", choices:["I just finished work.","I'm going to finish work.","I finished work yesterday."], answer:0},
-    {fr:"Ça te dit d'aller boire un verre ?", choices:["Want to go grab a drink?","Do you have a drink?","Is the drink ready?"], answer:0},
-    {fr:"Je pense que c'est une bonne idée.", choices:["I think it's a good idea.","I doubt it's a good idea.","It was a good idea."], answer:0},
-    {fr:"Combien ça coûte ?", choices:["How much does it cost?","How long does it take?","Where is it?"], answer:0},
-    {fr:"On se rejoint à quelle heure ?", choices:["What time should we meet up?","Where should we meet?","Who's joining us?"], answer:0},
-    {fr:"Ça ne me dérange pas.", choices:["I don't mind.","It bothers me a lot.","I disagree."], answer:0},
-    {fr:"Tu peux répéter ?", choices:["Can you repeat that?","Did you understand?","Can you wait?"], answer:0},
-    {fr:"Je suis un peu stressé(e).", choices:["I'm a bit stressed.","I'm very happy.","I'm a bit tired."], answer:0},
-    {fr:"On se rejoint à quelle heure ?", choices:["Where should we meet?","What time should we meet up?","When are you free?"], answer:1},
-    {fr:"Je n'ai pas le temps.", choices:["I don't have time.","I'm not on time.","I have plenty of time."], answer:0}
-    ]
-    ]
+    /* ---------- Verb mechanics: pronoun placement (A1 Month 1) ----------
+       Where reflexive, direct/indirect object pronouns go relative to the verb(s) in a
+       sentence — the "+ Pronoun Placement" half of the verb-mechanics pillar. Each item is
+       a fixed 3-choice judgment question (no auto-built distractors, no reverse direction),
+       rendered by renderJudgmentDrill. `note` is a one-line rule shown after answering. */
+    verbMechanicsItems: [
+  {prompt:"Where does the reflexive pronoun go?", fr:"Tu ___ laves.", choices:["te","se","vous"], answer:0, note:"Reflexive pronouns sit right before the conjugated verb — 'tu' pairs with 'te'."},
+  {prompt:"Choose the correct word order ('I see him'):", fr:"— pronoun placement —", choices:["Je le vois.","Je vois le.","Le je vois."], answer:0, note:"Direct object pronouns (le/la/les) go before the conjugated verb, not after it."},
+  {prompt:"Choose the correct order ('I'm going to see him'):", fr:"— pronoun placement —", choices:["Je vais le voir.","Je le vais voir.","Je vais voir le."], answer:0, note:"With two verbs, the pronoun goes right before the verb it belongs to — here, before 'voir'."},
+  {prompt:"Choose the correct order ('I saw him' — passé composé):", fr:"— pronoun placement —", choices:["Je l'ai vu.","J'ai le vu.","Je ai l'vu."], answer:0, note:"With the passé composé, the object pronoun goes before the auxiliary (avoir/être), not the participle."},
+  {prompt:"Complete: 'We get up early.'", fr:"Nous ___ levons tôt.", choices:["nous","vous","se"], answer:0, note:"'Nous' as subject pairs with 'nous' as the reflexive pronoun."},
+  {prompt:"Choose the correct negative order ('I don't see him'):", fr:"— pronoun placement —", choices:["Je ne le vois pas.","Je ne vois pas le.","Ne je le vois pas."], answer:0, note:"Negation wraps around pronoun + verb together: ne + [pronoun + verb] + pas."},
+  {prompt:"Choose the correct order ('She washes herself'):", fr:"— pronoun placement —", choices:["Elle se lave.","Elle lave se.","Se elle lave."], answer:0, note:"The reflexive pronoun always comes before the verb it's attached to."},
+  {prompt:"Complete: 'They're called Marc and Léa.'", fr:"Ils ___ appellent Marc et Léa.", choices:["s'","se","le"], answer:0, note:"'Se' elides to 's'' before a vowel sound: ils s'appellent."},
+  {prompt:"Choose the correct order ('We're going to help you'):", fr:"— pronoun placement —", choices:["On va t'aider.","On va aider te.","On te va aider."], answer:0, note:"With 'aller + infinitif', the pronoun sits right before the infinitive."},
+  {prompt:"Choose the correct order ('I don't have it'):", fr:"— pronoun placement —", choices:["Je ne l'ai pas.","Je ne ai pas le.","Je l'ai ne pas."], answer:0, note:"'Le' elides to 'l'' before a vowel, and still goes right before the conjugated verb (avoir)."},
+  {prompt:"Complete: 'I wake up at seven.'", fr:"Je ___ réveille à sept heures.", choices:["me","te","se"], answer:0, note:"'Je' pairs with 'me': je me réveille."},
+  {prompt:"Choose the correct order ('He just saw her'):", fr:"— pronoun placement —", choices:["Il vient de la voir.","Il la vient de voir.","Il vient de voir la."], answer:0, note:"With 'venir de + infinitif', the pronoun goes right before the infinitive, same rule as 'aller + infinitif'."},
+  {prompt:"Complete: 'What's your name?' (formal/plural you)", fr:"Vous ___ appelez comment ?", choices:["vous","te","se"], answer:0, note:"'Vous' as subject pairs with 'vous' as the reflexive pronoun."},
+  {prompt:"Choose the correct order ('I'm going to call her back'):", fr:"— pronoun placement —", choices:["Je vais la rappeler.","Je la vais rappeler.","Je vais rappeler la."], answer:0, note:"The pronoun goes before the infinitive it belongs to — 'rappeler', not 'vais'."},
+  {prompt:"Complete: 'They (fem.) got up early.' (passé composé)", fr:"Elles ___ sont levées tôt.", choices:["se","les","leur"], answer:0, note:"Reflexive verbs in the passé composé use être, with the reflexive pronoun still right before it: elles se sont levées."}
+    ],
+
+    /* ---------- Syntax & sentence structure (A1 Month 1) ----------
+       Word order, question formation, negation placement, c'est vs il/elle est, and
+       connectors — the patterns from each week's "Syntax" plan item, rendered the same way
+       as verbMechanicsItems. */
+    syntaxItems: [
+  {prompt:"Put the words in the right order:", fr:"faim / j' / ai", choices:["J'ai faim.","Ai j'faim.","Faim j'ai."], answer:0, note:"Simple statements follow Subject + Verb + Complement: J'ai faim."},
+  {prompt:"Which is a correctly formed question?", fr:"— word order —", choices:["Est-ce que tu es français ?","Tu est-ce que français ?","Français tu es-ce que ?"], answer:0, note:"'Est-ce que' opens the sentence; the rest keeps normal subject-verb order."},
+  {prompt:"Choose the correct sentence (profession, no article):", fr:"— syntax —", choices:["Il est médecin.","Il est un médecin.","C'est médecin."], answer:0, note:"After il/elle est + profession, drop the article. Use 'c'est un/une + profession' instead if you want the article."},
+  {prompt:"Choose the correct negative form ('I don't understand'):", fr:"— syntax —", choices:["Je ne comprends pas.","Je comprends ne pas.","Ne je comprends pas."], answer:0, note:"Negation wraps directly around the verb: ne + verb + pas."},
+  {prompt:"Which connector means 'because'?", fr:"— connectors —", choices:["parce que","mais","donc"], answer:0},
+  {prompt:"Choose the correctly ordered question (formal inversion):", fr:"— word order —", choices:["Es-tu prêt ?","Tu es-prêt ?","Prêt es-tu ?"], answer:0, note:"Formal inversion swaps verb and subject pronoun, joined with a hyphen: es-tu."},
+  {prompt:"Choose the correct order ('I would like a coffee, please'):", fr:"— word order —", choices:["Je voudrais un café, s'il vous plaît.","Un café je voudrais, s'il vous plaît.","S'il vous plaît je voudrais un café."], answer:0},
+  {prompt:"Choose the correct negative form (passé composé — 'I didn't eat'):", fr:"— syntax —", choices:["Je n'ai pas mangé.","Je ne mangé pas.","Je pas ai mangé."], answer:0, note:"With the passé composé, negation wraps around the auxiliary (ai), not the participle (mangé)."},
+  {prompt:"Which sentence correctly uses 'aller + infinitif' for the near future?", fr:"— syntax —", choices:["Je vais partir demain.","Je pars vais demain.","Je vais parti demain."], answer:0},
+  {prompt:"Choose the correct order ('Where should we meet?'):", fr:"— word order —", choices:["Où est-ce qu'on se retrouve ?","On se retrouve où est-ce que ?","Est-ce qu'où on se retrouve ?"], answer:0},
+  {prompt:"Choose the correct sentence (c'est vs il est):", fr:"— syntax —", choices:["C'est un bon restaurant.","Il est un bon restaurant.","C'est bon restaurant."], answer:0, note:"'C'est' takes an article (un/une) before a noun; 'il/elle est' doesn't."},
+  {prompt:"Which connector means 'but'?", fr:"— connectors —", choices:["mais","donc","parce que"], answer:0},
+  {prompt:"Choose the correctly ordered sentence ('He is going to the market'):", fr:"— word order —", choices:["Il va au marché.","Il au marché va.","Va il au marché."], answer:0},
+  {prompt:"Choose the correct order for a yes/no question by intonation only:", fr:"— word order —", choices:["Tu es prêt ?","Es prêt tu ?","Prêt tu es ?"], answer:0, note:"The simplest French question is just a statement said with rising intonation — word order doesn't change."},
+  {prompt:"Which connector means 'so / therefore'?", fr:"— connectors —", choices:["donc","mais","parce que"], answer:0}
+    ],
+
+    /* ---------- Slang & reductions (A1 Month 1) ----------
+       Casual, reduced spoken forms — how the phrases above actually sound in real speech.
+       Same [term, meaning, tag] shape as the vocab lists, so it reuses renderVocabDrill
+       (mastery, difficulty, direction toggle) directly instead of a bespoke drill. */
+    slangItems: [
+  ["Chuis fatigué.","I'm tired. (chuis = je suis)","A1"],
+  ["T'as faim ?","Are you hungry? (t'as = tu as)","A1"],
+  ["Y a du café ?","Is there coffee? (y a = il y a)","A1"],
+  ["Chais pas.","I don't know. (chais pas = je (ne) sais pas)","A1"],
+  ["C'est pas grave.","It's no big deal. (ne dropped: ce n'est pas grave)","A1"],
+  ["J'ai pas eu le temps.","I didn't have time. (ne dropped: je n'ai pas eu le temps)","A1"],
+  ["On va manger.","We're going to eat. (on replaces nous in everyday speech)","A1"],
+  ["T'es où ?","Where are you? (t'es = tu es)","A1"],
+  ["J'sais pas trop.","I don't really know. (elided je + dropped ne)","A1"],
+  ["Ouais, carrément.","Yeah, totally. (ouais = oui, casual)","A1"],
+  ["Y a pas de souci.","No problem. (y a pas = il n'y a pas)","A1"],
+  ["Faut y aller.","We've gotta go. (faut = il faut)","A1"],
+  ["T'inquiète.","Don't worry. (t'inquiète = ne t'inquiète pas)","A1"],
+  ["Bah, ouais.","Well, yeah. (bah = filler, ouais = casual yes)","A1"],
+  ["J'peux pas.","I can't. (j'peux pas = je ne peux pas)","A1"],
+  ["On y va ?","Shall we go? (on = nous, everyday spoken French)","A1"],
+  ["C'est trop bien !","That's so good! (trop used as 'very', casual intensifier)","A1"],
+  ["Y en a plus.","There's none left. (y en a plus = il n'y en a plus)","A1"],
+  ["Ça marche.","Sounds good / that works. (casual agreement)","A1"],
+  ["J'ai pas compris.","I didn't understand. (ne dropped: je n'ai pas compris)","A1"]
+    ],
+
+    /* Quiz, restructured to match planLevels — quizPlanLevels[level][weekIndex] lines up
+       1:1 with the flattened week list for that level. Each question defaults to a
+       translation check ("What does this mean?"); pass `prompt` to ask something else
+       (conjugation, word order, phonetics, slang) while reusing the same UI. */
+    quizPlanLevels: {
+      A1: [
+        [ // Week 1: Bonjour — the sound of French
+          {fr:"Bonjour, comment allez-vous ?", choices:["Hello, how are you?","Goodbye, see you soon?","Hello, what's your name?"], answer:0},
+          {fr:"Je m'appelle Claire.", choices:["My name is Claire.","I live in Claire.","I am Claire's friend."], answer:0},
+          {prompt:"Choose the correct form of être:", fr:"Tu ___ français.", choices:["es","suis","est"], answer:0},
+          {prompt:"Choose the correct form of avoir:", fr:"J'___ vingt ans.", choices:["ai","as","a"], answer:0},
+          {fr:"Merci beaucoup, à bientôt !", choices:["Thanks a lot, see you soon!","Sorry, goodbye!","Please, see you tomorrow!"], answer:0},
+          {prompt:"Phonetics — is the final consonant of this word pronounced?", fr:"salut", choices:["No — the 't' is silent","Yes — it's pronounced clearly","There is no final consonant"], answer:0},
+          {prompt:"Put the words in the right order:", fr:"faim / j' / ai", choices:["J'ai faim.","Ai j'faim.","Faim j'ai."], answer:0},
+          {prompt:"Which greeting is casual, used with friends?", fr:"— greeting —", choices:["Salut","Bonsoir","Enchanté"], answer:0},
+          {fr:"Je suis désolé(e), je ne comprends pas.", choices:["I'm sorry, I don't understand.","I'm sorry, I'm lost.","I'm happy, I understand."], answer:0},
+          {prompt:"Complete: 'Nous ___ ici.' (être)", fr:"Nous ___ ici.", choices:["sommes","êtes","sont"], answer:0}
+        ],
+        [ // Week 2: Qui es-tu ? Your life, your family
+          {fr:"Voici ma sœur, elle est médecin.", choices:["This is my sister, she's a doctor.","This is my mother, she's a teacher.","This is my friend, he's a doctor."], answer:0},
+          {prompt:"Conjugate 'habiter' for 'ils':", fr:"Ils ___ à Paris.", choices:["habitent","habite","habites"], answer:0},
+          {prompt:"Choose the right possessive ('my brother'):", fr:"C'est ___ frère.", choices:["mon","ma","mes"], answer:0},
+          {prompt:"In spoken French, 'nous allons' is almost always replaced by:", fr:"— reduction —", choices:["on va","on allons","nous va"], answer:0},
+          {fr:"Elle est sympa et très intelligente.", choices:["She's nice and very smart.","She's tired and a bit sad.","She's busy and very serious."], answer:0},
+          {prompt:"Which phrase has a liaison (linked sound)?", fr:"— phonetics —", choices:["les amis","le ami","la ami"], answer:0},
+          {prompt:"Which is a correctly formed question?", fr:"— syntax —", choices:["Est-ce que tu es français ?","Tu est-ce que français ?","Français tu es-ce que ?"], answer:0},
+          {prompt:"Choose the correct sentence (profession, no article after il/elle est):", fr:"— syntax —", choices:["Il est médecin.","Il est un médecin.","C'est médecin."], answer:0},
+          {prompt:"'Chais pas' is the reduced spoken form of:", fr:"— slang —", choices:["Je (ne) sais pas.","Je (ne) veux pas.","Je n'ai pas."], answer:0},
+          {fr:"Mon frère a deux enfants.", choices:["My brother has two children.","My sister has two brothers.","My friend has two children."], answer:0}
+        ],
+        [ // Week 3: Le quotidien — daily life & near future
+          {fr:"Je me lève à sept heures.", choices:["I get up at seven o'clock.","I go to bed at seven o'clock.","I eat at seven o'clock."], answer:0},
+          {prompt:"Choose the correct reflexive pronoun:", fr:"Tu ___ laves.", choices:["te","se","vous"], answer:0},
+          {prompt:"Complete with the futur proche:", fr:"Je ___ manger.", choices:["vais","va","allons"], answer:0},
+          {prompt:"Choose the correct word order for 'I see him':", fr:"— syntax —", choices:["Je le vois.","Je vois le.","Le je vois."], answer:0},
+          {prompt:"Which is correctly elided ('I love')?", fr:"— phonetics —", choices:["J'aime","Je aime","Je'aime"], answer:0},
+          {fr:"Y a du café ?", choices:["Is there coffee? (Il y a...)","Where's the coffee?","I have coffee."], answer:0},
+          {fr:"L'addition, s'il vous plaît.", choices:["The check, please.","The menu, please.","A table, please."], answer:0},
+          {fr:"On partage l'addition ?", choices:["Shall we split the bill?","Did you pay the bill?","Is the bill ready?"], answer:0},
+          {fr:"T'as faim ?", choices:["Are you hungry? (Tu as faim ?)","Are you tired?","Do you have money?"], answer:0},
+          {prompt:"Which connector means 'because'?", fr:"— syntax —", choices:["parce que","mais","donc"], answer:0}
+        ],
+        [ // Week 4: Se débrouiller en ville — first past tense
+          {prompt:"Complete with avoir (passé composé):", fr:"J'___ mangé.", choices:["ai","suis","a"], answer:0},
+          {prompt:"Complete with être (passé composé, aller):", fr:"Elle ___ allée au marché.", choices:["est","a","es"], answer:0},
+          {fr:"Hier, j'ai visité le musée.", choices:["Yesterday, I visited the museum.","Tomorrow, I will visit the museum.","I am visiting the museum now."], answer:0},
+          {prompt:"How do you say 'Turn left'?", fr:"— directions —", choices:["Tournez à gauche.","Tournez à droite.","Allez tout droit."], answer:0},
+          {prompt:"Choose the correct negative form ('I didn't eat'):", fr:"— syntax —", choices:["Je n'ai pas mangé.","Je ne mangé pas.","Je pas ai mangé."], answer:0},
+          {prompt:"Choose the correct word order ('I saw him'):", fr:"— syntax —", choices:["Je l'ai vu.","J'ai le vu.","Je ai l'vu."], answer:0},
+          {fr:"J'ai pas eu le temps.", choices:["I didn't have time. (Je n'ai pas eu le temps)","I don't have time now.","I will not have time."], answer:0},
+          {fr:"Excusez-moi, où est la gare ?", choices:["Excuse me, where is the train station?","Excuse me, what time is it?","Excuse me, how much is it?"], answer:0},
+          {fr:"Il fait beau aujourd'hui.", choices:["The weather is nice today.","It's cold today.","It's raining today."], answer:0},
+          {prompt:"Which sentence correctly uses 'aller + infinitif' for the near future?", fr:"— syntax —", choices:["Je vais partir demain.","Je pars vais demain.","Je vais parti demain."], answer:0}
+        ]
+      ]
+    },
   },
 
   nl: {
@@ -4122,6 +4186,19 @@ const COURSES = {
 /* ---------- ACTIVE COURSE STATE ---------- */
 let currentCourseId = null;
 let weeks, PHRASE_CATS, phrases, RES_TYPES, resources, mcq, fillBlank, listenItems, builderSentences, translateItems, quizWeeks, topWords, topVerbs, tenseVerbs, tenseItems, nouns, adjectives, functionWords, discourseMarkers;
+// Plan/Quiz, leveled (CEFR): only courses with a `planLevels` array (currently French) use these;
+// others keep working exactly as before via the `weeks`/`quizWeeks` globals above, which this
+// layer populates from the active level so every existing render function needs no other change.
+let planLevels = null, quizPlanLevels = null, activePlanLevel = null;
+// New A1-syllabus exercise types: pronoun placement (verb mechanics), sentence-order
+// judgment (syntax), and casual/reduced-speech recognition (slang). Default to [] so
+// availableExTabs()/masteredSourceList() work safely for courses that don't define them yet.
+let verbMechanicsItems = [], syntaxItems = [], slangItems = [];
+// CEFR level badge shown next to every item in Phrases/Exercises (same visual language as the
+// A1–B2 badges already on nouns/verbs/adjectives/etc). Resolved in loadCourse() from either the
+// active level id (courses using `levels:{}`, e.g. Dutch) or an explicit `contentLevel` on the
+// course object (courses like French where all authored content is currently a single level).
+let contentLevel = null;
 
 /* One-time reverse-migration: the (now removed) 3-profile picker had namespaced everything
    under "u1_"/"u2_"/"u3_" prefixes. Copy User 1's data back to the plain keys the app used
@@ -4348,10 +4425,100 @@ function normItemDays(v){
   if(v) days.fill(true); // migrate legacy "checked for the week" into a fully-checked week
   return days;
 }
+
+/* ---------- PLAN LEVELS (CEFR) ----------
+   Courses that offer `planLevels` (currently French) get a level-tab UI inside the
+   Plan section, each level holding month-grouped weeks. `weeks`/`quizWeeks` stay the
+   single source every render function already reads — this layer just keeps them in
+   sync with whichever level is active, so renderWeeks/renderQuizTabs/renderQuizBody
+   need no other change. Courses without `planLevels` are untouched. */
+function currentPlanLevelObj(){
+  if(!planLevels) return null;
+  return planLevels.find(pl=> pl.level===activePlanLevel) || planLevels[0];
+}
+function flattenLevelWeeks(pl){
+  if(!pl || pl.comingSoon || !pl.months) return [];
+  const out = [];
+  pl.months.forEach((m, mi)=>{
+    (m.weeks||[]).forEach((w, wi)=>{
+      out.push(Object.assign({}, w, { _monthIndex: mi, _monthTitle: m.title, _monthSummary: m.summary, _isFirstOfMonth: wi===0 }));
+    });
+  });
+  return out;
+}
+function weekChecksKey(){ return 'weekChecks_'+currentStoreKey+(activePlanLevel? '_'+activePlanLevel : ''); }
+function quizBestKey(){ return QUIZ_BEST_KEY_PREFIX+currentStoreKey+(activePlanLevel? '_'+activePlanLevel : ''); }
+function applyActivePlanLevel(){
+  const pl = currentPlanLevelObj();
+  weeks = flattenLevelWeeks(pl);
+  quizWeeks = (quizPlanLevels && quizPlanLevels[activePlanLevel]) || [];
+  weekChecks = store.get(weekChecksKey(), {});
+  quizBest = store.get(quizBestKey(), {});
+}
+function renderPlanLevelTabs(){
+  const wrap = document.getElementById('planLevelTabs');
+  if(!wrap) return;
+  if(!planLevels){ wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = '';
+  wrap.innerHTML = '';
+  planLevels.forEach(pl=>{
+    const b = document.createElement('button');
+    b.className = 'cat-tab' + (pl.level===activePlanLevel? ' active':'');
+    b.textContent = pl.level + (pl.comingSoon? ' · soon' : '');
+    b.addEventListener('click', ()=>{ if(pl.level!==activePlanLevel) setActivePlanLevel(pl.level); });
+    wrap.appendChild(b);
+  });
+}
+function renderPlanLevelInfo(){
+  const card = document.getElementById('planLevelInfo');
+  if(!card) return;
+  card.style.display = '';
+  if(!planLevels){
+    // Courses without a leveled plan (e.g. other languages) keep the original generic note.
+    card.innerHTML = `
+      <h3>How this works</h3>
+      <p>~30–40 min/day, six days a week. Listening and speaking lead every week. Reading and writing only show up when they directly support speaking. Tap a week to expand it, and mark it done as you go — your progress is saved on this device.</p>`;
+    return;
+  }
+  const pl = currentPlanLevelObj();
+  if(pl.comingSoon){
+    card.innerHTML = `
+      <h3>${pl.label}</h3>
+      <p>${pl.tagline}</p>
+      <p style="margin-top:8px; font-weight:600;">Coming soon — planned topics:</p>
+      <ul>${(pl.topics||[]).map(t=>`<li>${t}</li>`).join('')}</ul>`;
+  } else {
+    card.innerHTML = `
+      <h3>${pl.label}</h3>
+      <p>${pl.tagline}</p>
+      ${pl.comingSoonNote? `<p style="margin-top:8px;">${pl.comingSoonNote}</p>` : ''}
+      ${pl.syllabusNote? `<p class="syllabus-note">${pl.syllabusNote}</p>` : ''}
+      <p style="margin-top:8px;">~30–40 min/day, six days a week. Listening and speaking lead every week. Tap a week to expand it, and mark it done as you go — your progress is saved on this device.</p>`;
+  }
+}
+function setActivePlanLevel(levelCode){
+  activePlanLevel = levelCode;
+  store.set('planLevel_'+currentStoreKey, activePlanLevel);
+  applyActivePlanLevel();
+  renderPlanLevelTabs();
+  renderPlanLevelInfo();
+  renderWeeks();
+  activeQuizWeek = 0;
+  renderQuizTabs();
+  renderQuizBody();
+}
+
 function renderWeeks(){
   const wrap = document.getElementById('weeks');
   wrap.innerHTML = '';
+  if(!weeks.length) return; // comingSoon levels show their info in the planLevelInfo card instead
   weeks.forEach((w, i)=>{
+    if(w._isFirstOfMonth){
+      const mh = document.createElement('div');
+      mh.className = 'month-header';
+      mh.innerHTML = `<h3>${w._monthTitle}</h3>${w._monthSummary? `<p>${w._monthSummary}</p>` : ''}`;
+      wrap.appendChild(mh);
+    }
     const rawChecks = weekChecks[i] || blankWeekChecks(w);
     const checks = w.details.map((_, di)=> normItemDays(rawChecks[di]));
     const totalBoxes = w.details.length * 7;
@@ -4369,7 +4536,7 @@ function renderWeeks(){
           <div class="details">
             <ul class="checklist">${w.details.map((d, di)=>`
               <li class="${checks[di].every(Boolean)? 'checked':''}">
-                <span>${d}</span>
+                <span>${d && typeof d === 'object' ? `<span class="pillar-tag">${d.pillar}</span>${d.text}` : d}</span>
                 <div class="day-row">${DAY_LABELS.map((lbl, dayIdx)=>`
                   <label class="day-box">
                     <span class="day-label">${lbl}</span>
@@ -4395,7 +4562,7 @@ function renderWeeks(){
         if(!weekChecks[wi]) weekChecks[wi] = blankWeekChecks(weeks[wi]);
         weekChecks[wi][di] = normItemDays(weekChecks[wi][di]);
         weekChecks[wi][di][dayIdx] = cb.checked;
-        store.set('weekChecks_'+currentStoreKey, weekChecks);
+        store.set(weekChecksKey(), weekChecks);
         renderWeeks();
         const reopened = document.querySelectorAll('.week')[wi];
         if(reopened) reopened.classList.add('open');
@@ -4467,7 +4634,7 @@ function renderPhraseList(){
       const { choices, answerIdx } = challenge.built;
       return `<div class="phrase phrase-challenge">
         <div class="txt" style="width:100%;">
-          <div class="fr">${fr}</div>
+          <div class="fr">${fr} ${cefrTagHtml()}</div>
           <div class="q-instruction" style="margin:6px 0 8px;">Select the English translation to master this:</div>
           <div class="phrase-choices">${choices.map((c,ci)=>{
             const isWrong = challenge.wrong.has(ci);
@@ -4482,7 +4649,7 @@ function renderPhraseList(){
     }
     return `<div class="phrase">
       <div class="txt">
-        <div class="fr">${fr}</div>
+        <div class="fr">${fr} ${cefrTagHtml()}</div>
         <div class="en">${en}</div>
       </div>
       <div class="phrase-actions">
@@ -4588,6 +4755,10 @@ function renderQuizTabs(){
 
 function renderQuizBody(){
   const body = document.getElementById('quizBody');
+  if(!quizWeeks.length){
+    body.innerHTML = `<p style="font-size:.85rem; color:#5b6664; padding:4px;">No quiz yet for this level — check back once its weekly plan is published.</p>`;
+    return;
+  }
   const questions = quizWeeks[activeQuizWeek];
   const weekInfo = weeks[activeQuizWeek];
   let i = 0;
@@ -4624,7 +4795,7 @@ function renderQuizBody(){
     body.innerHTML = `
       <div class="card question-card">
         <div class="q-progress">Week ${activeQuizWeek+1} · ${weekInfo.title} — Question ${i+1} of ${questions.length}</div>
-        <div class="q-prompt">What does this mean?<br><span class="french">«${q.fr}»</span></div>
+        <div class="q-prompt">${q.prompt || 'What does this mean?'}<br><span class="french">«${q.fr}»</span></div>
         ${q.choices.map((c,idx)=>`<button class="opt" data-idx="${idx}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
         <div class="ex-btn-row">
@@ -4689,7 +4860,7 @@ function renderQuizBody(){
    gets an extra shuffled-in repeat each pass, so it comes up more often. Both are tracked
    per exercise type, keyed by each item's original (stable) index in its source array, and
    persisted per course/level. */
-const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs','phrases','tenses','nouns','adjectives','funcwords','discourse'];
+const MASTERY_TYPES = ['mcq','fill','listen','build','translate','words','verbs','phrases','tenses','verbMechanics','syntax','slang','nouns','adjectives','funcwords','discourse'];
 let mastered = {};
 let difficult = {};
 let exBodyStale = false; // set true whenever mastery/difficulty changes; tells nav to refresh Practice on next visit
@@ -4836,6 +5007,13 @@ function masteredNote(type){
   const n = masteredCount(type);
   return n ? ` · ${n} mastered` : '';
 }
+/* CEFR level badge (A1/A2/B1/B2), same visual language as the tag already shown next to
+   nouns/verbs/adjectives/function words/discourse markers. `lvl` defaults to the active
+   course's contentLevel so call sites don't each need to pass it explicitly. */
+function cefrTagHtml(lvl){
+  const v = lvl || contentLevel;
+  return v ? `<span class="cefr-tag">${v}</span>` : '';
+}
 /* Small icon-button pair for the top-right corner of a question card. */
 function qActionsHtml(type, idx, opts){
   const diffOn = isDifficult(type, idx);
@@ -4958,13 +5136,15 @@ function buildTenseItems(verbs){
 }
 
 /* ---------- EXERCISES ---------- */
-/* Exercises are grouped into 3 categories so the tab row doesn't turn into a 12-button
-   wall: Core practice (the weekly-phrase-based drills), Grammar (conjugation/tense drills),
+/* Exercises are grouped into categories so the tab row doesn't turn into a wall of buttons:
+   Core practice (the weekly-phrase-based drills), Grammar & structure (conjugation, pronoun
+   placement, and sentence-order drills), Slang & reductions (casual/reduced spoken forms),
    and Vocabulary (the standalone word lists). A category is only shown if at least one of
    its tabs is available for the current course (see availableExCategories). */
 const EX_CATEGORIES = [
   {id:'core', label:'Core practice'},
-  {id:'grammar', label:'Grammar'},
+  {id:'grammar', label:'Grammar & structure'},
+  {id:'slang', label:'Slang & reductions'},
   {id:'vocab', label:'Vocabulary'}
 ];
 const exTabs = [
@@ -4974,6 +5154,9 @@ const exTabs = [
   {id:'build', label:'Sentence builder', cat:'core'},
   {id:'translate', label:'Translate', cat:'core'},
   {id:'tenses', label:'Verb tenses', cat:'grammar'},
+  {id:'verbMechanics', label:'Pronoun placement', cat:'grammar'},
+  {id:'syntax', label:'Sentence structure', cat:'grammar'},
+  {id:'slang', label:'Slang & reductions', cat:'slang'},
   {id:'words', label:'Top 200 words', cat:'vocab'},
   {id:'verbs', label:'Top verbs', cat:'vocab'},
   {id:'nouns', label:'Nouns', cat:'vocab'},
@@ -4988,6 +5171,9 @@ function availableExTabs(){
     if(t.id==='words') return topWords && topWords.length > 0;
     if(t.id==='verbs') return topVerbs && topVerbs.length > 0;
     if(t.id==='tenses') return tenseItems && tenseItems.length > 0;
+    if(t.id==='verbMechanics') return verbMechanicsItems && verbMechanicsItems.length > 0;
+    if(t.id==='syntax') return syntaxItems && syntaxItems.length > 0;
+    if(t.id==='slang') return slangItems && slangItems.length > 0;
     if(t.id==='nouns') return nouns && nouns.length > 0;
     if(t.id==='adjectives') return adjectives && adjectives.length > 0;
     if(t.id==='funcwords') return functionWords && functionWords.length > 0;
@@ -5048,6 +5234,9 @@ function renderExBody(){
   if(activeEx==='words') return renderVocabDrill(body, topWords, {type:'words', tabLabel:'Top 200 words', itemLabel:'Word', qtext:'What does this word mean?', qtextReverse:'How do you say this word?', doneText:"That's all 200 words. Reset to go again — the order and answer choices reshuffle each time."});
   if(activeEx==='verbs') return renderVocabDrill(body, topVerbs, {type:'verbs', tabLabel:'Top verbs', itemLabel:'Verb', qtext:'What does this verb mean?', qtextReverse:'How do you say this verb?', doneText:"That's all "+topVerbs.length+" verbs. Reset to go again — the order and answer choices reshuffle each time."});
   if(activeEx==='tenses') return renderTenses(body);
+  if(activeEx==='verbMechanics') return renderJudgmentDrill(body, 'verbMechanics', verbMechanicsItems, {tabLabel:'Pronoun placement', itemLabel:'Question', doneText:"That's the full set. Reset to go again — the order reshuffles each time."});
+  if(activeEx==='syntax') return renderJudgmentDrill(body, 'syntax', syntaxItems, {tabLabel:'Sentence structure', itemLabel:'Question', doneText:"That's the full set. Reset to go again — the order reshuffles each time."});
+  if(activeEx==='slang') return renderVocabDrill(body, slangItems, {type:'slang', tabLabel:'Slang & reductions', itemLabel:'Phrase', qtext:'What does this mean in standard French?', qtextReverse:'How would you say this casually?', doneText:"That's the full set. Reset to go again — the order and answer choices reshuffle each time."});
   if(activeEx==='nouns') return renderVocabDrill(body, nouns, {type:'nouns', tabLabel:'Nouns', itemLabel:'Noun', qtext:'What does this noun mean?', qtextReverse:'How do you say this noun?', doneText:"That's all the nouns. Reset to go again — the order and answer choices reshuffle each time."});
   if(activeEx==='adjectives') return renderVocabDrill(body, adjectives, {type:'adjectives', tabLabel:'Adjectives', itemLabel:'Adjective', qtext:'What does this adjective mean?', qtextReverse:'How do you say this adjective?', doneText:"That's all the adjectives. Reset to go again — the order and answer choices reshuffle each time."});
   if(activeEx==='funcwords') return renderVocabDrill(body, functionWords, {type:'funcwords', tabLabel:'Function words', itemLabel:'Word', qtext:'What does this word mean?', qtextReverse:'How do you say this word?', doneText:"That's all the function words. Reset to go again — the order and answer choices reshuffle each time."});
@@ -5123,7 +5312,7 @@ function renderMCQ(body){
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         ${dirToggleHtml('mcq')}
         <div class="q-topline">
-          <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('mcq')}</div>
+          <div class="q-progress">${cefrTagHtml()}Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('mcq')}</div>
           ${qActionsHtml('mcq', pool[i].idx)}
         </div>
         <div class="q-prompt">${direction==='fr-en' ? 'What does this mean?' : 'How do you say this?'}<br><span class="french">«${promptText}»</span></div>
@@ -5217,6 +5406,139 @@ function renderMCQ(body){
   show();
 }
 
+/* Judgment drills: Verb mechanics (pronoun placement) and Syntax (sentence structure) —
+   each item authors its own fixed {prompt, fr?, choices, answer, note?}. Unlike the vocab
+   drills, there's no meaningful "reverse direction" and distractors aren't built from other
+   items' fields, so this reuses the same mastery/session/difficulty scaffolding as MCQ but
+   skips the direction toggle. Shared by renderExBody for both 'verbMechanics' and 'syntax'. */
+function renderJudgmentDrill(body, type, list, cfg){
+  if(!list.length){
+    body.innerHTML = `<div class="card"><p>Not available for this course yet.</p></div>`;
+    return;
+  }
+  const resumed = resumeSession(type, list, true);
+  let pool = resumed ? resumed.pool : buildPracticePool(type, list, false);
+  if(!pool.length){
+    clearSession(type);
+    body.innerHTML = emptyPoolCard(cfg.tabLabel);
+    return;
+  }
+  let i = resumed ? resumed.i : 0;
+  let state = resumed ? resumed.state : pool.map(()=>({ wrong: [], done: false }));
+  function persist(){ saveSession(type, { order: pool.map(p=>p.idx), state, i }); }
+  function score(){ return state.filter(s=>s.done).length; }
+
+  function show(skipAnim){
+    if(pool.length === 0){ clearSession(type); body.innerHTML = emptyPoolCard(cfg.tabLabel); return; }
+    if(i >= pool.length){
+      clearSession(type);
+      body.innerHTML = `<div class="card"><div class="score-pill">Score: ${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${cfg.doneText || 'Nice work. Reset to try again.'}</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="restart">Restart</button></div></div>`;
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool(type, list, false); state = pool.map(()=>({ wrong: [], done: false })); i=0; show(); });
+      body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
+      return;
+    }
+    const idx = pool[i].idx;
+    const q = pool[i].item;
+    const st = state[i];
+    persist();
+    body.innerHTML = `
+      <div class="card question-card${skipAnim ? '' : ' card-enter'}">
+        <div class="q-topline">
+          <div class="q-progress">${cefrTagHtml()}${cfg.itemLabel || 'Question'} ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote(type)}</div>
+          ${qActionsHtml(type, idx)}
+        </div>
+        <div class="q-prompt">${q.prompt || 'Choose the correct option:'}${q.fr ? `<br><span class="french">«${q.fr}»</span>` : ''}</div>
+        ${q.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
+        <div class="feedback" id="fb"></div>
+        <div class="answer-note" id="fbNote"></div>
+        <div class="ex-btn-row">
+          <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>Back</button>
+          <button class="btn btn-primary" id="nextBtn" ${st.done? '' : 'disabled'}>${i===pool.length-1? 'Finish':'Next'}</button>
+        </div>
+      </div>`;
+    const optBtns = body.querySelectorAll('.opt');
+    const fb = body.querySelector('#fb');
+    const fbNote = body.querySelector('#fbNote');
+    const nextBtn = body.querySelector('#nextBtn');
+    let pendingMaster = false;
+
+    function renderState(){
+      st.wrong.forEach(w=> optBtns[w].classList.add('wrong'));
+      st.wrong.forEach(w=> optBtns[w].disabled = true);
+      if(st.done){
+        optBtns[q.answer].classList.add('correct');
+        optBtns.forEach(o=> o.disabled = true);
+        fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+        fbNote.textContent = q.note || '';
+        nextBtn.disabled = false;
+      } else if(st.wrong.length){
+        fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+      }
+    }
+    renderState();
+
+    optBtns.forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        if(st.done || opt.disabled) return;
+        const ci = +opt.dataset.idx;
+        if(ci === q.answer){
+          st.done = true;
+          optBtns[ci].classList.add('correct');
+          optBtns.forEach(o=> o.disabled = true);
+          if(pendingMaster){
+            celebrateMastered(body, ()=>{
+              setMastered(type, idx, true);
+              removeUpcomingOccurrences(pool, state, i, idx);
+              show();
+            });
+            return;
+          }
+          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
+          fbNote.textContent = q.note || '';
+          nextBtn.disabled = false;
+          setTimeout(()=>{ i++; show(); }, 900);
+        } else {
+          st.wrong.push(ci);
+          opt.classList.add('wrong');
+          opt.disabled = true;
+          fb.textContent = pendingMaster ? 'Not quite — try another option to master this.' : 'Not quite — try another option.';
+          fb.className = 'feedback bad';
+          persist();
+        }
+      });
+    });
+    body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
+    nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      if(st.done){
+        celebrateMastered(body, ()=>{
+          setMastered(type, idx, true);
+          removeUpcomingOccurrences(pool, state, i, idx);
+          show();
+        });
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Select the correct answer to master this.');
+      else { disarmMaster(body); fb.textContent = ''; fb.className = 'feedback'; fbNote.textContent=''; renderState(); }
+    });
+    body.querySelector('#difficultBtn').addEventListener('click', ()=>{
+      toggleDifficult(type, idx);
+      applyDifficultToggle(type, idx, pool, i, state);
+      show(true);
+    });
+    body.querySelector('#restartBtn').addEventListener('click', ()=>{
+      if(!confirm(`Restart ${cfg.tabLabel || 'this exercise'} from the beginning? Your progress in this set will be reset.`)) return;
+      clearSession(type);
+      pool = buildPracticePool(type, list, false);
+      state = pool.map(()=>({ wrong: [], done: false }));
+      i = 0;
+      show();
+    });
+  }
+  show();
+}
+
 /* Fill in the blank */
 function renderFill(body){
   const resumed = resumeSession('fill', fillBlank, false);
@@ -5239,7 +5561,7 @@ function renderFill(body){
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
-          <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('fill')}</div>
+          <div class="q-progress">${cefrTagHtml()}Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('fill')}</div>
           ${qActionsHtml('fill', pool[i].idx)}
         </div>
         <div class="q-prompt"><span class="french">${q.prompt}</span></div>
@@ -5485,7 +5807,7 @@ function renderTenses(body){
         <div class="card question-card${skipAnim ? '' : ' card-enter'}">
           ${tenseFilterHtml()}
           <div class="q-topline">
-            <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('tenses')}</div>
+            <div class="q-progress">${cefrTagHtml()}Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('tenses')}</div>
             ${qActionsHtml('tenses', idx)}
           </div>
           ${promptHtml(q)}
@@ -5564,7 +5886,7 @@ function renderTenses(body){
         <div class="card question-card${skipAnim ? '' : ' card-enter'}">
           ${tenseFilterHtml()}
           <div class="q-topline">
-            <div class="q-progress">Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('tenses')}</div>
+            <div class="q-progress">${cefrTagHtml()}Question ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('tenses')}</div>
             ${qActionsHtml('tenses', idx)}
           </div>
           ${promptHtml(q)}
@@ -5684,7 +6006,7 @@ function renderListen(body){
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
-          <div class="q-progress">Phrase ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('listen')}</div>
+          <div class="q-progress">${cefrTagHtml()}Phrase ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('listen')}</div>
           ${qActionsHtml('listen', pool[i].idx)}
         </div>
         <p style="font-size:.88rem; color:#5b6664; margin-top:0;">Listen, then type what you hear — ${COURSES[currentCourseId].name} only.</p>
@@ -5799,7 +6121,7 @@ function renderBuilder(body){
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
-          <div class="q-progress">Sentence ${distinctOrdinal(qPool,i)} of ${qPool.uniqueTotal}${masteredNote('build')}</div>
+          <div class="q-progress">${cefrTagHtml()}Sentence ${distinctOrdinal(qPool,i)} of ${qPool.uniqueTotal}${masteredNote('build')}</div>
           ${qActionsHtml('build', qPool[i].idx)}
         </div>
         <div class="q-prompt">Build: <em>${q.en}</em></div>
@@ -5927,7 +6249,7 @@ function renderTranslate(body){
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
-          <div class="q-progress">Phrase ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('translate')}</div>
+          <div class="q-progress">${cefrTagHtml()}Phrase ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote('translate')}</div>
           ${qActionsHtml('translate', pool[i].idx)}
         </div>
         <div class="q-prompt">Translate to ${COURSES[currentCourseId].name}:<br><em>${q.en}</em></div>
@@ -6218,6 +6540,12 @@ function masteredTypeMeta(){
     verbs:     { label: 'Top verbs',         getFr: it=> it[0],           getEn: it=> it[1] },
     phrases:   { label: 'Phrases',           getFr: it=> it[0],           getEn: it=> it[1] },
     tenses:    { label: 'Verb tenses',       getFr: it=> `${it.pronounLabel} ___ · ${it.verb} (${it.tenseLabel})`, getEn: it=> `${it.pronounLabel} ${it.answer}` },
+    // These items always carry a real `prompt` (the question); `fr` is only set when there's
+    // a genuine sentence to show above the choices, and is otherwise a non-answer-revealing
+    // placeholder — so the mastered/review card uses `prompt` + the correct choice instead.
+    verbMechanics: { label: 'Pronoun placement', getFr: it=> it.prompt, getEn: it=> it.choices[it.answer] },
+    syntax:    { label: 'Sentence structure', getFr: it=> it.prompt, getEn: it=> it.choices[it.answer] },
+    slang:     { label: 'Slang & reductions', getFr: it=> it[0],           getEn: it=> it[1] },
     nouns:       { label: 'Nouns',           getFr: it=> it[0],           getEn: it=> it[1] },
     adjectives:  { label: 'Adjectives',      getFr: it=> it[0],           getEn: it=> it[1] },
     funcwords:   { label: 'Function words',  getFr: it=> it[0],           getEn: it=> it[1] },
@@ -6234,6 +6562,9 @@ function masteredSourceList(type){
   if(type==='verbs') return topVerbs;
   if(type==='phrases') return phrasesFlat;
   if(type==='tenses') return tenseItems;
+  if(type==='verbMechanics') return verbMechanicsItems;
+  if(type==='syntax') return syntaxItems;
+  if(type==='slang') return slangItems;
   if(type==='nouns') return nouns;
   if(type==='adjectives') return adjectives;
   if(type==='funcwords') return functionWords;
@@ -6542,7 +6873,6 @@ function loadCourse(langId, levelId){
   currentLevelId = resolvedLevelId;
   currentStoreKey = resolvedLevelId ? (langId+'_'+resolvedLevelId) : langId;
 
-  weeks = c.weeks;
   PHRASE_CATS = c.PHRASE_CATS;
   phrases = c.phrases;
   buildPhrasesFlat();
@@ -6552,16 +6882,19 @@ function loadCourse(langId, levelId){
   fillBlank = c.fillBlank;
   builderSentences = c.builderSentences;
   translateItems = c.translateItems;
-  quizWeeks = c.quizWeeks;
   topWords = c.topWords || [];
   topVerbs = c.topVerbs || [];
   tenseVerbs = c.tenseVerbs || [];
   tenseItems = buildTenseItems(tenseVerbs);
+  verbMechanicsItems = c.verbMechanicsItems || [];
+  syntaxItems = c.syntaxItems || [];
+  slangItems = c.slangItems || [];
   nouns = c.nouns || [];
   adjectives = c.adjectives || [];
   functionWords = c.functionWords || [];
   discourseMarkers = c.discourseMarkers || [];
   listenItems = Object.values(phrases).flat();
+  contentLevel = c.contentLevel || (resolvedLevelId ? resolvedLevelId.toUpperCase() : null);
   currentLangCode = lang.langCode;
 
   document.title = c.pageTitle || lang.pageTitle || lang.appName;
@@ -6576,8 +6909,19 @@ function loadCourse(langId, levelId){
     levelBadgeBtn.style.display = 'none';
   }
 
-  weekChecks = store.get('weekChecks_'+currentStoreKey, {});
-  quizBest = store.get(QUIZ_BEST_KEY_PREFIX+currentStoreKey, {});
+  planLevels = c.planLevels || null;
+  quizPlanLevels = c.quizPlanLevels || null;
+  if(planLevels){
+    activePlanLevel = store.get('planLevel_'+currentStoreKey, null) || planLevels[0].level;
+    if(!planLevels.find(pl=> pl.level===activePlanLevel)) activePlanLevel = planLevels[0].level;
+    applyActivePlanLevel(); // sets weeks, quizWeeks, weekChecks, quizBest from the active level
+  } else {
+    activePlanLevel = null;
+    weeks = c.weeks;
+    quizWeeks = c.quizWeeks;
+    weekChecks = store.get('weekChecks_'+currentStoreKey, {});
+    quizBest = store.get(QUIZ_BEST_KEY_PREFIX+currentStoreKey, {});
+  }
   loadMastered();
   loadDifficult();
   activeCat = PHRASE_CATS[0];
@@ -6594,6 +6938,8 @@ function loadCourse(langId, levelId){
     if(el) el.innerHTML = '';
   });
 
+  renderPlanLevelTabs();
+  renderPlanLevelInfo();
   renderWeeks();
   renderCatTabs();
   renderPhraseList();
