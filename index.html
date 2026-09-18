@@ -215,6 +215,9 @@
   .play-btn:active{ background: var(--teal); color: var(--cream); }
   .phrase-actions{ display:flex; align-items:center; gap:8px; flex:0 0 auto; }
   .phrase-actions .icon-toggle{ width:36px; height:36px; font-size:1rem; }
+  .phrase.phrase-challenge{ align-items:flex-start; }
+  .phrase-choices{ display:flex; flex-direction:column; gap:6px; }
+  .phrase-choices .opt{ padding:8px 12px; font-size:.88rem; }
 
   /* Exercises */
   .ex-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
@@ -359,6 +362,16 @@
   .icon-toggle.master.confirmed{
     background:#3f6e38; border-color:#3f6e38; color:#fff;
     animation: masterPulse .45s ease;
+  }
+  /* "Armed" = the user tapped ★ before answering, so mastering is now waiting on a
+     correct answer instead of happening instantly. Pulses to stay noticeable. */
+  .icon-toggle.master.armed{
+    background: var(--mustard); border-color: var(--mustard); color:#fff;
+    animation: masterArmedPulse 1.1s ease-in-out infinite;
+  }
+  @keyframes masterArmedPulse{
+    0%, 100%{ box-shadow: 0 0 0 0 rgba(164,71,74,.4); }
+    50%{ box-shadow: 0 0 0 6px rgba(164,71,74,0); }
   }
   .icon-toggle.difficult.active{ background: var(--rust); border-color:var(--rust); color:#fff; }
   .icon-toggle.difficult:active{ filter:brightness(.94); }
@@ -752,14 +765,14 @@
     color: var(--cream);
     border:1px solid rgba(247,248,251,.35);
     border-radius:20px;
-    padding:7px 12px;
-    font-size:.72rem;
+    padding:8px 13px;
+    font-size:.74rem;
     font-weight:700;
     letter-spacing:.02em;
     display:flex; align-items:center; gap:6px;
     cursor:pointer;
     backdrop-filter: blur(4px);
-    max-width:44vw;
+    max-width:50vw;
   }
   .sync-pill .sp-icon{ flex:0 0 auto; }
   .sync-pill .sp-label{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -875,9 +888,9 @@
   <!-- PLAN -->
   <section id="plan" class="active">
     <div class="card" id="wordsGoalCard"></div>
-    <div class="card" style="background:var(--mustard); border:none;">
-      <h3 style="margin-bottom:6px;">How this works</h3>
-      <p style="margin:0; font-size:.88rem; line-height:1.5; color:var(--teal-deep);">
+    <div class="card" style="background:#523f76; border:none;">
+      <h3 style="margin-bottom:6px; color:#fff;">How this works</h3>
+      <p style="margin:0; font-size:.88rem; line-height:1.5; color:#fff;">
         ~30–40 min/day, six days a week. Listening and speaking lead every week. Reading and writing only show up when they directly support speaking. Tap a week to expand it, and mark it done as you go — your progress is saved on this device.
       </p>
     </div>
@@ -4409,6 +4422,24 @@ function buildPhrasesFlat(){
     });
   });
 }
+/* Mastering a phrase from the browsing list used to be instant (translation is right
+   there on the card, so there was nothing to prove). Now tapping ★ swaps that one card
+   into a little multiple-choice quiz — pick the correct English translation to master
+   it, same "prove it first" rule as the Practice exercises. Keyed by flatIdx; cleared
+   on a correct answer or Cancel. The built choices are cached per challenge so a wrong
+   guess (which just re-renders the list) doesn't reshuffle the options underneath you. */
+let phraseChallenges = {};
+function buildPhraseChoices(flatIdx){
+  const correct = phrasesFlat[flatIdx];
+  const distractors = phrasesFlat
+    .map((entry,k)=>({entry, k}))
+    .filter(x=> x.k!==flatIdx)
+    .sort(()=>Math.random()-0.5)
+    .slice(0, Math.min(3, phrasesFlat.length-1))
+    .map(x=> x.entry[1]);
+  const combined = [{c:correct[1], ok:true}, ...distractors.map(c=>({c, ok:false}))].sort(()=>Math.random()-0.5);
+  return { choices: combined.map(c=>c.c), answerIdx: combined.findIndex(c=>c.ok) };
+}
 function renderCatTabs(){
   const wrap = document.getElementById('catTabs');
   wrap.innerHTML = '';
@@ -4431,6 +4462,24 @@ function renderPhraseList(){
   }
   list.innerHTML = items.map(({pair, flatIdx})=>{
     const [fr,en] = pair;
+    const challenge = phraseChallenges[flatIdx];
+    if(challenge){
+      const { choices, answerIdx } = challenge.built;
+      return `<div class="phrase phrase-challenge">
+        <div class="txt" style="width:100%;">
+          <div class="fr">${fr}</div>
+          <div class="q-instruction" style="margin:6px 0 8px;">Select the English translation to master this:</div>
+          <div class="phrase-choices">${choices.map((c,ci)=>{
+            const isWrong = challenge.wrong.has(ci);
+            return `<button type="button" class="opt phrase-choice${isWrong ? ' wrong' : ''}" data-flat="${flatIdx}" data-ci="${ci}" ${isWrong ? 'disabled' : ''}>${c}</button>`;
+          }).join('')}</div>
+          ${challenge.wrong.size ? '<div class="feedback bad" style="margin-top:6px;">Not quite — try another option.</div>' : ''}
+        </div>
+        <div class="phrase-actions">
+          <button type="button" class="icon-toggle restart phrase-cancel" data-flat="${flatIdx}" title="Cancel" aria-label="Cancel">✕</button>
+        </div>
+      </div>`;
+    }
     return `<div class="phrase">
       <div class="txt">
         <div class="fr">${fr}</div>
@@ -4438,7 +4487,7 @@ function renderPhraseList(){
       </div>
       <div class="phrase-actions">
         <button class="play-btn" data-flat="${flatIdx}" aria-label="Play audio">▶</button>
-        <button type="button" class="icon-toggle master" data-flat="${flatIdx}" title="Mark as mastered — hides it from this list" aria-label="Mark as mastered">★</button>
+        <button type="button" class="icon-toggle master" data-flat="${flatIdx}" title="Answer a quick check to master this" aria-label="Mark as mastered">★</button>
       </div>
     </div>`;
   }).join('');
@@ -4447,8 +4496,39 @@ function renderPhraseList(){
   });
   list.querySelectorAll('.icon-toggle.master').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      setMastered('phrases', +btn.dataset.flat, true);
-      phrasesStale = false; // we're refreshing right now, no need for the nav handler to do it again
+      const flatIdx = +btn.dataset.flat;
+      // Not enough other phrases to build real distractors (practically never
+      // happens) — fall back to instant mastery rather than showing a broken quiz.
+      if(phrasesFlat.length < 2){
+        setMastered('phrases', flatIdx, true);
+        phrasesStale = false;
+        renderPhraseList();
+        return;
+      }
+      phraseChallenges[flatIdx] = { wrong: new Set(), built: buildPhraseChoices(flatIdx) };
+      renderPhraseList();
+    });
+  });
+  list.querySelectorAll('.phrase-choice').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const flatIdx = +btn.dataset.flat;
+      const ci = +btn.dataset.ci;
+      const challenge = phraseChallenges[flatIdx];
+      if(!challenge) return;
+      if(ci === challenge.built.answerIdx){
+        delete phraseChallenges[flatIdx];
+        setMastered('phrases', flatIdx, true);
+        phrasesStale = false; // we're refreshing right now, no need for the nav handler to do it again
+        renderPhraseList();
+      } else {
+        challenge.wrong.add(ci);
+        renderPhraseList();
+      }
+    });
+  });
+  list.querySelectorAll('.phrase-cancel').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      delete phraseChallenges[+btn.dataset.flat];
       renderPhraseList();
     });
   });
@@ -4784,6 +4864,22 @@ function celebrateMastered(body, advance){
     setTimeout(advance, 200);
   }, 550);
 }
+/* "Arming" the ★ button: clicking it before you've actually answered the current
+   question no longer masters instantly — it puts that question into "prove it" mode.
+   The button pulses gold and the next CORRECT answer (via whatever answer control the
+   question already has — MCQ options, a fill-in box, sentence-builder chips) triggers
+   the mastery instead of just advancing normally. A wrong answer just behaves as it
+   always did (no mastery) and the arm stays on so they can keep trying. */
+function armMaster(body, hintText){
+  const btn = body.querySelector('#masterBtn');
+  if(btn){ btn.classList.add('armed'); btn.title = 'Answer correctly to master it — tap ★ again to cancel'; }
+  const fb = body.querySelector('#fb');
+  if(fb){ fb.textContent = hintText; fb.className = 'feedback'; }
+}
+function disarmMaster(body){
+  const btn = body.querySelector('#masterBtn');
+  if(btn){ btn.classList.remove('armed'); btn.title = 'Mark as mastered — won\'t show again'; }
+}
 function emptyPoolCard(label){
   return `<div class="card"><p style="margin:0;">🎉 You've mastered everything in <strong>${label}</strong> for now. Find it in the <strong>Mastered</strong> tab, or unmaster an item there to bring it back here.</p></div>`;
 }
@@ -5037,6 +5133,7 @@ function renderMCQ(body){
     const opts = body.querySelectorAll('.opt');
     const fb = body.querySelector('#fb');
     const nextBtn = body.querySelector('#nextBtn');
+    let pendingMaster = false;
 
     function renderState(){
       st.wrong.forEach(w=> opts[w].classList.add('wrong'));
@@ -5060,6 +5157,15 @@ function renderMCQ(body){
           st.done = true;
           opts[idx].classList.add('correct');
           opts.forEach(o=> o.disabled = true);
+          if(pendingMaster){
+            const masteredIdx = pool[i].idx;
+            celebrateMastered(body, ()=>{
+              setMastered('mcq', masteredIdx, true);
+              removeUpcomingOccurrences(pool, state, i, masteredIdx);
+              show();
+            });
+            return;
+          }
           fb.textContent = 'Correct!'; fb.className = 'feedback ok';
           nextBtn.disabled = false;
           setTimeout(()=>{ i++; show(); }, 700);
@@ -5067,7 +5173,8 @@ function renderMCQ(body){
           st.wrong.push(idx);
           opt.classList.add('wrong');
           opt.disabled = true;
-          fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+          fb.textContent = pendingMaster ? 'Not quite — try another option to master this.' : 'Not quite — try another option.';
+          fb.className = 'feedback bad';
           persist();
         }
       });
@@ -5076,11 +5183,17 @@ function renderMCQ(body){
     nextBtn.addEventListener('click', ()=>{ i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
-      celebrateMastered(body, ()=>{
-        setMastered('mcq', masteredIdx, true);
-        removeUpcomingOccurrences(pool, state, i, masteredIdx);
-        show();
-      });
+      if(st.done){
+        celebrateMastered(body, ()=>{
+          setMastered('mcq', masteredIdx, true);
+          removeUpcomingOccurrences(pool, state, i, masteredIdx);
+          show();
+        });
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Select the correct answer to master this.');
+      else { disarmMaster(body); fb.textContent = ''; fb.className = 'feedback'; renderState(); }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('mcq', pool[i].idx);
@@ -5138,6 +5251,8 @@ function renderFill(body){
     if(prevVal) input.value = prevVal;
     const nextBtn = body.querySelector('#nextBtn');
     let advanceTimer = null;
+    let pendingMaster = false;
+    let checkedCorrect = null; // null = not attempted yet this question
     body.querySelector('#hintBtn').addEventListener('click', ()=>{
       body.querySelector('#fb').textContent = q.hint;
       body.querySelector('#fb').className = 'feedback';
@@ -5146,26 +5261,50 @@ function renderFill(body){
       const val = input.value.trim().toLowerCase();
       const fb = body.querySelector('#fb');
       const correct = val === q.answer;
-      if(correct){
-        fb.textContent = 'Correct!'; fb.className='feedback ok'; score++;
-      } else {
-        fb.textContent = `Correct answer: "${q.answer}"`; fb.className='feedback bad';
-      }
+      checkedCorrect = correct;
       input.disabled = true;
       body.querySelector('#check').disabled = true;
       nextBtn.disabled = false;
-      // a wrong answer stays put until Next is clicked — only a correct one auto-advances
-      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
+      if(correct){
+        score++;
+        if(pendingMaster){
+          const masteredIdx = pool[i].idx;
+          celebrateMastered(body, ()=>{
+            setMastered('fill', masteredIdx, true);
+            removeUpcomingOccurrences(pool, null, i, masteredIdx);
+            show();
+          });
+          return;
+        }
+        fb.textContent = 'Correct!'; fb.className='feedback ok';
+        // a wrong answer stays put until Next is clicked — only a correct one auto-advances
+        advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
+      } else {
+        fb.textContent = `Correct answer: "${q.answer}"`; fb.className='feedback bad';
+      }
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
     nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
-      celebrateMastered(body, ()=>{
-        setMastered('fill', masteredIdx, true);
-        removeUpcomingOccurrences(pool, null, i, masteredIdx);
-        show();
-      });
+      if(checkedCorrect){
+        if(advanceTimer) clearTimeout(advanceTimer);
+        celebrateMastered(body, ()=>{
+          setMastered('fill', masteredIdx, true);
+          removeUpcomingOccurrences(pool, null, i, masteredIdx);
+          show();
+        });
+        return;
+      }
+      if(checkedCorrect === false){
+        const fb = body.querySelector('#fb');
+        fb.textContent = "You already answered this one this round — it'll come back around for another chance.";
+        fb.className = 'feedback bad';
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Type the correct answer to master this.');
+      else { disarmMaster(body); const fb = body.querySelector('#fb'); fb.textContent = ''; fb.className = 'feedback'; }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('fill', pool[i].idx);
@@ -5297,13 +5436,6 @@ function renderTenses(body){
   }
 
   function wireCommonButtons(idx){
-    body.querySelector('#masterBtn').addEventListener('click', ()=>{
-      celebrateMastered(body, ()=>{
-        setMastered('tenses', idx, true);
-        removeUpcomingOccurrences(pool, state, i, idx);
-        show();
-      });
-    });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('tenses', idx);
       applyDifficultToggle('tenses', idx, pool, i, state);
@@ -5363,6 +5495,7 @@ function renderTenses(body){
       const opts = body.querySelectorAll('.opt');
       const fb = body.querySelector('#fb');
       const nextBtn = body.querySelector('#nextBtn');
+      let pendingMaster = false;
       if(st.wrong.length) st.wrong.forEach(w=>{ opts[w].classList.add('wrong'); opts[w].disabled = true; });
       if(st.done){
         opts[st.answer].classList.add('correct');
@@ -5380,21 +5513,47 @@ function renderTenses(body){
             st.done = true;
             opts[ci].classList.add('correct');
             opts.forEach(o=> o.disabled = true);
+            persist();
+            if(pendingMaster){
+              celebrateMastered(body, ()=>{
+                setMastered('tenses', idx, true);
+                removeUpcomingOccurrences(pool, state, i, idx);
+                show();
+              });
+              return;
+            }
             fb.textContent = 'Correct!'; fb.className = 'feedback ok';
             nextBtn.disabled = false;
-            persist();
             setTimeout(()=>{ i++; show(); }, 700);
           } else {
             st.wrong.push(ci);
             opt.classList.add('wrong');
             opt.disabled = true;
-            fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+            fb.textContent = pendingMaster ? 'Not quite — try another option to master this.' : 'Not quite — try another option.';
+            fb.className = 'feedback bad';
             persist();
           }
         });
       });
       body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
       nextBtn.addEventListener('click', ()=>{ i++; show(); });
+      body.querySelector('#masterBtn').addEventListener('click', ()=>{
+        if(st.done){
+          celebrateMastered(body, ()=>{
+            setMastered('tenses', idx, true);
+            removeUpcomingOccurrences(pool, state, i, idx);
+            show();
+          });
+          return;
+        }
+        pendingMaster = !pendingMaster;
+        if(pendingMaster) armMaster(body, 'Select the correct answer to master this.');
+        else {
+          disarmMaster(body);
+          fb.textContent = st.wrong.length ? 'Not quite — try another option.' : '';
+          fb.className = st.wrong.length ? 'feedback bad' : 'feedback';
+        }
+      });
     } else {
       const prevVal = skipAnim ? (body.querySelector('#tenseIn')?.value || '') : '';
       body.innerHTML = `
@@ -5421,6 +5580,7 @@ function renderTenses(body){
       if(prevVal) input.value = prevVal;
 
       function lock(){ input.disabled = true; checkBtn.disabled = true; revealBtn.disabled = true; }
+      let pendingMaster = false;
 
       if(st.done){
         input.value = q.answer;
@@ -5443,18 +5603,29 @@ function renderTenses(body){
         const correct = val === q.answer.toLowerCase();
         if(correct){
           st.done = true;
-          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
           lock();
           persist();
+          if(pendingMaster){
+            celebrateMastered(body, ()=>{
+              setMastered('tenses', idx, true);
+              removeUpcomingOccurrences(pool, state, i, idx);
+              show();
+            });
+            return;
+          }
+          fb.textContent = 'Correct!'; fb.className = 'feedback ok';
           advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
         } else {
-          fb.textContent = 'Not quite — try again.'; fb.className = 'feedback bad';
+          fb.textContent = pendingMaster ? 'Not quite — try again to master this.' : 'Not quite — try again.';
+          fb.className = 'feedback bad';
           input.select();
         }
       });
       revealBtn.addEventListener('click', ()=>{
         if(st.done || st.revealed) return;
         st.revealed = true;
+        pendingMaster = false;
+        disarmMaster(body);
         input.value = q.answer;
         lock();
         fb.textContent = `Answer: "${q.answer}"`; fb.className = 'feedback';
@@ -5462,6 +5633,25 @@ function renderTenses(body){
       });
       input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) checkBtn.click(); });
       nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
+      body.querySelector('#masterBtn').addEventListener('click', ()=>{
+        if(st.done){
+          if(advanceTimer) clearTimeout(advanceTimer);
+          celebrateMastered(body, ()=>{
+            setMastered('tenses', idx, true);
+            removeUpcomingOccurrences(pool, state, i, idx);
+            show();
+          });
+          return;
+        }
+        if(st.revealed){
+          fb.textContent = "You've already revealed this one — it'll come back around for another chance.";
+          fb.className = 'feedback bad';
+          return;
+        }
+        pendingMaster = !pendingMaster;
+        if(pendingMaster) armMaster(body, 'Type the correct form to master this.');
+        else { disarmMaster(body); fb.textContent = ''; fb.className = 'feedback'; }
+      });
     }
     wireCommonButtons(idx);
     wireTenseFilter(body, resetForTenseFilter);
@@ -5509,29 +5699,55 @@ function renderListen(body){
     const input = body.querySelector('#dictIn');
     const nextBtn = body.querySelector('#nextBtn');
     let advanceTimer = null;
+    let pendingMaster = false;
+    let checkedCorrect = null;
     body.querySelector('#check').addEventListener('click', ()=>{
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
       const fb = body.querySelector('#fb');
       const correct = norm(input.value) === norm(fr);
-      if(correct){
-        fb.textContent = `Correct! "${fr}" — ${en}`; fb.className='feedback ok'; score++;
-      } else {
-        fb.textContent = `Target: "${fr}" (${en})`; fb.className='feedback bad';
-      }
+      checkedCorrect = correct;
       input.disabled = true;
       body.querySelector('#check').disabled = true;
       nextBtn.disabled = false;
-      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1500);
+      if(correct){
+        score++;
+        if(pendingMaster){
+          const masteredIdx = pool[i].idx;
+          celebrateMastered(body, ()=>{
+            setMastered('listen', masteredIdx, true);
+            removeUpcomingOccurrences(pool, null, i, masteredIdx);
+            show();
+          });
+          return;
+        }
+        fb.textContent = `Correct! "${fr}" — ${en}`; fb.className='feedback ok';
+        advanceTimer = setTimeout(()=>{ i++; show(); }, 1500);
+      } else {
+        fb.textContent = `Target: "${fr}" (${en})`; fb.className='feedback bad';
+      }
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
     nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
-      celebrateMastered(body, ()=>{
-        setMastered('listen', masteredIdx, true);
-        removeUpcomingOccurrences(pool, null, i, masteredIdx);
-        show();
-      });
+      if(checkedCorrect){
+        if(advanceTimer) clearTimeout(advanceTimer);
+        celebrateMastered(body, ()=>{
+          setMastered('listen', masteredIdx, true);
+          removeUpcomingOccurrences(pool, null, i, masteredIdx);
+          show();
+        });
+        return;
+      }
+      if(checkedCorrect === false){
+        const fb2 = body.querySelector('#fb');
+        fb2.textContent = "You already answered this one this round — it'll come back around for another chance.";
+        fb2.className = 'feedback bad';
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Type what you hear to master this.');
+      else { disarmMaster(body); const fb2 = body.querySelector('#fb'); fb2.textContent = ''; fb2.className = 'feedback'; }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('listen', pool[i].idx);
@@ -5595,32 +5811,58 @@ function renderBuilder(body){
     renderRows();
     const nextBtn = body.querySelector('#nextBtn');
     let advanceTimer = null;
+    let pendingMaster = false;
+    let checkedCorrect = null;
     body.querySelector('#clear').addEventListener('click', ()=>{ if(answered) return; chosen = []; bank = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
     body.querySelector('#check').addEventListener('click', ()=>{
       if(answered) return;
       const built = chosen.map(c=>c.p).join(' ').replace(/\s+([,?!])/g,'$1');
       const fb = body.querySelector('#fb');
       const correct = built.toLowerCase() === q.answer.toLowerCase();
-      if(correct){
-        fb.textContent = 'Correct!'; fb.className='feedback ok'; score++;
-      } else {
-        fb.textContent = `Target: "${q.answer}"`; fb.className='feedback bad';
-      }
+      checkedCorrect = correct;
       answered = true;
       body.querySelector('#check').disabled = true;
       body.querySelector('#clear').disabled = true;
       nextBtn.disabled = false;
-      // a wrong build stays put until Next is clicked — only a correct one auto-advances
-      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1300);
+      if(correct){
+        score++;
+        if(pendingMaster){
+          const masteredIdx = qPool[i].idx;
+          celebrateMastered(body, ()=>{
+            setMastered('build', masteredIdx, true);
+            removeUpcomingOccurrences(qPool, null, i, masteredIdx);
+            show();
+          });
+          return;
+        }
+        fb.textContent = 'Correct!'; fb.className='feedback ok';
+        // a wrong build stays put until Next is clicked — only a correct one auto-advances
+        advanceTimer = setTimeout(()=>{ i++; show(); }, 1300);
+      } else {
+        fb.textContent = `Target: "${q.answer}"`; fb.className='feedback bad';
+      }
     });
     nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = qPool[i].idx;
-      celebrateMastered(body, ()=>{
-        setMastered('build', masteredIdx, true);
-        removeUpcomingOccurrences(qPool, null, i, masteredIdx);
-        show();
-      });
+      if(checkedCorrect){
+        if(advanceTimer) clearTimeout(advanceTimer);
+        celebrateMastered(body, ()=>{
+          setMastered('build', masteredIdx, true);
+          removeUpcomingOccurrences(qPool, null, i, masteredIdx);
+          show();
+        });
+        return;
+      }
+      if(checkedCorrect === false){
+        const fb = body.querySelector('#fb');
+        fb.textContent = "You already answered this one this round — it'll come back around for another chance.";
+        fb.className = 'feedback bad';
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Build the correct sentence to master this.');
+      else { disarmMaster(body); const fb = body.querySelector('#fb'); fb.textContent = ''; fb.className = 'feedback'; }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('build', qPool[i].idx);
@@ -5697,30 +5939,56 @@ function renderTranslate(body){
     const input = body.querySelector('#trIn');
     const nextBtn = body.querySelector('#nextBtn');
     let advanceTimer = null;
+    let pendingMaster = false;
+    let checkedCorrect = null;
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.fr));
     body.querySelector('#check').addEventListener('click', ()=>{
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
       const fb = body.querySelector('#fb');
       const correct = norm(input.value) === norm(q.fr);
-      if(correct){
-        fb.textContent = 'Correct!'; fb.className='feedback ok'; score++;
-      } else {
-        fb.textContent = `Target: "${q.fr}"`; fb.className='feedback bad';
-      }
+      checkedCorrect = correct;
       input.disabled = true;
       body.querySelector('#check').disabled = true;
       nextBtn.disabled = false;
-      if(correct) advanceTimer = setTimeout(()=>{ i++; show(); }, 1400);
+      if(correct){
+        score++;
+        if(pendingMaster){
+          const masteredIdx = pool[i].idx;
+          celebrateMastered(body, ()=>{
+            setMastered('translate', masteredIdx, true);
+            removeUpcomingOccurrences(pool, null, i, masteredIdx);
+            show();
+          });
+          return;
+        }
+        fb.textContent = 'Correct!'; fb.className='feedback ok';
+        advanceTimer = setTimeout(()=>{ i++; show(); }, 1400);
+      } else {
+        fb.textContent = `Target: "${q.fr}"`; fb.className='feedback bad';
+      }
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
     nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
-      celebrateMastered(body, ()=>{
-        setMastered('translate', masteredIdx, true);
-        removeUpcomingOccurrences(pool, null, i, masteredIdx);
-        show();
-      });
+      if(checkedCorrect){
+        if(advanceTimer) clearTimeout(advanceTimer);
+        celebrateMastered(body, ()=>{
+          setMastered('translate', masteredIdx, true);
+          removeUpcomingOccurrences(pool, null, i, masteredIdx);
+          show();
+        });
+        return;
+      }
+      if(checkedCorrect === false){
+        const fb = body.querySelector('#fb');
+        fb.textContent = "You already answered this one this round \u2014 it'll come back around for another chance.";
+        fb.className = 'feedback bad';
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Type the correct translation to master this.');
+      else { disarmMaster(body); const fb = body.querySelector('#fb'); fb.textContent = ''; fb.className = 'feedback'; }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('translate', pool[i].idx);
@@ -5836,6 +6104,7 @@ function renderVocabDrill(body, list, opts){
     const optBtns = body.querySelectorAll('.opt');
     const fb = body.querySelector('#fb');
     const nextBtn = body.querySelector('#nextBtn');
+    let pendingMaster = false;
 
     function revealPlayButtonIfHidden(){
       if(body.querySelector('#playBtn')) return;
@@ -5872,15 +6141,24 @@ function renderVocabDrill(body, list, opts){
           st.done = true;
           optBtns[ci].classList.add('correct');
           optBtns.forEach(o=> o.disabled = true);
+          revealPlayButtonIfHidden();
+          if(pendingMaster){
+            celebrateMastered(body, ()=>{
+              setMastered(type, idx, true);
+              removeUpcomingOccurrences(pool, state, i, idx);
+              show();
+            });
+            return;
+          }
           fb.textContent = 'Correct!'; fb.className = 'feedback ok';
           nextBtn.disabled = false;
-          revealPlayButtonIfHidden();
           setTimeout(()=>{ i++; show(); }, 700);
         } else {
           st.wrong.push(ci);
           opt.classList.add('wrong');
           opt.disabled = true;
-          fb.textContent = 'Not quite — try another option.'; fb.className = 'feedback bad';
+          fb.textContent = pendingMaster ? 'Not quite — try another option to master this.' : 'Not quite — try another option.';
+          fb.className = 'feedback bad';
           persist();
         }
       });
@@ -5888,11 +6166,17 @@ function renderVocabDrill(body, list, opts){
     body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
     nextBtn.addEventListener('click', ()=>{ i++; show(); });
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
-      celebrateMastered(body, ()=>{
-        setMastered(type, idx, true);
-        removeUpcomingOccurrences(pool, state, i, idx);
-        show();
-      });
+      if(st.done){
+        celebrateMastered(body, ()=>{
+          setMastered(type, idx, true);
+          removeUpcomingOccurrences(pool, state, i, idx);
+          show();
+        });
+        return;
+      }
+      pendingMaster = !pendingMaster;
+      if(pendingMaster) armMaster(body, 'Select the correct answer to master this.');
+      else { disarmMaster(body); fb.textContent = st.wrong.length ? 'Not quite — try another option.' : ''; fb.className = st.wrong.length ? 'feedback bad' : 'feedback'; }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult(type, idx);
