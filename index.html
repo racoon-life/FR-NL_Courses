@@ -626,7 +626,7 @@
     margin-top:2px;
   }
   .course-switch-btn:active{ background: rgba(247,248,251,.24); }
-  .hdr-actions{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex:0 0 auto; }
+  .hdr-actions{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:6px; flex:0 0 auto; }
   .level-badge-btn{
     background: var(--mustard);
     border: none;
@@ -747,9 +747,7 @@
 
   /* cloud sync pill */
   .sync-pill{
-    position:fixed;
-    top:12px; right:12px;
-    z-index:500;
+    flex:0 0 auto;
     background: rgba(22,33,58,.88);
     color: var(--cream);
     border:1px solid rgba(247,248,251,.35);
@@ -817,10 +815,6 @@
   window.dispatchEvent(new Event('fb-ready'));
 </script>
 
-<button id="syncPill" class="sync-pill" title="Sign in to sync progress across devices">
-  <span class="sp-icon">⇄</span><span class="sp-label" id="syncPillLabel">Sync</span>
-</button>
-
 <div id="landingScreen" class="landing">
   <div class="landing-inner">
     <div class="landing-eyebrow">Language courses</div>
@@ -870,6 +864,9 @@
   <div class="hdr-actions">
     <button class="level-badge-btn" id="levelBadgeBtn" aria-label="Change level" style="display:none;"></button>
     <button class="course-switch-btn" id="switchCourseBtn" aria-label="Change course">🌐 Courses</button>
+    <button id="syncPill" class="sync-pill" title="Sign in to sync progress across devices">
+      <span class="sp-icon">⇄</span><span class="sp-label" id="syncPillLabel">Sync</span>
+    </button>
   </div>
 </header>
 
