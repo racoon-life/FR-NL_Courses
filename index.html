@@ -4157,6 +4157,23 @@ function snapshotSyncableLocalStorage(){
 // e.g. a later mastery timestamp or quiz score; booleans OR together, e.g.
 // weekly-plan day checkmarks); arrays merge position-by-position; anything
 // else (plain strings like "last course opened") just prefers the local copy.
+// Order-independent stringify. Firestore doesn't preserve JS object key
+// order the way localStorage's JSON.stringify does (a plain object comes
+// back from getDoc() with its own field order, usually not matching the
+// order the same object was set() in locally). Comparing the two with a
+// plain JSON.stringify therefore reports "changed" on every single pull —
+// even when the merged content is byte-for-byte identical — which used to
+// trigger an unconditional location.reload() every time, and that reload
+// immediately re-ran the same pull-and-compare, forever (the visible
+// "Sync" <-> "Syncing…" flicker). Sorting keys before comparing fixes that;
+// the actual value written to localStorage is still plain JSON.stringify
+// (order doesn't matter for JSON.parse), only the *comparison* needs to be
+// order-independent.
+function stableStringify(val){
+  if(val === null || typeof val !== 'object') return JSON.stringify(val);
+  if(Array.isArray(val)) return '[' + val.map(stableStringify).join(',') + ']';
+  return '{' + Object.keys(val).sort().map(k => JSON.stringify(k)+':'+stableStringify(val[k])).join(',') + '}';
+}
 function mergeSyncValue(localVal, remoteVal){
   if(localVal === undefined) return remoteVal;
   if(remoteVal === undefined) return localVal;
@@ -4202,9 +4219,10 @@ async function pullAndMergeFromCloud(){
       const hasRemote = Object.prototype.hasOwnProperty.call(remoteData, key);
       const winner = (hasLocal && hasRemote) ? mergeSyncValue(localSnapshot[key], remoteData[key])
                     : hasRemote ? remoteData[key] : localSnapshot[key];
-      const winnerStr = JSON.stringify(winner);
-      if(winnerStr !== localStorage.getItem(key)){
-        localStorage.setItem(key, winnerStr);
+      const existingRaw = localStorage.getItem(key);
+      const existingStable = existingRaw === null ? undefined : stableStringify(JSON.parse(existingRaw));
+      if(stableStringify(winner) !== existingStable){
+        localStorage.setItem(key, JSON.stringify(winner));
         changed = true;
       }
     });
