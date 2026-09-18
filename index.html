@@ -4837,12 +4837,16 @@ function masteredNote(type){
   return n ? ` · ${n} mastered` : '';
 }
 /* Small icon-button pair for the top-right corner of a question card. */
-function qActionsHtml(type, idx){
+function qActionsHtml(type, idx, opts){
   const diffOn = isDifficult(type, idx);
+  // Vocab drills (words/verbs/nouns/etc.) put ★ next to the play-sound button instead of
+  // up here, since it's more natural sitting right by the word you're about to master —
+  // so they pass {noMaster:true} and render their own masterBtn markup in the word row.
+  const noMaster = opts && opts.noMaster;
   return `<div class="q-actions">
     <button type="button" class="icon-toggle restart" id="restartBtn" title="Restart this exercise from the beginning" aria-label="Restart from the beginning">↺</button>
     <button type="button" class="icon-toggle difficult${diffOn ? ' active' : ''}" id="difficultBtn" title="${diffOn ? 'Marked difficult — shows up more often. Tap to unmark.' : 'Mark as difficult — shows up more often'}" aria-label="Mark as difficult">🐢</button>
-    <button type="button" class="icon-toggle master" id="masterBtn" title="Mark as mastered — won't show again" aria-label="Mark as mastered">★</button>
+    ${noMaster ? '' : '<button type="button" class="icon-toggle master" id="masterBtn" title="Mark as mastered — won\'t show again" aria-label="Mark as mastered">★</button>'}
   </div>`;
 }
 /* Plays a short "marked as mastered" confirmation — the icon turns green and pulses, a
@@ -6085,12 +6089,13 @@ function renderVocabDrill(body, list, opts){
         ${dirToggleHtml(type)}
         <div class="q-topline">
           <div class="q-progress">${opts.itemLabel} ${distinctOrdinal(pool,i)} of ${pool.uniqueTotal}${masteredNote(type)}</div>
-          ${qActionsHtml(type, idx)}
+          ${qActionsHtml(type, idx, {noMaster:true})}
         </div>
         <div class="q-instruction">${direction === 'fr-en' ? opts.qtext : (opts.qtextReverse || opts.qtext)}</div>
         <div class="q-word-row">
           <span class="french q-word">${promptWord}</span>${posTag}
           ${showPlay ? `<button class="play-btn-inline" id="playBtn" aria-label="Play pronunciation">▶</button>` : ''}
+          <button type="button" class="icon-toggle master" id="masterBtn" title="Mark as mastered — won't show again" aria-label="Mark as mastered">★</button>
         </div>
         ${st.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
@@ -6116,7 +6121,11 @@ function renderVocabDrill(body, list, opts){
       btn.setAttribute('aria-label', 'Play pronunciation');
       btn.textContent = '▶';
       btn.addEventListener('click', ()=> speak(item[0]));
-      wordRow.appendChild(btn);
+      // ★ now lives in this row too (to the right of the play button) — insert the
+      // newly-revealed play button before it, not after, so the order stays word → ▶ → ★.
+      const masterBtnEl = wordRow.querySelector('#masterBtn');
+      if(masterBtnEl) wordRow.insertBefore(btn, masterBtnEl);
+      else wordRow.appendChild(btn);
     }
 
     function renderState(){
@@ -6142,6 +6151,7 @@ function renderVocabDrill(body, list, opts){
           optBtns[ci].classList.add('correct');
           optBtns.forEach(o=> o.disabled = true);
           revealPlayButtonIfHidden();
+          speak(item[0]);
           if(pendingMaster){
             celebrateMastered(body, ()=>{
               setMastered(type, idx, true);
