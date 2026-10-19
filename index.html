@@ -294,6 +294,14 @@
     margin:8px 0;
     line-height:1.45;
   }
+  /* English gloss shown under a fill-the-blank target-language sentence, so a learner can
+     still grasp the meaning while focusing on the grammar point being drilled. */
+  .q-translation{
+    font-size:.78rem;
+    font-style:italic;
+    opacity:.7;
+    margin-top:2px;
+  }
   /* Same plain-text style as the inline CEFR/POS tag already used next to nouns, verbs,
      adjectives, function words and discourse markers — kept as one class so every badge
      in the app (vocab rows, exercise questions, phrases) reads as the same visual language. */
@@ -20457,15 +20465,119 @@ function applyChrome(){
   if(footer) footer.textContent = T('Made for self-study · progress stored locally in your browser');
 }
 
-function speak(text){
-  if(!('speechSynthesis' in window)){ alert('Speech not supported on this browser.'); return; }
+// Pulls a short English gloss out of an authored prompt string, for judgment-drill/quiz items
+// that embed one inline rather than storing a separate field — e.g. "Choose the correct order
+// ('I'm going to see him'):" or "Which connector means 'because'?". A contraction's own
+// apostrophe (I'm, don't, they're) is masked first so it's never mistaken for a quote
+// boundary, then the single remaining quoted span is extracted. Prompts with MORE than one
+// quoted span after masking — e.g. "Conjugate 'habiter' for 'ils':", which quotes two
+// unrelated grammar terms, not a gloss of the sentence — are deliberately left alone (return
+// null) rather than guessing, since grabbing from the first quote to the last would otherwise
+// splice unrelated fragments together into nonsense.
+function extractGloss(prompt){
+  if(!prompt) return null;
+  const PLACEHOLDER = '\u0000';
+  const guarded = prompt.replace(
+    /\b(I|he|she|it|we|you|they|don|doesn|didn|isn|aren|wasn|weren|hasn|haven|hadn|wouldn|couldn|shouldn|won|can|that|what|who|there|let)'(m|re|s|t|ve|ll|d)\b/gi,
+    (m, a, b) => a + PLACEHOLDER + b
+  );
+  const pairs = guarded.match(/'[^']*'/g);
+  if(!pairs || pairs.length !== 1) return null;
+  const inner = pairs[0].slice(1, -1);
+  // A prompt sometimes quotes the target-language sentence itself (still containing its own
+  // blank), e.g. "Complete: 'Nous ___ ici.' (être)" — that quoted text is not an English gloss,
+  // it's just the fr sentence being referenced. Showing it back as a "translation" would just
+  // duplicate the unfilled sentence, so bail out rather than guess.
+  if(inner.indexOf('___') !== -1) return null;
+  return inner.replace(new RegExp(PLACEHOLDER, 'g'), "'");
+}
+// Fisher-Yates-ish shuffle of a choices array that keeps track of where the correct answer
+// ends up — used so the correct option's on-screen position varies question to question
+// instead of sitting in the same spot (often index 0) every single time, which is what the
+// authored data does on its own.
+function shuffleChoices(choices, answerIdx){
+  const arr = choices.map((c, idx)=> ({c, ok: idx === answerIdx}));
+  for(let k = arr.length - 1; k > 0; k--){
+    const j = Math.floor(Math.random() * (k + 1));
+    [arr[k], arr[j]] = [arr[j], arr[k]];
+  }
+  return { choices: arr.map(x=> x.c), answer: arr.findIndex(x=> x.ok) };
+}
+// Renders the «target-language quote» line for a judgment-drill or quiz item (both share the
+// same authored {prompt, fr, choices, answer} shape). `fr` is sometimes a real sentence
+// (optionally with a "___" blank) and sometimes just a placeholder tag like "— syntax —" or
+// "— slang —" whose actual content lives entirely in `choices` — showing that raw placeholder
+// in big quote styling was a standing bug (it conveys nothing). Instead:
+//   - placeholder fr: try to pull a usable phrase out of the prompt (extractGloss) and show
+//     that instead; if the prompt has no quoted phrase either, just omit the line.
+//   - real fr with a blank: show it as before, plus a small English gloss underneath when the
+//     prompt happens to carry one, so the learner isn't drilling pure grammar blind.
+//   - real complete fr: unchanged.
+function frQuoteHtml(q){
+  if(!q.fr) return '';
+  if(/^—/.test(q.fr.trim())){
+    const gloss = extractGloss(q.prompt);
+    return gloss ? `<br><span class="french">«${gloss}»</span>` : '';
+  }
+  const gloss = q.fr.indexOf('___') !== -1 ? extractGloss(q.prompt) : null;
+  return `<br><span class="french">«${q.fr}»</span>${gloss ? `<div class="q-translation">${gloss}</div>` : ''}`;
+}
+// Resolves what to actually SPEAK for a judgment-drill or quiz item: substitutes any "___"
+// blank with the correct choice text, and falls back to the correct choice outright when fr
+// is just a placeholder tag ("— syntax —") with no real sentence of its own. Never speaks the
+// raw "___" or a literal placeholder — both used to leave the answer missing or nonsensical.
+function targetSpeech(q){
+  if(!q.fr) return q.choices[q.answer];
+  if(q.fr.indexOf('___') !== -1) return q.fr.replace('___', q.choices[q.answer]);
+  if(/^—/.test(q.fr.trim())) return q.choices[q.answer];
+  return q.fr;
+}
+// Picks the best available voice for the current course's language: an exact locale match
+// (e.g. "fr-FR") beats a bare language-prefix match (e.g. any "fr-*"), and among same-quality
+// candidates a network/cloud voice (localService===false, e.g. Chrome's "Google Français")
+// is preferred over a local OS voice, which tends to sound more robotic and less accurate.
+function bestVoiceFor(langCode){
+  const voices = speechSynthesis.getVoices();
+  const short = langCode.split('-')[0];
+  const candidates = voices.filter(v=> v.lang && v.lang.startsWith(short));
+  if(!candidates.length) return null;
+  function score(v){
+    let s = 0;
+    if(v.lang === langCode) s += 2;
+    if(v.localService === false) s += 1;
+    return s;
+  }
+  return candidates.sort((a,b)=> score(b)-score(a))[0];
+}
+// Speaks `text` in the current course's language. `onEnd` (optional) fires once the audio has
+// actually finished playing — callers that auto-advance to the next question use this instead
+// of a fixed timer, so the screen never cuts the sentence off early. A safety-net timeout still
+// fires onEnd if the browser never raises 'end'/'error' (some engines drop it on cancel/reload),
+// so playback can never softlock the exercise.
+function speak(text, onEnd){
+  if(!('speechSynthesis' in window)){
+    if(onEnd) onEnd();
+    alert('Speech not supported on this browser.');
+    return;
+  }
   const u = new SpeechSynthesisUtterance(text);
   u.lang = currentLangCode;
-  const voices = speechSynthesis.getVoices();
-  const short = currentLangCode.split('-')[0];
-  const match = voices.find(v=>v.lang && v.lang.startsWith(short));
-  if(match) u.voice = match;
-  u.rate = 0.92;
+  // Defensive: assigning .voice can throw if the picked entry isn't a genuine
+  // SpeechSynthesisVoice (shouldn't happen with a real browser's own getVoices() list, but
+  // never let a voice-selection hiccup silently kill playback before it even starts).
+  try {
+    const match = bestVoiceFor(currentLangCode);
+    if(match) u.voice = match;
+  } catch(e) { /* fall back to the browser's own default voice for this lang */ }
+  u.rate = 1; // normal speaking tempo
+  u.pitch = 1;
+  let done = false;
+  function finish(){ if(done) return; done = true; clearTimeout(safety); if(onEnd) onEnd(); }
+  u.onend = finish;
+  u.onerror = finish;
+  // Rough ceiling: ~130ms/char at normal tempo, plus a flat floor — generous enough never to
+  // fire before real speech of this length would finish, but still a bounded fallback.
+  const safety = setTimeout(finish, Math.max(2500, text.length * 130));
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
@@ -20863,7 +20975,7 @@ function renderQuizBody(){
   const questions = quizWeeks[activeQuizWeek];
   const weekInfo = weeks[activeQuizWeek];
   let i = 0;
-  const state = questions.map(()=>({ wrong: [], done: false }));
+  const state = questions.map(()=>({ wrong: [], done: false, choices: null, answer: null }));
 
   // Only a first-try correct answer counts — st.wrong stays empty until a wrong option is
   // clicked, so "done with no wrong attempts" is exactly "got it right first try".
@@ -20893,11 +21005,22 @@ function renderQuizBody(){
     }
     const q = questions[i];
     const st = state[i];
+    // Shuffle once per question and cache it — the authored data leans heavily on the correct
+    // option sitting at index 0, so without this the right answer would be predictably first.
+    if(!st.choices){
+      const built = shuffleChoices(q.choices, q.answer);
+      st.choices = built.choices;
+      st.answer = built.answer;
+    }
+    // Some quiz items are fill-the-blank ("Ils ___ à Paris.") and some use a placeholder fr
+    // tag ("— slang —") whose real sentence lives entirely in `choices` — either way, speak
+    // the complete correct sentence, never the raw blank or the placeholder text itself.
+    const quizSpeech = targetSpeech(q);
     body.innerHTML = `
       <div class="card question-card">
         <div class="q-progress">${T('Week')} ${activeQuizWeek+1} · ${weekInfo.title} — ${T('Question')} ${i+1}${T(' of ')}${questions.length}</div>
-        <div class="q-prompt">${q.prompt || T('What does this mean?')}<br><span class="french">«${q.fr}»</span></div>
-        ${q.choices.map((c,idx)=>`<button class="opt" data-idx="${idx}">${c}</button>`).join('')}
+        <div class="q-prompt">${q.prompt || T('What does this mean?')}${frQuoteHtml(q)}</div>
+        ${st.choices.map((c,idx)=>`<button class="opt" data-idx="${idx}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
         <div class="ex-btn-row">
           <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>${T('Back')}</button>
@@ -20908,13 +21031,17 @@ function renderQuizBody(){
     const opts = body.querySelectorAll('.opt');
     const fb = body.querySelector('#fb');
     const nextBtn = body.querySelector('#nextBtn');
-    body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.fr));
+    body.querySelector('#playBtn').addEventListener('click', ()=> speak(quizSpeech));
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing — whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; i++; show(); }
 
     function renderState(){
       st.wrong.forEach(w=> opts[w].classList.add('wrong'));
       st.wrong.forEach(w=> opts[w].disabled = true);
       if(st.done){
-        opts[q.answer].classList.add('correct');
+        opts[st.answer].classList.add('correct');
         opts.forEach(o=> o.disabled = true);
         if(st.wrong.length === 0){
           fb.textContent = T('Correct!'); fb.className = 'feedback ok';
@@ -20932,7 +21059,7 @@ function renderQuizBody(){
       opt.addEventListener('click', ()=>{
         if(st.done || opt.disabled) return;
         const idx = +opt.dataset.idx;
-        if(idx === q.answer){
+        if(idx === st.answer){
           st.done = true;
           opts[idx].classList.add('correct');
           opts.forEach(o=> o.disabled = true);
@@ -20942,8 +21069,7 @@ function renderQuizBody(){
             fb.textContent = T('Correct — but only a first-try answer counts toward your score.'); fb.className = 'feedback';
           }
           nextBtn.disabled = false;
-          speak(q.fr);
-          setTimeout(()=>{ i++; show(); }, 700);
+          speak(quizSpeech, advanceOnce);
         } else {
           st.wrong.push(idx);
           opt.classList.add('wrong');
@@ -20953,7 +21079,7 @@ function renderQuizBody(){
       });
     });
     body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
-    nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
   }
   show();
 }
@@ -21601,9 +21727,18 @@ function renderMCQ(body){
     const st = state[i];
     let promptText, choicesArr, correctIdx;
     if(direction === 'fr-en'){
+      // The authored data leans heavily on the correct option sitting at index 0 — shuffle
+      // once per question and cache it (same st.choices/st.answer slot the reverse direction
+      // already uses — safe, since switching direction always clears state via
+      // resetForDirection, so a given state entry only ever serves one direction at a time).
+      if(!st.choices){
+        const built = shuffleChoices(q.choices, q.answer);
+        st.choices = built.choices;
+        st.answer = built.answer;
+      }
       promptText = q.fr;
-      choicesArr = q.choices;
-      correctIdx = q.answer;
+      choicesArr = st.choices;
+      correctIdx = st.answer;
     } else {
       if(!st.choices){
         const built = buildReverseChoices(pool[i].idx);
@@ -21643,6 +21778,10 @@ function renderMCQ(body){
     const playBtnMcq = body.querySelector('#playBtn');
     playBtnMcq.addEventListener('click', ()=> speak(mcqSpeech));
     let pendingMaster = false;
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing — whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; i++; show(); }
 
     function renderState(){
       st.wrong.forEach(w=> opts[w].classList.add('wrong'));
@@ -21678,8 +21817,7 @@ function renderMCQ(body){
           fb.textContent = T('Correct!'); fb.className = 'feedback ok';
           nextBtn.disabled = false;
           playBtnMcq.style.display = '';
-          speak(mcqSpeech);
-          setTimeout(()=>{ i++; show(); }, 700);
+          speak(mcqSpeech, advanceOnce);
         } else {
           st.wrong.push(idx);
           opt.classList.add('wrong');
@@ -21691,7 +21829,7 @@ function renderMCQ(body){
       });
     });
     body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
-    nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       if(st.done){
@@ -21742,7 +21880,7 @@ function renderJudgmentDrill(body, type, list, cfg){
     return;
   }
   let i = resumed ? resumed.i : 0;
-  let state = resumed ? resumed.state : pool.map(()=>({ wrong: [], done: false }));
+  let state = resumed ? resumed.state : pool.map(()=>({ wrong: [], done: false, choices: null, answer: null }));
   function persist(){ saveSession(type, { order: pool.map(p=>p.idx), state, i }); }
   function score(){ return state.filter(s=>s.done).length; }
 
@@ -21751,24 +21889,28 @@ function renderJudgmentDrill(body, type, list, cfg){
     if(i >= pool.length){
       clearSession(type);
       body.innerHTML = `<div class="card"><div class="score-pill">${T('Score: ')}${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${cfg.doneText || T('Nice work. Reset to try again.')}</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">${T('Back')}</button><button class="btn btn-primary" id="restart">${T('Restart')}</button></div></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool(type, list, false); state = pool.map(()=>({ wrong: [], done: false })); i=0; show(); });
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool(type, list, false); state = pool.map(()=>({ wrong: [], done: false, choices: null, answer: null })); i=0; show(); });
       body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
       return;
     }
     const idx = pool[i].idx;
     const q = pool[i].item;
     const st = state[i];
+    // The authored data leans heavily on the correct option sitting at index 0 — shuffle once
+    // per question and cache it in session state, so the position varies but stays put across
+    // re-renders (difficulty toggle, navigating back) instead of reshuffling under the user.
+    if(!st.choices){
+      const built = shuffleChoices(q.choices, q.answer);
+      st.choices = built.choices;
+      st.answer = built.answer;
+    }
     persist();
-    // Most judgment-drill items give a real target-language sentence in `fr`, often with a
-    // blank ("___") standing in for the answer; others just carry a placeholder tag like
-    // "— syntax —" whose real sentence lives entirely in `choices`. Either way, the audio
-    // must speak the COMPLETE correct sentence (blank substituted with the right choice),
-    // never the raw "___" — a TTS engine just skips/garbles that token, which is what used
-    // to make the correct word go missing from the spoken sentence.
-    const speakableNow = !!(q.fr && !/^—/.test(q.fr.trim()));
-    const judgmentSpeech = (q.fr && q.fr.indexOf('___') !== -1)
-      ? q.fr.replace('___', q.choices[q.answer])
-      : (speakableNow ? q.fr : q.choices[q.answer]);
+    // Either a real target-language sentence in `fr` (often with a "___" blank standing in
+    // for the answer) or a placeholder tag like "— syntax —" whose real sentence lives
+    // entirely in `choices` — targetSpeech() always resolves to the complete correct
+    // sentence either way. (Uses the ORIGINAL q.choices/q.answer, not the shuffled display
+    // copy — the correct text itself doesn't depend on which button position it ends up in.)
+    const judgmentSpeech = targetSpeech(q);
     // From-scratch learning aid (English course only): surface the per-item explanation
     // BEFORE answering, not just after — a beginner reasoning from zero shouldn't have to
     // guess blind. French/Dutch are untouched: fbNote below still only fills in on correct.
@@ -21780,9 +21922,9 @@ function renderJudgmentDrill(body, type, list, cfg){
           <div class="q-progress">${cefrTagHtml()}${cfg.itemLabel || T('Question')} ${distinctOrdinal(pool,i)}${T(' of ')}${pool.uniqueTotal}${masteredNote(type)}</div>
           ${qActionsHtml(type, idx)}
         </div>
-        <div class="q-prompt">${q.prompt || T('Choose the correct option:')}${q.fr ? `<br><span class="french">«${q.fr}»</span>` : ''}</div>
+        <div class="q-prompt">${q.prompt || T('Choose the correct option:')}${frQuoteHtml(q)}</div>
         ${showHintUpfront ? `<div class="q-hint">💡 ${T('Hint')}: ${q.note}</div>` : ''}
-        ${q.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
+        ${st.choices.map((c,ci)=>`<button class="opt" data-idx="${ci}">${c}</button>`).join('')}
         <div class="feedback" id="fb"></div>
         <div class="answer-note" id="fbNote"></div>
         <div class="ex-btn-row">
@@ -21799,12 +21941,16 @@ function renderJudgmentDrill(body, type, list, cfg){
     const playBtnJd = body.querySelector('#playBtn');
     playBtnJd.addEventListener('click', ()=> speak(judgmentSpeech));
     let pendingMaster = false;
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing — whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; i++; show(); }
 
     function renderState(){
       st.wrong.forEach(w=> optBtns[w].classList.add('wrong'));
       st.wrong.forEach(w=> optBtns[w].disabled = true);
       if(st.done){
-        optBtns[q.answer].classList.add('correct');
+        optBtns[st.answer].classList.add('correct');
         optBtns.forEach(o=> o.disabled = true);
         fb.textContent = T('Correct!'); fb.className = 'feedback ok';
         fbNote.textContent = q.note || '';
@@ -21819,7 +21965,7 @@ function renderJudgmentDrill(body, type, list, cfg){
       opt.addEventListener('click', ()=>{
         if(st.done || opt.disabled) return;
         const ci = +opt.dataset.idx;
-        if(ci === q.answer){
+        if(ci === st.answer){
           st.done = true;
           optBtns[ci].classList.add('correct');
           optBtns.forEach(o=> o.disabled = true);
@@ -21834,8 +21980,7 @@ function renderJudgmentDrill(body, type, list, cfg){
           fb.textContent = T('Correct!'); fb.className = 'feedback ok';
           fbNote.textContent = q.note || '';
           nextBtn.disabled = false;
-          speak(judgmentSpeech);
-          setTimeout(()=>{ i++; show(); }, 900);
+          speak(judgmentSpeech, advanceOnce);
         } else {
           st.wrong.push(ci);
           opt.classList.add('wrong');
@@ -21847,7 +21992,7 @@ function renderJudgmentDrill(body, type, list, cfg){
       });
     });
     body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
-    nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       if(st.done){
         celebrateMastered(body, ()=>{
@@ -21870,7 +22015,7 @@ function renderJudgmentDrill(body, type, list, cfg){
       if(!confirm(restartConfirmText(cfg.tabLabel || T('this exercise')))) return;
       clearSession(type);
       pool = buildPracticePool(type, list, false);
-      state = pool.map(()=>({ wrong: [], done: false }));
+      state = pool.map(()=>({ wrong: [], done: false, choices: null, answer: null }));
       i = 0;
       show();
     });
@@ -21919,9 +22064,12 @@ function renderFill(body){
     if(prevVal) input.value = prevVal;
     const nextBtn = body.querySelector('#nextBtn');
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.prompt.replace('___', q.answer)));
-    let advanceTimer = null;
     let pendingMaster = false;
     let checkedCorrect = null; // null = not attempted yet this question
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing — whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
     body.querySelector('#hintBtn').addEventListener('click', ()=>{
       body.querySelector('#fb').textContent = q.hint;
       body.querySelector('#fb').className = 'feedback';
@@ -21946,19 +22094,19 @@ function renderFill(body){
           return;
         }
         fb.textContent = T('Correct!'); fb.className='feedback ok';
-        speak(q.prompt.replace('___', q.answer));
-        // a wrong answer stays put until Next is clicked — only a correct one auto-advances
-        advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
+        // a wrong answer stays put until Next is clicked — only a correct one auto-advances,
+        // and only once the audio has actually finished playing (not on a fixed timer).
+        speak(q.prompt.replace('___', q.answer), advanceOnce);
       } else {
         fb.textContent = `${T('Correct answer: ')}"${q.answer}"`; fb.className='feedback bad';
       }
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
-    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       if(checkedCorrect){
-        if(advanceTimer) clearTimeout(advanceTimer);
+        speechSynthesis.cancel();
         celebrateMastered(body, ()=>{
           setMastered('fill', masteredIdx, true);
           removeUpcomingOccurrences(pool, null, i, masteredIdx);
@@ -22169,6 +22317,10 @@ function renderTenses(body){
       const playBtnTm = body.querySelector('#playBtn');
       playBtnTm.addEventListener('click', ()=> speak(q.answer));
       let pendingMaster = false;
+      // Guards against double-advancing when the user manually clicks Next while the
+      // auto-play-on-correct audio is still finishing — whichever fires first wins.
+      let advanced = false;
+      function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
       if(st.wrong.length) st.wrong.forEach(w=>{ opts[w].classList.add('wrong'); opts[w].disabled = true; });
       if(st.done){
         opts[st.answer].classList.add('correct');
@@ -22198,8 +22350,7 @@ function renderTenses(body){
             fb.textContent = T('Correct!'); fb.className = 'feedback ok';
             nextBtn.disabled = false;
             playBtnTm.style.display = '';
-            speak(q.answer);
-            setTimeout(()=>{ i++; show(); }, 700);
+            speak(q.answer, advanceOnce);
           } else {
             st.wrong.push(ci);
             opt.classList.add('wrong');
@@ -22211,7 +22362,7 @@ function renderTenses(body){
         });
       });
       body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
-      nextBtn.addEventListener('click', ()=>{ i++; show(); });
+      nextBtn.addEventListener('click', advanceOnce);
       body.querySelector('#masterBtn').addEventListener('click', ()=>{
         if(st.done){
           celebrateMastered(body, ()=>{
@@ -22270,7 +22421,10 @@ function renderTenses(body){
         fb.textContent = `Answer: "${q.answer}"`; fb.className = 'feedback';
       }
 
-      let advanceTimer = null;
+      // Guards against double-advancing when the user manually clicks Next while the
+      // auto-play-on-correct audio is still finishing — whichever fires first wins.
+      let advanced = false;
+      function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
       // A wrong guess just says so and lets you try again — it never gives the answer away.
       // Only Reveal shows it (and, like giving up, locks the question); Next always works so
       // you're never stuck on one you don't know.
@@ -22293,8 +22447,7 @@ function renderTenses(body){
           }
           fb.textContent = T('Correct!'); fb.className = 'feedback ok';
           playBtnTf.style.display = '';
-          speak(q.answer);
-          advanceTimer = setTimeout(()=>{ i++; show(); }, 1100);
+          speak(q.answer, advanceOnce);
         } else {
           fb.textContent = pendingMaster ? 'Not quite — try again to master this.' : 'Not quite — try again.';
           fb.className = 'feedback bad';
@@ -22313,10 +22466,10 @@ function renderTenses(body){
         persist();
       });
       input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) checkBtn.click(); });
-      nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
+      nextBtn.addEventListener('click', advanceOnce);
       body.querySelector('#masterBtn').addEventListener('click', ()=>{
         if(st.done){
-          if(advanceTimer) clearTimeout(advanceTimer);
+          speechSynthesis.cancel();
           celebrateMastered(body, ()=>{
             setMastered('tenses', idx, true);
             removeUpcomingOccurrences(pool, state, i, idx);
@@ -22495,9 +22648,12 @@ function renderBuilder(body){
     renderRows();
     const nextBtn = body.querySelector('#nextBtn');
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.answer));
-    let advanceTimer = null;
     let pendingMaster = false;
     let checkedCorrect = null;
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing — whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
     body.querySelector('#clear').addEventListener('click', ()=>{ if(answered) return; chosen = []; bank = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
     body.querySelector('#check').addEventListener('click', ()=>{
       if(answered) return;
@@ -22521,18 +22677,18 @@ function renderBuilder(body){
           return;
         }
         fb.textContent = T('Correct!'); fb.className='feedback ok';
-        speak(q.answer);
-        // a wrong build stays put until Next is clicked — only a correct one auto-advances
-        advanceTimer = setTimeout(()=>{ i++; show(); }, 1300);
+        // a wrong build stays put until Next is clicked — only a correct one auto-advances,
+        // and only once the audio has actually finished playing (not on a fixed timer).
+        speak(q.answer, advanceOnce);
       } else {
         fb.textContent = `${T('Target: ')}"${q.answer}"`; fb.className='feedback bad';
       }
     });
-    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = qPool[i].idx;
       if(checkedCorrect){
-        if(advanceTimer) clearTimeout(advanceTimer);
+        speechSynthesis.cancel();
         celebrateMastered(body, ()=>{
           setMastered('build', masteredIdx, true);
           removeUpcomingOccurrences(qPool, null, i, masteredIdx);
@@ -22626,9 +22782,12 @@ function renderTranslate(body){
     if(prevVal) body.querySelector('#trIn').value = prevVal;
     const input = body.querySelector('#trIn');
     const nextBtn = body.querySelector('#nextBtn');
-    let advanceTimer = null;
     let pendingMaster = false;
     let checkedCorrect = null;
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing \u2014 whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.fr));
     body.querySelector('#check').addEventListener('click', ()=>{
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
@@ -22650,18 +22809,17 @@ function renderTranslate(body){
           return;
         }
         fb.textContent = T('Correct!'); fb.className='feedback ok';
-        speak(q.fr);
-        advanceTimer = setTimeout(()=>{ i++; show(); }, 1400);
+        speak(q.fr, advanceOnce);
       } else {
         fb.textContent = `${T('Target: ')}"${q.fr}"`; fb.className='feedback bad';
       }
     });
     input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
-    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       if(checkedCorrect){
-        if(advanceTimer) clearTimeout(advanceTimer);
+        speechSynthesis.cancel();
         celebrateMastered(body, ()=>{
           setMastered('translate', masteredIdx, true);
           removeUpcomingOccurrences(pool, null, i, masteredIdx);
@@ -22795,6 +22953,10 @@ function renderVocabDrill(body, list, opts){
     const fb = body.querySelector('#fb');
     const nextBtn = body.querySelector('#nextBtn');
     let pendingMaster = false;
+    // Guards against double-advancing when the user manually clicks Next while the
+    // auto-play-on-correct audio is still finishing — whichever fires first wins.
+    let advanced = false;
+    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
 
     function revealPlayButtonIfHidden(){
       if(body.querySelector('#playBtn')) return;
@@ -22836,8 +22998,8 @@ function renderVocabDrill(body, list, opts){
           optBtns[ci].classList.add('correct');
           optBtns.forEach(o=> o.disabled = true);
           revealPlayButtonIfHidden();
-          speak(item[0]);
           if(pendingMaster){
+            speak(item[0]);
             celebrateMastered(body, ()=>{
               setMastered(type, idx, true);
               removeUpcomingOccurrences(pool, state, i, idx);
@@ -22847,7 +23009,7 @@ function renderVocabDrill(body, list, opts){
           }
           fb.textContent = T('Correct!'); fb.className = 'feedback ok';
           nextBtn.disabled = false;
-          setTimeout(()=>{ i++; show(); }, 700);
+          speak(item[0], advanceOnce);
         } else {
           st.wrong.push(ci);
           opt.classList.add('wrong');
@@ -22859,7 +23021,7 @@ function renderVocabDrill(body, list, opts){
       });
     });
     body.querySelector('#prevBtn').addEventListener('click', ()=>{ i--; show(); });
-    nextBtn.addEventListener('click', ()=>{ i++; show(); });
+    nextBtn.addEventListener('click', advanceOnce);
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       if(st.done){
         celebrateMastered(body, ()=>{
