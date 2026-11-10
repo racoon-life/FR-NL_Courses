@@ -229,6 +229,73 @@
     cursor:pointer;
   }
   .week-jump-link:hover, .week-jump-link:focus-visible{ background: rgba(29,58,110,0.14); }
+  .tense-mcq-only{ display:flex; align-items:center; gap:8px; margin:2px 0 10px; font-size:.82rem; font-weight:600; color:var(--teal-deep); cursor:pointer; }
+  .tense-mcq-only input{ width:18px; height:18px; accent-color:var(--teal); }
+
+  /* ---------- Plan: guided week-by-week flow ---------- */
+  .pw-nav{ display:flex; align-items:center; gap:6px; margin:2px 0 12px; }
+  .pw-arrow{ flex:0 0 38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--card); color:var(--teal); font-size:1.2rem; line-height:1; cursor:pointer; }
+  .pw-arrow:disabled{ opacity:.35; cursor:default; }
+  .pw-chips{ flex:1; display:flex; gap:8px; overflow-x:auto; padding:5px 3px; scrollbar-width:none; scroll-behavior:smooth; }
+  .pw-chips::-webkit-scrollbar{ display:none; }
+  .pw-chip{ flex:0 0 auto; min-width:40px; height:40px; padding:0 4px; border-radius:50%; border:2px solid var(--line); background:var(--card); color:var(--teal-deep); font-weight:700; font-size:.92rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .pw-chip.done{ background:var(--teal); border-color:var(--teal); color:var(--cream); }
+  .pw-chip.current{ border-color:var(--mustard); box-shadow:0 0 0 3px rgba(164,71,74,.2); }
+  .pw-card{ padding:16px 16px 6px; }
+  .pw-month{ font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:#5b6664; margin-bottom:2px; }
+  .pw-focus{ font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--mustard); font-weight:700; margin-bottom:4px; }
+  .pw-title-h{ font-size:1.2rem; margin:0 0 6px; line-height:1.25; }
+  .pw-summary{ margin:0 0 10px; font-size:.84rem; line-height:1.45; color:#4b5857; cursor:pointer; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .pw-summary.open{ display:block; }
+  .pw-goal{ font-size:.84rem; line-height:1.45; background:rgba(29,58,110,.06); border-radius:10px; padding:8px 10px; margin-bottom:10px; }
+  .pw-progress{ display:flex; align-items:center; gap:10px; font-size:.78rem; color:#5b6664; margin-bottom:12px; }
+  .pw-bar{ flex:1; height:8px; background:rgba(22,33,58,.09); border-radius:99px; overflow:hidden; }
+  .pw-fill{ height:100%; background:var(--teal); border-radius:99px; transition:width .3s ease; }
+  .pw-cta{ width:100%; margin-bottom:6px; padding:13px 16px; font-size:1rem; }
+  .pw-complete{ text-align:center; padding:8px 0 10px; }
+  .pw-complete-t{ font-weight:700; font-size:1.05rem; color:var(--teal-deep); margin-bottom:10px; }
+  .pw-steps{ list-style:none; margin:6px 0 0; padding:0; }
+  .pw-step{ display:flex; gap:12px; padding:13px 0; border-top:1px solid var(--line); }
+  .pw-check{ flex:0 0 30px; width:30px; height:30px; border-radius:50%; border:2px solid rgba(22,33,58,.28); background:#fff; color:#fff; font-size:.95rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; margin-top:1px; }
+  .pw-step.next .pw-check{ border-color:var(--mustard); }
+  .pw-step.done .pw-check{ background:var(--teal); border-color:var(--teal); }
+  .pw-body{ flex:1; min-width:0; }
+  .pw-upnext{ font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:var(--mustard); margin-bottom:2px; }
+  .pw-title{ font-weight:700; font-size:.98rem; color:var(--teal-deep); line-height:1.3; }
+  .pw-title.plain{ font-weight:600; font-size:.92rem; color:var(--ink); line-height:1.4; }
+  .pw-step.done .pw-title{ color:#7c8794; }
+  .pw-preview{ margin-top:3px; font-size:.84rem; line-height:1.45; color:#4b5857; }
+  .pw-full{ margin-top:6px; font-size:.84rem; line-height:1.5; color:#3d4a49; padding-top:6px; border-top:1px dashed var(--line); }
+  .pw-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:9px; }
+  .pw-go{ display:inline-flex; align-items:center; gap:6px; font-size:.82rem; font-weight:700; color:var(--teal); background:rgba(29,58,110,.08); border:none; border-radius:10px; padding:9px 12px; cursor:pointer; text-align:left; }
+  .pw-go .arr{ opacity:.6; font-size:1rem; line-height:1; }
+  .pw-go.primary{ background:var(--teal); color:var(--cream); }
+  .pw-more{ background:none; border:none; color:#5b6664; font-size:.78rem; font-weight:600; text-decoration:underline; text-underline-offset:2px; cursor:pointer; padding:9px 4px; }
+  .pw-foot{ display:flex; justify-content:space-between; gap:10px; margin:2px 0 14px; }
+  .pw-foot .btn:disabled{ opacity:.35; cursor:default; }
+  .plan-about summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:8px; color:#fff; font-weight:700; font-size:.98rem; }
+  .plan-about summary::-webkit-details-marker{ display:none; }
+  .plan-about summary::after{ content:"▾"; margin-left:auto; transition:transform .2s; }
+  .plan-about[open] summary::after{ transform:rotate(180deg); }
+  .plan-about .pa-sub{ font-size:.74rem; font-weight:500; color:#d8d2ea; }
+  .plan-about .pa-body{ margin-top:8px; }
+  .plan-about .pa-body p{ margin:0 0 6px; font-size:.85rem; line-height:1.5; color:#fff; }
+  /* guided-flow bar above the bottom nav */
+  .flow-bar{ position:fixed; left:0; right:0; bottom:62px; z-index:49; background:#fff; border-top:2px solid var(--mustard); box-shadow:0 -6px 16px rgba(15,33,71,.14); padding:8px 12px 9px; }
+  .flow-bar[hidden]{ display:none; }
+  .fb-inner{ max-width:640px; margin:0 auto; }
+  .fb-top{ display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .fb-info{ flex:1; min-width:0; display:flex; flex-direction:column; line-height:1.25; }
+  .fb-where{ font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:#5b6664; }
+  .fb-title{ font-size:.9rem; color:var(--teal-deep); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fb-link{ background:none; border:none; color:var(--teal); font-weight:700; font-size:.78rem; cursor:pointer; padding:6px 4px; white-space:nowrap; }
+  .fb-x{ background:none; border:none; color:#7c8794; font-size:1rem; cursor:pointer; padding:6px 8px; }
+  .fb-btns{ display:flex; gap:8px; }
+  .fb-btn{ border-radius:10px; font-weight:700; font-size:.86rem; padding:10px 12px; cursor:pointer; border:1px solid var(--teal); }
+  .fb-btn.ghost{ background:none; color:var(--teal); }
+  .fb-btn.ghost:disabled{ opacity:.35; cursor:default; }
+  .fb-btn.primary{ flex:1; background:var(--teal); color:var(--cream); }
+  body.has-flowbar{ padding-bottom: calc(78px + var(--flowh, 92px)); }
   /* Collapsible "grammar cheat-sheet" card shown above grammar/core exercises, English
      course only (currentUILang === 'lt'), so an absolute-beginner Lithuanian speaker gets
      the underlying rule before being quizzed on it. */
@@ -1046,9 +1113,9 @@
 
   <!-- PLAN -->
   <section id="plan" class="active">
+    <div id="weeks"></div>
     <div class="card" id="wordsGoalCard"></div>
     <div class="card plan-level-card" id="planLevelInfo"></div>
-    <div id="weeks"></div>
   </section>
 
   <!-- PHRASES -->
@@ -1093,6 +1160,21 @@
 </main>
 
 <footer class="note" id="footerNote">Made for self-study · progress stored locally in your browser</footer>
+
+<div id="flowBar" class="flow-bar" hidden>
+  <div class="fb-inner">
+    <div class="fb-top">
+      <div class="fb-info"><span class="fb-where" id="fbWhere"></span><strong class="fb-title" id="fbTitle"></strong></div>
+      <button type="button" class="fb-link" id="fbPlan"></button>
+      <button type="button" class="fb-x" id="fbClose" aria-label="Exit guided mode" title="Exit guided mode">✕</button>
+    </div>
+    <div class="fb-btns">
+      <button type="button" class="fb-btn ghost" id="fbPrev"></button>
+      <button type="button" class="fb-btn ghost" id="fbSkip"></button>
+      <button type="button" class="fb-btn primary" id="fbNext"></button>
+    </div>
+  </div>
+</div>
 
 <nav class="bottom">
   <button data-target="plan" class="active"><span class="ic">📅</span><span class="nav-label">Plan</span></button>
@@ -20248,6 +20330,7 @@ store.set = function(key, val){
 /* ---------- NAV ---------- */
 document.querySelectorAll('nav.bottom button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
+    planFlow = null; // leaving the guided flow by hand — the bar's context no longer applies
     document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
@@ -20295,6 +20378,32 @@ let currentCourseName = 'French';
    site stays exactly as before for French and Dutch. */
 let currentUILang = 'en';
 const UI_STRINGS_LT = {
+  'Multiple choice only': 'Tik pasirinkimo klausimai',
+  'About this level': "Apie šį lygį",
+  '~30–40 min/day, six days a week. Listening and speaking lead every week.': "~30–40 min per dieną, šešias dienas per savaitę. Kiekvieną savaitę svarbiausia klausymas ir kalbėjimas.",
+  'Follow the steps in order — each button opens the matching exercise. Tick a step when you finish it; your progress is saved on this device.': "Eikite per žingsnius iš eilės — kiekvienas mygtukas atidaro atitinkamą pratimą. Pažymėkite žingsnį, kai jį baigsite; jūsų pažanga išsaugoma šiame įrenginyje.",
+  'Reading and writing only show up when they directly support speaking.': "Skaitymas ir rašymas pasirodo tik tada, kai tiesiogiai padeda kalbėti.",
+  'Week complete': "Savaitė baigta",
+  'Go to week ': "Pereiti į savaitę ",
+  'Level plan complete — well done!': "Šio lygio planas baigtas — puiku!",
+  'Previous week': "Ankstesnė savaitė",
+  'Next week': "Kita savaitė",
+  'Start': "Pradėti",
+  'Continue': "Tęsti",
+  'Up next': "Toliau",
+  'Read more': "Plačiau",
+  'Show less': "Mažiau",
+  'steps done': "žingsnių atlikta",
+  'Step': "Žingsnis",
+  'Skip': "Praleisti",
+  'Next ›': "Toliau ›",
+  '✓ Done · Next ›': "✓ Atlikta · Toliau ›",
+  '✓ Done · Finish': "✓ Atlikta · Baigti",
+  'Check what you learned this week.': "Patikrinkite, ką išmokote šią savaitę.",
+  'Best: ': "Geriausias: ",
+  "This week's goal": "Šios savaitės tikslas",
+  'Mark as done': "Pažymėti kaip atliktą",
+  'Mark as not done': "Atžymėti",
   // bottom nav
   'Plan': 'Planas', 'Phrases': 'Frazės', 'Practice': 'Pratybos', 'Quiz': 'Testas',
   'Resources': 'Ištekliai', 'Mastered': 'Išmokta',
@@ -20526,8 +20635,14 @@ function frQuoteHtml(q){
 // blank with the correct choice text, and falls back to the correct choice outright when fr
 // is just a placeholder tag ("— syntax —") with no real sentence of its own. Never speaks the
 // raw "___" or a literal placeholder — both used to leave the answer missing or nonsensical.
+function isScrambledWords(fr){
+  return typeof fr === 'string' && / \/ /.test(fr) && fr.indexOf('___') === -1;
+}
 function targetSpeech(q){
   if(!q.fr) return q.choices[q.answer];
+  // "Put the words in the right order" items: fr is the scrambled word list ("faim / j' / ai"),
+  // which must never be spoken — the correct sentence is the right answer choice.
+  if(isScrambledWords(q.fr)) return q.choices[q.answer];
   if(q.fr.indexOf('___') !== -1) return q.fr.replace('___', q.choices[q.answer]);
   if(/^—/.test(q.fr.trim())) return q.choices[q.answer];
   return q.fr;
@@ -20554,6 +20669,15 @@ function bestVoiceFor(langCode){
 // of a fixed timer, so the screen never cuts the sentence off early. A safety-net timeout still
 // fires onEnd if the browser never raises 'end'/'error' (some engines drop it on cancel/reload),
 // so playback can never softlock the exercise.
+// Each speak() call gets a token. stopSpeech() (and any newer speak()) bumps it, so an utterance
+// that was cancelled/superseded NEVER fires its onEnd — browsers raise 'error'/'end' on
+// speechSynthesis.cancel(), which used to trigger the pending auto-advance at the wrong moment
+// (e.g. tapping ★ to master a question mid-audio advanced the screen and broke the mastering).
+let speakToken = 0;
+function stopSpeech(){
+  speakToken++;
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+}
 function speak(text, onEnd){
   if(!('speechSynthesis' in window)){
     if(onEnd) onEnd();
@@ -20572,7 +20696,12 @@ function speak(text, onEnd){
   u.rate = 1; // normal speaking tempo
   u.pitch = 1;
   let done = false;
-  function finish(){ if(done) return; done = true; clearTimeout(safety); if(onEnd) onEnd(); }
+  const myToken = ++speakToken;
+  function finish(){
+    if(done) return; done = true; clearTimeout(safety);
+    if(myToken !== speakToken) return; // cancelled or superseded — don't auto-advance
+    if(onEnd) onEnd();
+  }
   u.onend = finish;
   u.onerror = finish;
   // Rough ceiling: ~130ms/char at normal tempo, plus a flat floor — generous enough never to
@@ -20616,19 +20745,23 @@ function renderPlanLevelInfo(){
   if(!card) return;
   card.style.display = '';
   const c = currentLevelData;
+  const how = `<p>${T('~30–40 min/day, six days a week. Listening and speaking lead every week.')}</p>
+      <p>${T('Follow the steps in order — each button opens the matching exercise. Tick a step when you finish it; your progress is saved on this device.')}</p>`;
   if(c && c.tagline){
     // Levels with a rich CEFR/DELF syllabus note (currently French A1) get the fuller card.
-    card.innerHTML = `
-      <h3>${c.label || ''}</h3>
-      <p>${c.tagline}</p>
-      ${c.comingSoonNote? `<p style="margin-top:8px;">${c.comingSoonNote}</p>` : ''}
-      ${c.syllabusNote? `<p class="syllabus-note">${c.syllabusNote}</p>` : ''}
-      <p style="margin-top:8px;">${T('~30–40 min/day, six days a week. Listening and speaking lead every week. Tap a week to expand it, and mark it done as you go — your progress is saved on this device.')}</p>`;
+    card.innerHTML = `<details class="plan-about">
+      <summary><span class="pa-label">${c.label || ''}</span><span class="pa-sub">${T('About this level')}</span></summary>
+      <div class="pa-body">
+        <p>${c.tagline}</p>
+        ${c.comingSoonNote? `<p style="margin-top:8px;">${c.comingSoonNote}</p>` : ''}
+        ${c.syllabusNote? `<p class="syllabus-note">${c.syllabusNote}</p>` : ''}
+        <div style="margin-top:8px;">${how}</div>
+      </div></details>`;
   } else {
-    // Courses/levels without that extra syllabus context keep the original generic note.
-    card.innerHTML = `
-      <h3>${T('How this works')}</h3>
-      <p>${T('~30–40 min/day, six days a week. Listening and speaking lead every week. Reading and writing only show up when they directly support speaking. Tap a week to expand it, and mark it done as you go — your progress is saved on this device.')}</p>`;
+    // Courses/levels without that extra syllabus context keep the generic note.
+    card.innerHTML = `<details class="plan-about">
+      <summary><span class="pa-label">${T('How this works')}</span></summary>
+      <div class="pa-body">${how}<p>${T('Reading and writing only show up when they directly support speaking.')}</p></div></details>`;
   }
 }
 
@@ -20686,7 +20819,7 @@ function weekPhraseCatIndices(i){
 // real link to that exercise tab instead of leaving it as inert bold text.
 function linkifyPracticeMentions(text){
   if(!text || typeof exTabs === 'undefined') return text;
-  return text.replace(/<strong>(Practice → [^<]*)<\/strong>/g, (match, inner)=>{
+  return text.replace(/<strong>([^<]*→[^<]*)<\/strong>/g, (match, inner)=>{
     const label = inner.split('→').pop().trim();
     const tab = exTabs.find(t=> t.label === label);
     if(!tab) return match;
@@ -20706,83 +20839,353 @@ document.addEventListener('keydown', (e)=>{
   }
 });
 
-function renderWeeks(){
-  const wrap = document.getElementById('weeks');
-  wrap.innerHTML = '';
-  if(!weeks.length) return;
-  weeks.forEach((w, i)=>{
-    if(w._isFirstOfMonth){
-      const mh = document.createElement('div');
-      mh.className = 'month-header';
-      mh.innerHTML = `<h3>${w._monthTitle}</h3>${w._monthSummary? `<p>${w._monthSummary}</p>` : ''}`;
-      wrap.appendChild(mh);
-    }
-    const rawChecks = weekChecks[i] || blankWeekChecks(w);
-    const checks = w.details.map((_, di)=> normItemDays(rawChecks[di]));
-    const totalBoxes = w.details.length * 7;
-    const checkedCount = checks.reduce((sum, days)=> sum + days.filter(Boolean).length, 0);
-    const allDone = checkedCount === totalBoxes;
-    const el = document.createElement('div');
-    el.className = 'week' + (allDone? ' done':'');
-    el.innerHTML = `
-      <button class="week-toggle">
-        <div class="badge">${allDone? '✓' : (i+1)}</div>
-        <div class="content">
-          <div class="focus">${w.focus}</div>
-          <h3>${T('Week')} ${i+1} · ${w.title}</h3>
-          <p>${w.summary}</p>
-          <div class="details">
-            <ul class="checklist">${w.details.map((d, di)=>`
-              <li class="${checks[di].every(Boolean)? 'checked':''}">
-                <span>${d && typeof d === 'object' ? `<span class="pillar-tag">${d.pillar}</span>${linkifyPracticeMentions(d.text)}` : d}</span>
-                <div class="day-row">${dayLabels().map((lbl, dayIdx)=>`
-                  <label class="day-box">
-                    <span class="day-label">${lbl}</span>
-                    <input type="checkbox" data-week="${i}" data-item="${di}" data-day="${dayIdx}" ${checks[di][dayIdx]? 'checked':''}>
-                  </label>`).join('')}
-                </div>
-              </li>`).join('')}
-            </ul>
-            <div class="week-progress">${checkedCount}${T(' of ')}${totalBoxes} ${T('done')}</div>
-            <div class="week-jump-links">
-              <span class="week-jump-link" data-jump="quiz" data-idx="${i}" role="button" tabindex="0">🏁 ${T("This week's quiz")}</span>
-              ${weekPhraseCatIndices(i).length ? `<span class="week-jump-link" data-jump="phrases" data-idx="${weekPhraseCatIndices(i)[0]}" role="button" tabindex="0">💬 ${T('Phrases for this week')}</span>` : ''}
-            </div>
-          </div>
-        </div>
-        <div class="chev">▸</div>
-      </button>`;
-    wrap.appendChild(el);
-    el.querySelector('.week-toggle').addEventListener('click', (e)=>{
-      if(e.target.tagName === 'INPUT' || (e.target.tagName === 'SPAN' && e.target.closest('li')) || e.target.closest('.day-box') || e.target.closest('.week-jump-link') || e.target.closest('.ex-jump-link')) return;
-      el.classList.toggle('open');
-    });
-    el.querySelectorAll('.checklist input[type="checkbox"]').forEach(cb=>{
-      cb.addEventListener('click', (e)=> e.stopPropagation());
-      cb.addEventListener('change', ()=>{
-        const wi = +cb.dataset.week, di = +cb.dataset.item, dayIdx = +cb.dataset.day;
-        if(!weekChecks[wi]) weekChecks[wi] = blankWeekChecks(weeks[wi]);
-        weekChecks[wi][di] = normItemDays(weekChecks[wi][di]);
-        weekChecks[wi][di][dayIdx] = cb.checked;
-        store.set('weekChecks_'+currentStoreKey, weekChecks);
-        renderWeeks();
-        const reopened = document.querySelectorAll('.week')[wi];
-        if(reopened) reopened.classList.add('open');
-      });
-    });
-    el.querySelectorAll('.week-jump-link').forEach(link=>{
-      link.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        const idx = +link.dataset.idx;
-        if(link.dataset.jump === 'quiz') goToQuizWeek(idx);
-        else if(link.dataset.jump === 'phrases') goToPhraseCat(idx);
-      });
-      link.addEventListener('keydown', (e)=>{
-        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); link.click(); }
-      });
+/* ---------- PLAN: guided, week-by-week flow ----------
+   The Plan tab shows ONE week at a time as a short ordered list of steps. Each step is one
+   of the week's authored items (pillars / to-dos — content unchanged, just collapsed behind
+   a one-line preview) and carries buttons that open the matching Phrases category,
+   Practice exercise or the weekly Quiz. Tapping a button starts a "guided flow": a small bar
+   sits above the bottom nav while you're in the exercise, letting you step back and forth
+   through the week's steps (and tick them off) without returning to the Plan each time. */
+let planSteps = {};      // { "weekIdx:detailIdx" | "weekIdx:q": true/false }
+let planWeekIdx = -1;    // week currently shown (-1 = not resolved yet for this level)
+let planFlow = null;     // { week, step, t } while following the guided flow
+let planExpanded = new Set(); // step keys whose full text is open
+const PLAN_GOAL_RE = /^\s*(tikslai|goals?)\s*$/i;
+const PLAN_EX_SYNONYMS = [
+  [/multiple[ -]choice/i, 'mcq'],
+  [/fill in the blank/i, 'fill'],
+  [/listening dictation/i, 'listen'],
+  [/sentence builder/i, 'build'],
+  [/\btranslate\b/i, 'translate']
+];
+function planStripTags(s){ return String(s||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(); }
+function exTabDisplayLabel(t){
+  return t.id==='translate' ? `${T('Translate')} ${currentNativeLangLabel}→${(currentCourseId||'').toUpperCase()}` : T(t.label);
+}
+function exTargetIcon(id){ return id==='listen' ? '🎧' : '✏️'; }
+/* Works out which app screens a step should open, in order: explicit "Practice → …" mentions
+   in the text first, then phrase categories the text names, then exercise names, and finally
+   a sensible default per pillar (Vocabulary → the week's phrases, Verb mechanics → Verb
+   tenses, Phonetics → Listening dictation, Slang → Slang & reductions, Syntax → Sentence
+   structure). Only screens that actually exist for this level are ever returned. */
+function planStepTargets(wi, pillar, text, isObj){
+  const avail = availableExTabs().map(t=>t.id);
+  const out = [], seen = new Set();
+  function addEx(id){
+    if(!avail.includes(id)) return;
+    const k = 'ex:'+id; if(seen.has(k)) return; seen.add(k);
+    const tab = exTabs.find(t=>t.id===id);
+    out.push({ type:'ex', id, label: exTabDisplayLabel(tab), icon: exTargetIcon(id) });
+  }
+  function addPhrases(idx){
+    if(!PHRASE_CATS || !PHRASE_CATS[idx]) return;
+    const k = 'ph:'+idx; if(seen.has(k)) return; seen.add(k);
+    out.push({ type:'phrases', idx, label: `${T('Phrases')}: ${PHRASE_CATS[idx]}`, icon:'💬' });
+  }
+  const html = String(text||'');
+  // 1. explicit "<strong>Practice → … → Label</strong>" / "<strong>→ Label</strong>" mentions
+  const re = /<strong>([^<]*→[^<]*)<\/strong>/g; let m;
+  while((m = re.exec(html))){
+    const label = m[1].split('→').pop().trim();
+    const tab = exTabs.find(t=> t.label === label);
+    if(tab) addEx(tab.id);
+  }
+  // 2. phrase categories named in the text (quoted, or verbatim)
+  const lower = planStripTags(html).toLowerCase();
+  (PHRASE_CATS||[]).forEach((cat, idx)=>{
+    if(lower.includes(cat.toLowerCase())) addPhrases(idx);
+  });
+  const quoted = lower.match(/'[^']{4,}'/g) || [];
+  quoted.forEach(q=>{
+    const frag = q.slice(1,-1);
+    (PHRASE_CATS||[]).forEach((cat, idx)=>{
+      const cl = cat.toLowerCase();
+      if(cl.startsWith(frag) || frag.startsWith(cl)) addPhrases(idx);
     });
   });
+  // 3. exercise names (always for plain to-do strings; for pillars only if nothing else matched)
+  if(!isObj || !out.length){
+    PLAN_EX_SYNONYMS.forEach(([rx, id])=>{ if(rx.test(lower)) addEx(id); });
+  }
+  // 4. pillar defaults
+  if(isObj && !out.length){
+    const p = pillar.toLowerCase();
+    if(/vocab|žodyn/.test(p)){
+      const ph = weekPhraseCatIndices(wi);
+      if(ph.length) ph.forEach(addPhrases); else addEx('words');
+    } else if(/verb|gramat/.test(p)){
+      addEx('tenses'); if(/pronoun/.test(p)) addEx('verbMechanics');
+      if(!out.length) addEx('fill');
+    } else if(/phonet|tarim/.test(p)) addEx('listen');
+    else if(/slang|šnekam/.test(p)) addEx('slang');
+    else if(/syntax/.test(p)) addEx('syntax');
+  }
+  return out;
 }
+function planWeekSteps(wi){
+  const w = weeks[wi]; const steps = [];
+  if(!w){ steps.goal = null; return steps; }
+  let goal = null;
+  (w.details||[]).forEach((d, di)=>{
+    const isObj = !!(d && typeof d === 'object');
+    const pillar = isObj ? (d.pillar||'') : '';
+    const text = isObj ? (d.text||'') : String(d);
+    if(isObj && PLAN_GOAL_RE.test(pillar)){ goal = text; return; }
+    steps.push({ key: wi+':'+di, kind:'detail', isObj, pillar, text, targets: planStepTargets(wi, pillar, text, isObj) });
+  });
+  if(typeof quizWeeks !== 'undefined' && quizWeeks && quizWeeks[wi]){
+    steps.push({ key: wi+':q', kind:'quiz', isObj:true, pillar:T('Weekly quiz'), text:'',
+      targets:[{ type:'quiz', idx:wi, label:T("This week's quiz"), icon:'🏁' }] });
+  }
+  steps.goal = goal;
+  return steps;
+}
+function loadPlanSteps(){
+  const saved = store.get('planSteps_'+currentStoreKey, null);
+  if(saved && typeof saved === 'object') return saved;
+  // First run on the new Plan: carry over anything ticked in the old 7-day checklist.
+  const legacy = store.get('weekChecks_'+currentStoreKey, {});
+  const out = {};
+  Object.keys(legacy||{}).forEach(wi=>{
+    (legacy[wi]||[]).forEach((days, di)=>{
+      if(normItemDays(days).some(Boolean)) out[wi+':'+di] = true;
+    });
+  });
+  return out;
+}
+function isStepDone(wi, st){
+  const v = planSteps[st.key];
+  if(v !== undefined) return !!v;
+  return st.kind==='quiz' && typeof quizBest !== 'undefined' && quizBest[wi] !== undefined;
+}
+function setStepDone(st, val){
+  planSteps[st.key] = !!val;
+  store.set('planSteps_'+currentStoreKey, planSteps);
+}
+function weekDoneCount(wi){
+  const steps = planWeekSteps(wi);
+  return { done: steps.filter(s=>isStepDone(wi,s)).length, total: steps.length };
+}
+function isWeekComplete(wi){ const c = weekDoneCount(wi); return c.total > 0 && c.done === c.total; }
+function resolvePlanWeek(){
+  if(planWeekIdx >= 0 && planWeekIdx < weeks.length) return;
+  const saved = store.get('planWeek_'+currentStoreKey, null);
+  if(Number.isInteger(saved) && saved >= 0 && saved < weeks.length){ planWeekIdx = saved; return; }
+  planWeekIdx = 0;
+  for(let i=0;i<weeks.length;i++){ if(!isWeekComplete(i)){ planWeekIdx = i; return; } }
+}
+function setPlanWeek(i){
+  if(i < 0 || i >= weeks.length) return;
+  planWeekIdx = i;
+  store.set('planWeek_'+currentStoreKey, i);
+  renderPlan();
+  window.scrollTo({top:0});
+}
+function planPreview(text){
+  const plain = planStripTags(text);
+  if(plain.length <= 150) return { html: linkifyPracticeMentions(text), more:false };
+  const m = plain.match(/^(.{40,}?[.!?])(?:\s|$)/);
+  const p = (m && m[1].length <= 200) ? m[1] : plain.slice(0,150).replace(/\s+\S*$/,'') + '…';
+  return { html: p, more: p.length < plain.length };
+}
+function launchTarget(t){
+  if(t.type==='phrases') goToPhraseCat(t.idx);
+  else if(t.type==='ex') goToExercise(t.id);
+  else if(t.type==='quiz') goToQuizWeek(t.idx);
+}
+function startPlanStep(wi, si, ti){
+  const steps = planWeekSteps(wi), st = steps[si];
+  if(!st || !st.targets.length) return;
+  planFlow = { week: wi, step: si, t: ti||0 };
+  planWeekIdx = wi;
+  store.set('planWeek_'+currentStoreKey, wi);
+  launchTarget(st.targets[planFlow.t] || st.targets[0]);
+  updateFlowBar();
+}
+function nextPlanStepIdx(wi){
+  const steps = planWeekSteps(wi);
+  for(let k=0;k<steps.length;k++){ if(!isStepDone(wi, steps[k])) return k; }
+  return -1;
+}
+function renderPlanStep(wi, st, si, isNext){
+  const done = isStepDone(wi, st);
+  const open = planExpanded.has(st.key);
+  let titleHtml, previewHtml = '', more = false, fullHtml = '';
+  if(st.kind==='quiz'){
+    titleHtml = `<div class="pw-title">${st.pillar}</div>`;
+    const b = quizBest[wi];
+    previewHtml = b !== undefined ? `${T('Best: ')}${b}/${quizWeeks[wi].length}` : T('Check what you learned this week.');
+  } else if(st.isObj){
+    titleHtml = `<div class="pw-title">${st.pillar}</div>`;
+    const pv = planPreview(st.text);
+    previewHtml = pv.html; more = pv.more;
+    fullHtml = linkifyPracticeMentions(st.text);
+  } else {
+    titleHtml = `<div class="pw-title plain">${st.text}</div>`;
+  }
+  const goBtns = st.targets.map((t, ti)=>
+    `<button type="button" class="pw-go${isNext && ti===0 ? ' primary' : ''}" data-pw-go data-step="${si}" data-t="${ti}">${t.icon} ${t.label}<span class="arr">›</span></button>`
+  ).join('');
+  return `
+    <li class="pw-step${done?' done':''}${isNext?' next':''}" data-key="${st.key}">
+      <button type="button" class="pw-check" data-pw-check data-step="${si}" role="checkbox" aria-checked="${done}" aria-label="${done ? T('Mark as not done') : T('Mark as done')}">${done ? '✓' : ''}</button>
+      <div class="pw-body">
+        ${isNext ? `<div class="pw-upnext">${T('Up next')}</div>` : ''}
+        ${titleHtml}
+        ${previewHtml ? `<div class="pw-preview">${previewHtml}</div>` : ''}
+        ${more ? `<div class="pw-full"${open ? '' : ' hidden'}>${fullHtml}</div>` : ''}
+        <div class="pw-actions">
+          ${goBtns}
+          ${more ? `<button type="button" class="pw-more" data-pw-more data-key="${st.key}" aria-expanded="${open}">${open ? T('Show less') : T('Read more')}</button>` : ''}
+        </div>
+      </div>
+    </li>`;
+}
+function renderPlan(){
+  const wrap = document.getElementById('weeks');
+  if(!wrap) return;
+  if(!weeks.length){ wrap.innerHTML = ''; return; }
+  resolvePlanWeek();
+  const wi = planWeekIdx, w = weeks[wi];
+  const steps = planWeekSteps(wi);
+  const counts = weekDoneCount(wi);
+  const pct = counts.total ? Math.round(counts.done / counts.total * 100) : 0;
+  const nextIdx = nextPlanStepIdx(wi);
+  const complete = counts.total > 0 && counts.done === counts.total;
+  const chips = weeks.map((_, i)=>{
+    const d = isWeekComplete(i), cur = i === wi;
+    return `<button type="button" class="pw-chip${d?' done':''}${cur?' current':''}" data-pw-week="${i}" aria-label="${T('Week')} ${i+1}" aria-current="${cur}">${d ? '✓' : i+1}</button>`;
+  }).join('');
+  let cta = '';
+  if(complete){
+    cta = wi < weeks.length - 1
+      ? `<div class="pw-complete"><div class="pw-complete-t">🎉 ${T('Week complete')}</div><button type="button" class="btn btn-primary" data-pw-week="${wi+1}">${T('Go to week ')}${wi+2} ›</button></div>`
+      : `<div class="pw-complete"><div class="pw-complete-t">🎉 ${T('Level plan complete — well done!')}</div></div>`;
+  }
+  wrap.innerHTML = `
+    <div class="pw-nav">
+      <button type="button" class="pw-arrow" data-pw-delta="-1" aria-label="${T('Previous week')}" ${wi===0?'disabled':''}>‹</button>
+      <div class="pw-chips" id="pwChips">${chips}</div>
+      <button type="button" class="pw-arrow" data-pw-delta="1" aria-label="${T('Next week')}" ${wi===weeks.length-1?'disabled':''}>›</button>
+    </div>
+    <div class="card pw-card">
+      ${w._monthTitle ? `<div class="pw-month">${w._monthTitle}</div>` : ''}
+      <div class="pw-focus">${w.focus || ''}</div>
+      <h2 class="pw-title-h">${T('Week')} ${wi+1} · ${w.title}</h2>
+      <p class="pw-summary" data-pw-summary title="${T('Read more')}">${w.summary || ''}</p>
+      ${steps.goal ? `<div class="pw-goal"><strong>🎯 ${T("This week's goal")}</strong> ${steps.goal}</div>` : ''}
+      <div class="pw-progress"><div class="pw-bar"><div class="pw-fill" style="width:${pct}%"></div></div><span>${counts.done}${T(' of ')}${counts.total} ${T('steps done')}</span></div>
+      ${cta}
+      <ol class="pw-steps">${steps.map((st, si)=> renderPlanStep(wi, st, si, si === nextIdx && !complete)).join('')}</ol>
+    </div>
+    <div class="pw-foot">
+      <button type="button" class="btn btn-ghost btn-sm" data-pw-delta="-1" ${wi===0?'disabled':''}>‹ ${T('Previous week')}</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-pw-delta="1" ${wi===weeks.length-1?'disabled':''}>${T('Next week')} ›</button>
+    </div>`;
+  const chipWrap = document.getElementById('pwChips');
+  const cur = chipWrap && chipWrap.querySelector('.current');
+  if(chipWrap && cur) chipWrap.scrollLeft = cur.offsetLeft - chipWrap.clientWidth/2 + cur.offsetWidth/2;
+}
+function renderWeeks(){ renderPlan(); } // kept as the entry point loadCourse() already calls
+
+/* One delegated listener for everything inside the Plan. */
+document.getElementById('weeks').addEventListener('click', (e)=>{
+  if(e.target.closest('.ex-jump-link')) return; // handled by the document-level link handler
+  const sum = e.target.closest('[data-pw-summary]');
+  if(sum){ sum.classList.toggle('open'); return; }
+  const weekBtn = e.target.closest('[data-pw-week]');
+  if(weekBtn){ setPlanWeek(+weekBtn.dataset.pwWeek); return; }
+  const delta = e.target.closest('[data-pw-delta]');
+  if(delta){ setPlanWeek(planWeekIdx + (+delta.dataset.pwDelta)); return; }
+  const check = e.target.closest('[data-pw-check]');
+  if(check){
+    const st = planWeekSteps(planWeekIdx)[+check.dataset.step];
+    if(st){ setStepDone(st, !isStepDone(planWeekIdx, st)); renderPlan(); }
+    return;
+  }
+  const go = e.target.closest('[data-pw-go]');
+  if(go){ startPlanStep(planWeekIdx, +go.dataset.step, +go.dataset.t); return; }
+  const cta = e.target.closest('[data-pw-cta]');
+  if(cta){ startPlanStep(planWeekIdx, +cta.dataset.step, 0); return; }
+  const more = e.target.closest('[data-pw-more]');
+  if(more){
+    const key = more.dataset.key;
+    if(planExpanded.has(key)) planExpanded.delete(key); else planExpanded.add(key);
+    const li = more.closest('.pw-step');
+    const full = li.querySelector('.pw-full');
+    const isOpen = planExpanded.has(key);
+    if(full) full.hidden = !isOpen;
+    more.setAttribute('aria-expanded', String(isOpen));
+    more.textContent = isOpen ? T('Show less') : T('Read more');
+  }
+});
+
+/* ---------- Guided-flow bar (shown above the bottom nav while following the plan) ---------- */
+function updateFlowBar(){
+  const bar = document.getElementById('flowBar');
+  if(!bar) return;
+  const active = document.querySelector('main section.active');
+  const sid = active ? active.id : '';
+  const show = !!planFlow && ['phrases','exercises','quiz'].includes(sid) && weeks[planFlow.week];
+  document.body.classList.toggle('has-flowbar', !!show);
+  if(!show){ bar.hidden = true; return; }
+  const steps = planWeekSteps(planFlow.week), st = steps[planFlow.step];
+  if(!st){ bar.hidden = true; document.body.classList.remove('has-flowbar'); return; }
+  const tgt = st.targets[planFlow.t] || st.targets[0];
+  const multi = st.targets.length > 1 ? ` (${planFlow.t+1}/${st.targets.length})` : '';
+  const title = st.kind==='detail' && !st.isObj ? tgt.label : (st.pillar || tgt.label);
+  document.getElementById('fbWhere').textContent = `${T('Week')} ${planFlow.week+1} · ${T('Step')} ${planFlow.step+1}/${steps.length}`;
+  document.getElementById('fbTitle').textContent = title + multi;
+  const hasPrev = planFlow.t > 0 || steps.slice(0, planFlow.step).some(s=>s.targets.length);
+  const atLastTarget = planFlow.t >= st.targets.length - 1;
+  const hasNextStep = steps.slice(planFlow.step+1).some(s=>s.targets.length);
+  document.getElementById('fbPrev').disabled = !hasPrev;
+  document.getElementById('fbPrev').textContent = '‹ ' + T('Back');
+  document.getElementById('fbSkip').textContent = T('Skip');
+  document.getElementById('fbSkip').hidden = false;
+  document.getElementById('fbNext').textContent = !atLastTarget ? T('Next ›') : (hasNextStep ? T('✓ Done · Next ›') : T('✓ Done · Finish'));
+  document.getElementById('fbPlan').textContent = '📅 ' + T('Plan');
+  bar.hidden = false;
+  const nav = document.querySelector('nav.bottom');
+  bar.style.bottom = (nav ? nav.offsetHeight : 62) + 'px';
+  document.body.style.setProperty('--flowh', bar.offsetHeight + 'px');
+}
+function endPlanFlow(toPlan){
+  planFlow = null;
+  updateFlowBar();
+  if(toPlan){ goToSection('plan'); renderPlan(); window.scrollTo({top:0}); }
+}
+function flowAdvance(markDone){
+  const f = planFlow; if(!f) return;
+  const steps = planWeekSteps(f.week), st = steps[f.step];
+  if(st && f.t < st.targets.length - 1){ f.t++; launchTarget(st.targets[f.t]); updateFlowBar(); return; }
+  if(markDone && st) setStepDone(st, true);
+  for(let k=f.step+1; k<steps.length; k++){
+    if(steps[k].targets.length){ f.step = k; f.t = 0; launchTarget(steps[k].targets[0]); updateFlowBar(); renderPlan(); return; }
+  }
+  endPlanFlow(true);
+}
+function flowBack(){
+  const f = planFlow; if(!f) return;
+  const steps = planWeekSteps(f.week);
+  if(f.t > 0){ f.t--; launchTarget(steps[f.step].targets[f.t]); updateFlowBar(); return; }
+  for(let k=f.step-1; k>=0; k--){
+    if(steps[k].targets.length){ f.step = k; f.t = steps[k].targets.length - 1; launchTarget(steps[k].targets[f.t]); updateFlowBar(); return; }
+  }
+}
+(function initFlowBar(){
+  const bar = document.getElementById('flowBar');
+  if(!bar) return;
+  document.getElementById('fbNext').addEventListener('click', ()=> flowAdvance(true));
+  document.getElementById('fbSkip').addEventListener('click', ()=> flowAdvance(false));
+  document.getElementById('fbPrev').addEventListener('click', flowBack);
+  document.getElementById('fbPlan').addEventListener('click', ()=> endPlanFlow(true));
+  document.getElementById('fbClose').addEventListener('click', ()=> endPlanFlow(false));
+  // keep the bar in step with whichever section is showing, however the user got there
+  const obs = new MutationObserver(updateFlowBar);
+  document.querySelectorAll('main section').forEach(s=> obs.observe(s, { attributes:true, attributeFilter:['class'] }));
+  window.addEventListener('resize', updateFlowBar);
+})();
 
 /* ---------- RENDER: PHRASES ---------- */
 let activeCat;
@@ -21752,7 +22155,7 @@ function renderMCQ(body){
     // Many mcq items use a blank ("___") in `fr` with the answer living in the choices —
     // speaking the raw blank just drops the word, so always substitute it with the correct
     // choice before playing audio, in both directions.
-    const mcqSpeech = (q.fr && q.fr.indexOf('___') !== -1) ? q.fr.replace('___', q.choices[q.answer]) : q.fr;
+    const mcqSpeech = targetSpeech(q);
     persist();
     body.innerHTML = `
       ${exerciseRuleHtml()}
@@ -22069,7 +22472,7 @@ function renderFill(body){
     // Guards against double-advancing when the user manually clicks Next while the
     // auto-play-on-correct audio is still finishing — whichever fires first wins.
     let advanced = false;
-    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
+    function advanceOnce(){ if(advanced) return; advanced = true; stopSpeech(); i++; show(); }
     body.querySelector('#hintBtn').addEventListener('click', ()=>{
       body.querySelector('#fb').textContent = q.hint;
       body.querySelector('#fb').className = 'feedback';
@@ -22106,7 +22509,7 @@ function renderFill(body){
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       if(checkedCorrect){
-        speechSynthesis.cancel();
+        stopSpeech();
         celebrateMastered(body, ()=>{
           setMastered('fill', masteredIdx, true);
           removeUpcomingOccurrences(pool, null, i, masteredIdx);
@@ -22147,6 +22550,8 @@ function renderFill(body){
    like the direction toggle, and rebuilds the pool (via a sparse "sourceList" that only has
    entries at the indices matching the filter — buildPracticePool/resumeSession's forEach
    skips the gaps) so idx still always means the same thing in tenseItems either way. */
+function getTenseMcqOnly(){ return !!store.get('tenseMcqOnly_'+currentStoreKey, false); }
+function setTenseMcqOnly(v){ store.set('tenseMcqOnly_'+currentStoreKey, !!v); }
 function getTenseFilter(){ return store.get('tenseFilter_'+currentStoreKey, 'all'); }
 function setTenseFilter(val){ store.set('tenseFilter_'+currentStoreKey, val); }
 function tenseFilterLabel(key){ return key==='all' ? 'All tenses' : (TENSE_DEFS.find(t=>t.key===key) || {}).label; }
@@ -22164,9 +22569,12 @@ function tenseFilterHtml(){
     <div class="dir-switch" id="tenseFilterSwitch">
       ${opts.map(o=>`<button type="button" class="dir-opt${active===o.key? ' active':''}" data-tf="${o.key}">${o.label}</button>`).join('')}
     </div>
-  </div>`;
+  </div>
+  <label class="tense-mcq-only"><input type="checkbox" id="tenseMcqOnly"${getTenseMcqOnly() ? ' checked' : ''}> <span>${T('Multiple choice only')}</span></label>`;
 }
-function wireTenseFilter(body, onSwitch){
+function wireTenseFilter(body, onSwitch, onMcqOnly){
+  const mcqBox = body.querySelector('#tenseMcqOnly');
+  if(mcqBox) mcqBox.addEventListener('change', ()=>{ setTenseMcqOnly(mcqBox.checked); if(onMcqOnly) onMcqOnly(); });
   const wrap = body.querySelector('#tenseFilterSwitch');
   if(!wrap) return;
   wrap.querySelectorAll('.dir-opt').forEach(btn=>{
@@ -22188,7 +22596,7 @@ function tensesSessionKey(filter){ return 'session_tenses_'+filter+'_'+currentSt
 function loadTensesSession(filter){ return store.get(tensesSessionKey(filter), null); }
 function saveTensesSession(filter, data){ store.set(tensesSessionKey(filter), data); }
 function clearTensesSession(filter){ store.set(tensesSessionKey(filter), null); }
-function freshTenseState(){ return { format: Math.random() < 0.5 ? 'mcq' : 'fill', wrong: [], done: false, revealed: false, choices: null, answer: null }; }
+function freshTenseState(){ return { format: (getTenseMcqOnly() || Math.random() < 0.5) ? 'mcq' : 'fill', wrong: [], done: false, revealed: false, choices: null, answer: null }; }
 function resumeTensesSession(filter, sourceList){
   const saved = loadTensesSession(filter);
   if(!saved || !Array.isArray(saved.order) || !saved.order.length) return null;
@@ -22215,7 +22623,7 @@ function renderTenses(body){
   let state = resumed ? resumed.state : pool.map(()=> freshTenseState());
   // a resumed state slot can come back without a format (e.g. the fallback used when the
   // pool's shape changed since the session was saved) — give it one so show() never sees undefined
-  state.forEach(s=>{ if(!s.format) s.format = Math.random() < 0.5 ? 'mcq' : 'fill'; });
+  state.forEach(s=>{ if(!s.format) s.format = (getTenseMcqOnly() || Math.random() < 0.5) ? 'mcq' : 'fill'; });
 
   function score(){ return state.filter(s=>s.done).length; }
   function persist(){ saveTensesSession(filter, { order: pool.map(p=>p.idx), state, i }); }
@@ -22253,6 +22661,19 @@ function renderTenses(body){
     return `<div class="q-prompt">Conjugate <span class="french">${q.verb}</span> <span style="opacity:.65;">(${q.en})</span><br>${q.tenseLabel} — <strong>${q.pronounLabel}</strong> ___</div>`;
   }
 
+  // "Multiple choice only" switched on/off: every question not yet answered flips to (or, when
+  // switched off, is re-dealt away from) multiple choice. Answered ones and ones already
+  // being attempted in the other format keep what they had.
+  function onMcqOnlyToggle(){
+    const only = getTenseMcqOnly();
+    state.forEach(s=>{
+      if(s.done) return;
+      if(only) s.format = 'mcq';
+      else if(!s.wrong.length) s.format = Math.random() < 0.5 ? 'mcq' : 'fill';
+    });
+    show(true);
+  }
+
   function wireCommonButtons(idx){
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
       toggleDifficult('tenses', idx);
@@ -22273,7 +22694,7 @@ function renderTenses(body){
     if(pool.length === 0){
       clearTensesSession(filter);
       body.innerHTML = `<div class="card">${tenseFilterHtml()}<p style="margin:0;">🎉 Nothing left to practice in <strong>${tenseFilterLabel(getTenseFilter())}</strong> for now. Try a different tense above, or find it in the <strong>Mastered</strong> tab.</p></div>`;
-      wireTenseFilter(body, resetForTenseFilter);
+      wireTenseFilter(body, resetForTenseFilter, onMcqOnlyToggle);
       return;
     }
     if(i >= pool.length){
@@ -22281,7 +22702,7 @@ function renderTenses(body){
       body.innerHTML = `<div class="card">${tenseFilterHtml()}<div class="score-pill">${T('Score: ')}${Math.min(score(), pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${T('Nice work. Reset to try again.')}</p><div class="ex-btn-row"><button class="btn btn-ghost" id="back">${T('Back')}</button><button class="btn btn-primary" id="restart">${T('Restart')}</button></div></div>`;
       body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('tenses', currentSourceList(), false); state = pool.map(()=> freshTenseState()); i=0; show(); });
       body.querySelector('#back').addEventListener('click', ()=>{ i = pool.length-1; show(); });
-      wireTenseFilter(body, resetForTenseFilter);
+      wireTenseFilter(body, resetForTenseFilter, onMcqOnlyToggle);
       return;
     }
     const idx = pool[i].idx;
@@ -22289,6 +22710,7 @@ function renderTenses(body){
     const st = state[i];
     persist();
 
+    if(getTenseMcqOnly() && !st.done && st.format !== 'mcq') st.format = 'mcq'; // covers resumed sessions
     if(st.format === 'mcq'){
       if(!st.choices){
         const built = buildChoicesFor(idx);
@@ -22320,7 +22742,7 @@ function renderTenses(body){
       // Guards against double-advancing when the user manually clicks Next while the
       // auto-play-on-correct audio is still finishing — whichever fires first wins.
       let advanced = false;
-      function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
+      function advanceOnce(){ if(advanced) return; advanced = true; stopSpeech(); i++; show(); }
       if(st.wrong.length) st.wrong.forEach(w=>{ opts[w].classList.add('wrong'); opts[w].disabled = true; });
       if(st.done){
         opts[st.answer].classList.add('correct');
@@ -22424,7 +22846,7 @@ function renderTenses(body){
       // Guards against double-advancing when the user manually clicks Next while the
       // auto-play-on-correct audio is still finishing — whichever fires first wins.
       let advanced = false;
-      function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
+      function advanceOnce(){ if(advanced) return; advanced = true; stopSpeech(); i++; show(); }
       // A wrong guess just says so and lets you try again — it never gives the answer away.
       // Only Reveal shows it (and, like giving up, locks the question); Next always works so
       // you're never stuck on one you don't know.
@@ -22469,7 +22891,7 @@ function renderTenses(body){
       nextBtn.addEventListener('click', advanceOnce);
       body.querySelector('#masterBtn').addEventListener('click', ()=>{
         if(st.done){
-          speechSynthesis.cancel();
+          stopSpeech();
           celebrateMastered(body, ()=>{
             setMastered('tenses', idx, true);
             removeUpcomingOccurrences(pool, state, i, idx);
@@ -22488,7 +22910,7 @@ function renderTenses(body){
       });
     }
     wireCommonButtons(idx);
-    wireTenseFilter(body, resetForTenseFilter);
+    wireTenseFilter(body, resetForTenseFilter, onMcqOnlyToggle);
   }
   show();
 }
@@ -22653,7 +23075,7 @@ function renderBuilder(body){
     // Guards against double-advancing when the user manually clicks Next while the
     // auto-play-on-correct audio is still finishing — whichever fires first wins.
     let advanced = false;
-    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
+    function advanceOnce(){ if(advanced) return; advanced = true; stopSpeech(); i++; show(); }
     body.querySelector('#clear').addEventListener('click', ()=>{ if(answered) return; chosen = []; bank = q.parts.map((p,idx)=>({p,idx})).sort(()=>Math.random()-0.5); renderRows(); });
     body.querySelector('#check').addEventListener('click', ()=>{
       if(answered) return;
@@ -22688,7 +23110,7 @@ function renderBuilder(body){
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = qPool[i].idx;
       if(checkedCorrect){
-        speechSynthesis.cancel();
+        stopSpeech();
         celebrateMastered(body, ()=>{
           setMastered('build', masteredIdx, true);
           removeUpcomingOccurrences(qPool, null, i, masteredIdx);
@@ -22787,7 +23209,7 @@ function renderTranslate(body){
     // Guards against double-advancing when the user manually clicks Next while the
     // auto-play-on-correct audio is still finishing \u2014 whichever fires first wins.
     let advanced = false;
-    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
+    function advanceOnce(){ if(advanced) return; advanced = true; stopSpeech(); i++; show(); }
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(q.fr));
     body.querySelector('#check').addEventListener('click', ()=>{
       const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
@@ -22819,7 +23241,7 @@ function renderTranslate(body){
     body.querySelector('#masterBtn').addEventListener('click', ()=>{
       const masteredIdx = pool[i].idx;
       if(checkedCorrect){
-        speechSynthesis.cancel();
+        stopSpeech();
         celebrateMastered(body, ()=>{
           setMastered('translate', masteredIdx, true);
           removeUpcomingOccurrences(pool, null, i, masteredIdx);
@@ -22956,7 +23378,7 @@ function renderVocabDrill(body, list, opts){
     // Guards against double-advancing when the user manually clicks Next while the
     // auto-play-on-correct audio is still finishing — whichever fires first wins.
     let advanced = false;
-    function advanceOnce(){ if(advanced) return; advanced = true; speechSynthesis.cancel(); i++; show(); }
+    function advanceOnce(){ if(advanced) return; advanced = true; stopSpeech(); i++; show(); }
 
     function revealPlayButtonIfHidden(){
       if(body.querySelector('#playBtn')) return;
@@ -23496,6 +23918,10 @@ function loadCourse(langId, levelId){
   quizWeeks = c.quizWeeks || [];
   weekChecks = store.get('weekChecks_'+currentStoreKey, {});
   quizBest = store.get(QUIZ_BEST_KEY_PREFIX+currentStoreKey, {});
+  planSteps = loadPlanSteps();
+  planFlow = null;
+  planWeekIdx = -1;
+  planExpanded = new Set();
   loadMastered();
   loadDifficult();
   activeCat = PHRASE_CATS[0];
