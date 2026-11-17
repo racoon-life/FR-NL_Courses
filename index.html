@@ -1665,6 +1665,163 @@
     #exBody #playBtn.playing{ animation:none; }
   }
 
+    /* ---------- Information architecture pass: Home = next action, Plan = roadmap ---------- */
+  .hm-greet{ margin:4px 2px 16px; }
+  .hm-hi{ font-size:.78rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); }
+  .hm-ready{ margin:4px 0 2px; font-family:var(--font-display); font-weight:900; font-size:1.7rem; letter-spacing:-.025em; line-height:1.15; }
+  .hm-hero > .hm-cta{ width:100%; flex:none; }
+  .hm-hero-where{ font-size:.86rem; font-weight:700; opacity:.85; }
+  .hm-hero-desc{ margin:10px 0 14px; font-size:.95rem; line-height:1.45; font-weight:600; color:#26402F; }
+  .hm-hero-count{ margin:-6px 0 14px; font-size:.8rem; font-weight:700; opacity:.8; }
+  .hm-hero-title{ font-size:1.6rem; margin:6px 0 2px; }
+  .hm-ghost{ display:block; width:100%; margin-top:6px; min-height:44px; background:none; border:none; color:#26402F; font:inherit; font-weight:800; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+  .hm-mile{ margin:0 0 12px; padding:10px 14px; border-radius:16px; background:var(--surface); color:var(--text); font-size:.88rem; font-weight:700; box-shadow:0 1px 0 rgba(48,58,50,.04), 0 6px 22px rgba(48,58,50,.05); }
+  .hm-prog{ background:var(--surface); border-radius:var(--r-lg); padding:14px 16px; margin-bottom:6px; box-shadow:0 1px 0 rgba(48,58,50,.04), 0 6px 22px rgba(48,58,50,.05); }
+  .hm-prog-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-weight:800; font-size:.92rem; }
+  .hm-prog-lv{ display:inline-flex; align-items:center; gap:6px; min-width:0; }
+  .hm-prog-wk{ color:var(--text-2); font-weight:700; font-size:.82rem; white-space:nowrap; }
+  .hm-bar{ height:8px; border-radius:99px; background:var(--surface-2); overflow:hidden; margin:10px 0 8px; }
+  .hm-bar i{ display:block; height:100%; background:var(--primary-2, var(--sage-d, #759B80)); border-radius:99px; transition:width .3s ease; min-width:0; }
+  .hm-prog-foot{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 12px; font-size:.78rem; color:var(--text-2); font-weight:600; }
+  .hm-tile{ color:var(--text); min-width:0; }
+  .hm-quick{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hm-tile .tt, .hm-tile .ts{ overflow-wrap:break-word; }
+  @media (max-width:360px){ .hm-quick{ grid-template-columns:minmax(0,1fr); } }
+  .hm-more{ background:none; border:none; min-height:44px; padding:0 4px; color:var(--primary-text); font:inherit; font-weight:800; font-size:.86rem; cursor:pointer; }
+  .hm-section-t{ margin:14px 2px 4px; }
+  .hm-planlink{ display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:transparent; border:1.5px dashed var(--border-strong); border-radius:18px; padding:12px 14px; margin:14px 0 0; min-height:60px; cursor:pointer; font:inherit; color:var(--text); }
+  .hm-planlink .tic{ width:40px; height:40px; border-radius:12px; background:#ECEBD9; display:grid; place-items:center; font-size:1.2rem; flex:0 0 auto; }
+  .hm-planlink .tt{ font-weight:800; font-size:.95rem; }
+  .hm-planlink .ts{ font-size:.78rem; color:var(--text-2); }
+  .hm-planlink .chev{ margin-left:auto; color:var(--text-2); font-size:1.3rem; }
+  .hm-planlink:hover{ background:var(--surface); }
+  .info-btn{ width:22px; height:22px; min-height:22px; padding:0; border-radius:50%; border:1.5px solid var(--border-strong); background:var(--surface); color:var(--text-2); font:italic 800 .72rem/1 Georgia,serif; cursor:pointer; position:relative; flex:0 0 auto; }
+  .info-btn::after{ content:""; position:absolute; inset:-11px; }
+  .info-btn[aria-expanded="true"]{ background:var(--primary-soft); color:var(--primary-text); border-color:var(--primary-soft-2); }
+  .hint-card{ margin:10px 0 0; padding:10px 12px; border-radius:14px; background:var(--primary-soft); color:var(--text); font-size:.84rem; line-height:1.45; font-weight:600; }
+  .hint-card[hidden]{ display:none; }
+
+  /* Plan: orientation + roadmap */
+  #plan .plan-intro{ margin:2px 0 18px; }
+  .pi-title{ margin:0 0 4px; font-family:var(--font-display); font-weight:900; font-size:1.55rem; letter-spacing:-.02em; line-height:1.2; }
+  .pi-sub{ margin:0 0 14px; color:var(--text-2); font-size:.95rem; line-height:1.45; }
+  .pi-now{ background:var(--surface); border-radius:var(--r-lg); padding:14px 16px; box-shadow:0 1px 0 rgba(48,58,50,.04), 0 6px 22px rgba(48,58,50,.05); }
+  .pi-now-top{ display:flex; justify-content:space-between; gap:10px; align-items:baseline; font-size:.92rem; }
+  .pi-now-top span{ color:var(--text-2); font-weight:700; font-size:.82rem; white-space:nowrap; }
+  .pi-now-foot{ font-size:.78rem; color:var(--text-2); font-weight:600; }
+  .pi-path, .onb-levels{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  .pi-lv{ padding:3px 12px; border-radius:var(--r-pill); background:var(--surface-2); color:var(--text-2); font-weight:800; font-size:.78rem; }
+  .pi-lv.cur{ background:var(--primary); color:var(--on-primary); }
+  .pi-arr{ color:var(--text-2); font-size:.8rem; }
+  .pi-help{ margin-top:10px; border-radius:16px; background:var(--primary-soft); }
+  .pi-help summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:8px; padding:12px 14px; min-height:48px; font-weight:800; font-size:.9rem; color:var(--primary-text); }
+  .pi-help summary::-webkit-details-marker{ display:none; }
+  .pi-help summary::after{ content:"▾"; margin-left:auto; transition:transform .2s ease; }
+  .pi-help[open] summary::after{ transform:rotate(180deg); }
+  .info-dot{ display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--surface); font:italic 800 .72rem/1 Georgia,serif; }
+  .pi-help-body{ padding:0 14px 12px; font-size:.86rem; line-height:1.5; }
+  .pi-help-body h4{ margin:10px 0 2px; font-size:.86rem; }
+  .pi-help-body p{ margin:0 0 4px; color:var(--text); }
+  .pi-link{ display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:6px; min-height:48px; padding:0 4px; background:none; border:none; color:var(--primary-text); font:inherit; font-weight:800; font-size:.9rem; cursor:pointer; text-align:left; }
+  .rm-h{ margin:6px 2px 10px; font-size:1.1rem; }
+  .rm-list{ list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .rm-month{ margin:8px 4px 0; font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--text-2); }
+  .rm-week{ background:var(--surface); border-radius:var(--r-lg); box-shadow:0 1px 0 rgba(48,58,50,.04), 0 6px 22px rgba(48,58,50,.05); scroll-margin-top:84px; }
+  .rm-week.open{ box-shadow:0 1px 0 rgba(48,58,50,.04), 0 10px 30px rgba(48,58,50,.09); }
+  .rm-head{ display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:none; border:none; padding:14px 16px; min-height:64px; cursor:pointer; font:inherit; color:var(--text); border-radius:var(--r-lg); }
+  .rm-dot{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto; font-weight:900; font-size:.9rem; background:var(--surface-2); color:var(--text-2); }
+  .st-done .rm-dot{ background:var(--primary); color:var(--on-primary); }
+  .st-doing .rm-dot, .st-next .rm-dot, .st-start .rm-dot{ background:var(--primary-soft-2, #D8E6D2); color:var(--primary-text); }
+  .rm-ht{ display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; }
+  .rm-eyebrow{ font-size:.72rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-2); }
+  .rm-eyebrow b{ color:var(--primary-text); }
+  .st-later .rm-eyebrow b, .st-avail .rm-eyebrow b{ color:var(--text-2); }
+  .rm-title{ font-weight:800; font-size:1rem; line-height:1.3; }
+  .st-done:not(.open) .rm-title{ font-weight:700; color:var(--text-2); }
+  .rm-meta{ font-size:.78rem; color:var(--text-2); font-weight:600; }
+  .rm-chev{ color:var(--text-2); transition:transform .2s ease; flex:0 0 auto; }
+  .rm-week.open .rm-chev{ transform:rotate(180deg); }
+  .rm-body{ padding:0 16px 16px; }
+  .rm-body .pw-steps{ margin-top:8px; }
+  .rm-body .pw-cando{ margin-top:0; }
+
+  /* Finish-a-lesson sheet */
+  .done-sheet{ display:flex; flex-direction:column; gap:10px; text-align:center; }
+  .ds-leaf{ font-size:2rem; line-height:1; }
+  .ds-msg{ margin:0; font-family:var(--font-display); font-weight:900; font-size:1.2rem; line-height:1.3; }
+  .ds-did{ margin:0; font-size:.92rem; line-height:1.4; }
+  .ds-did span{ color:var(--text-2); font-size:.82rem; }
+  .done-sheet .pw-progress{ justify-content:center; }
+  .ds-mile{ margin:0; padding:8px 12px; border-radius:14px; background:var(--primary-soft); font-weight:800; font-size:.88rem; }
+  .ds-primary{ display:flex; flex-direction:column; align-items:center; gap:2px; min-height:60px; padding:10px 16px; border:none; border-radius:var(--r-pill); background:var(--primary); color:var(--on-primary); font:inherit; cursor:pointer; box-shadow:0 8px 20px rgba(48,79,60,.25); }
+  .ds-primary span{ font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+  .ds-primary b{ font-size:1rem; font-weight:800; }
+  .ds-secondary{ min-height:48px; background:none; border:none; color:var(--primary-text); font:inherit; font-weight:800; cursor:pointer; }
+
+  /* Welcome (first run) */
+  .onb-ov{ position:fixed; inset:0; z-index:400; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn .25s ease; overflow:auto; }
+  .onb{ position:relative; width:100%; max-width:420px; text-align:center; padding:32px 6px 8px; }
+  .onb-skip{ position:absolute; top:0; right:0; min-height:44px; padding:0 8px; background:none; border:none; color:var(--text-2); font:inherit; font-weight:800; cursor:pointer; }
+  .onb-art{ min-height:110px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; }
+  .onb-art svg{ width:112px; height:112px; }
+  .onb h2{ margin:0 0 10px; font-family:var(--font-display); font-weight:900; font-size:1.65rem; letter-spacing:-.02em; line-height:1.2; }
+  .onb p{ margin:0 0 18px; color:var(--text-2); font-size:1rem; line-height:1.5; }
+  .onb-dots{ display:flex; justify-content:center; gap:6px; margin:4px 0 18px; }
+  .onb-dots i{ width:8px; height:8px; border-radius:50%; background:var(--border-strong); }
+  .onb-dots i.on{ background:var(--primary); width:22px; border-radius:99px; }
+  .onb-primary{ width:100%; min-height:56px; border:none; border-radius:var(--r-pill); background:var(--primary); color:var(--on-primary); font:inherit; font-weight:800; font-size:1.05rem; cursor:pointer; box-shadow:0 10px 24px rgba(48,79,60,.25); }
+  .onb-quiet{ margin-top:8px; min-height:48px; background:none; border:none; color:var(--primary-text); font:inherit; font-weight:800; cursor:pointer; }
+  .onb-levels{ justify-content:center; flex-wrap:nowrap; margin-top:0; }
+  .onb-lv{ padding:12px 18px; border-radius:18px; background:var(--surface); box-shadow:0 6px 20px rgba(48,58,50,.07); font-family:var(--font-display); font-weight:900; font-size:1.3rem; color:var(--text-2); }
+  .onb-lv.cur{ background:var(--primary); color:var(--on-primary); }
+  body.onb-open{ overflow:hidden; }
+
+  /* growing plant + streak */
+  .hm-toprow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .streak-chip{ display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:0 12px; border-radius:var(--r-pill); border:none; background:var(--surface); color:var(--primary-text); font:inherit; font-weight:800; font-size:.82rem; cursor:pointer; box-shadow:0 1px 0 rgba(48,58,50,.05), 0 4px 14px rgba(48,58,50,.06); position:relative; white-space:nowrap; }
+  .streak-chip::after{ content:""; position:absolute; inset:-4px -2px; }
+  .streak-chip.zero{ color:var(--text-2); font-weight:700; }
+  .hm-prog{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; }
+  .hm-prog-main{ flex:1 1 0; min-width:0; }
+  .hm-prog .hint-card{ flex:1 0 100%; margin-top:2px; }
+  .hm-prog-main .hm-bar{ margin:8px 0 6px; }
+  .plant-btn{ display:flex; flex-direction:column; align-items:center; gap:0; width:84px; padding:2px 0 0; background:none; border:none; cursor:pointer; font:inherit; color:var(--text); border-radius:18px; flex:0 0 auto; }
+  .plant-art svg{ width:68px; height:68px; display:block; transform-origin:50% 88%; animation:plantSway 7s ease-in-out infinite; }
+  .plant-name{ font-weight:800; font-size:.74rem; color:var(--primary-text); margin-top:-2px; min-height:28px; display:flex; align-items:center; }
+  .plant-btn.grew .plant-art{ position:relative; }
+  .plant-btn.grew .plant-art svg{ animation:plantGrow 1.1s var(--ease) 1, plantSway 7s ease-in-out 1.1s infinite; }
+  .plant-btn.grew .plant-art::after{ content:""; position:absolute; inset:6px; border-radius:50%; border:2px solid var(--sage); opacity:0; animation:plantRing 1.1s ease-out 1; }
+  @keyframes plantSway{ 0%,100%{ transform:rotate(-1.6deg); } 50%{ transform:rotate(1.6deg); } }
+  @keyframes plantGrow{ 0%{ transform:scale(.7) translateY(8px); opacity:.5; } 55%{ transform:scale(1.12) translateY(-2px); opacity:1; } 100%{ transform:scale(1) translateY(0); } }
+  @keyframes plantRing{ 0%{ transform:scale(.6); opacity:.9; } 100%{ transform:scale(1.5); opacity:0; } }
+  .garden-sheet, .streak-sheet{ text-align:center; display:flex; flex-direction:column; gap:8px; }
+  .gs-plant svg{ width:120px; height:120px; transform-origin:50% 88%; animation:plantSway 7s ease-in-out infinite; }
+  .gs-stage{ margin:0; font-family:var(--font-display); font-weight:900; font-size:1.4rem; }
+  .gs-xp, .gs-next{ margin:0; color:var(--text-2); font-size:.9rem; font-weight:600; }
+  .gs-next b{ color:var(--primary-text); }
+  .gs-stages{ list-style:none; margin:4px 0 0; padding:0; display:flex; flex-direction:column; gap:4px; text-align:left; }
+  .gs-stages li{ display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:12px; background:var(--surface-2); color:var(--text-2); font-weight:700; font-size:.88rem; }
+  .gs-stages li.on{ background:var(--primary-soft); color:var(--primary-text); }
+  .gs-stages li.now{ box-shadow:inset 0 0 0 2px var(--sage); }
+  .gs-stages li i{ margin-left:auto; font-style:normal; font-size:.76rem; opacity:.8; }
+  .gs-note{ margin:6px 0 0; font-size:.78rem; line-height:1.45; color:var(--text-2); }
+  .ss-big{ margin:0; font-family:var(--font-display); font-weight:900; font-size:2.4rem; line-height:1.1; }
+  .ss-big small{ font-size:1rem; color:var(--text-2); font-weight:700; }
+  .ss-cal{ list-style:none; margin:6px 0; padding:0; display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .ss-cal li{ display:flex; flex-direction:column; align-items:center; gap:4px; font-size:.74rem; font-weight:800; color:var(--text-2); }
+  .ss-cal i{ width:100%; max-width:40px; aspect-ratio:1; border-radius:50%; background:var(--surface-2); display:grid; place-items:center; font-style:normal; font-weight:900; color:var(--on-primary); }
+  .ss-cal li.on i{ background:var(--primary); }
+  .ss-cal li.today i{ box-shadow:0 0 0 2px var(--surface), 0 0 0 4px var(--sage); }
+  .ss-msg{ margin:0; font-weight:700; font-size:.92rem; }
+  .ss-best{ margin:0; color:var(--text-2); font-size:.84rem; font-weight:700; }
+  @media (max-width:360px){ .plant-btn{ width:72px; } .plant-art svg{ width:58px; height:58px; } .streak-chip{ font-size:.76rem; padding:0 10px; } }
+  @media (prefers-reduced-motion:reduce){ .plant-art svg, .gs-plant svg, .plant-btn.grew .plant-art svg{ animation:none !important; } .plant-btn.grew .plant-art::after{ animation:none; } }
+  /* After a practice activity */
+  .done-next{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+  .done-next .btn{ width:100%; }
+  @media (min-width:900px){ .hm-ready{ font-size:2rem; } .pi-title{ font-size:1.8rem; } }
+  @media (prefers-reduced-motion:reduce){ .rm-chev, .hm-bar i, .pi-help summary::after{ transition:none; } .onb-ov{ animation:none; } }
+
   /* ---------- Audit fixes: narrow-screen overflow & tap targets ---------- */
   :where(button, a[href], summary, [tabindex]):focus-visible{ outline:3px solid var(--primary); outline-offset:2px; }
   .goal-dlg input:focus-visible, .fill-input:focus-visible{ outline:none; }
@@ -1858,6 +2015,7 @@
 
   <!-- PLAN -->
   <section id="plan">
+    <div id="planIntro"></div>
     <div id="weeks"></div>
     <div class="card" id="wordsGoalCard"></div>
     <div class="card plan-level-card" id="planLevelInfo"></div>
@@ -21550,26 +21708,18 @@ function flattenMonths(months){
 function renderPlanLevelInfo(){
   const card = document.getElementById('planLevelInfo');
   if(!card) return;
-  card.style.display = '';
   const c = currentLevelData;
-  const how = `<p>${T('~30–40 min/day, six days a week. Listening and speaking lead every week.')}</p>
-      <p>${T('Follow the steps in order — each button opens the matching exercise. Tick a step when you finish it; your progress is saved on this device.')}</p>`;
+  // "How your plan works" now lives at the top of the Plan; this card keeps the level's own syllabus notes.
   if(c && c.tagline){
-    // Levels with a rich CEFR/DELF syllabus note (currently French A1) get the fuller card.
+    card.style.display = '';
     card.innerHTML = `<details class="plan-about">
       <summary><span class="pa-label">${c.label || ''}</span><span class="pa-sub">${T('About this level')}</span></summary>
       <div class="pa-body">
         <p>${c.tagline}</p>
         ${c.comingSoonNote? `<p style="margin-top:8px;">${c.comingSoonNote}</p>` : ''}
         ${c.syllabusNote? `<p class="syllabus-note">${c.syllabusNote}</p>` : ''}
-        <div style="margin-top:8px;">${how}</div>
       </div></details>`;
-  } else {
-    // Courses/levels without that extra syllabus context keep the generic note.
-    card.innerHTML = `<details class="plan-about">
-      <summary><span class="pa-label">${T('How this works')}</span></summary>
-      <div class="pa-body">${how}<p>${T('Reading and writing only show up when they directly support speaking.')}</p></div></details>`;
-  }
+  } else { card.innerHTML = ''; card.style.display = 'none'; }
 }
 
 /* Jump links: each Plan week card links straight to that week's matching quiz, its
@@ -21784,9 +21934,11 @@ function setPlanWeek(i){
   if(i < 0 || i >= weeks.length) return;
   planWeekIdx = i;
   store.set('planWeek_'+currentStoreKey, i);
+  planOpen.add(i); planOpenInit = true;
   renderPlan();
   if(typeof renderHome === 'function') renderHome();
-  window.scrollTo({top:0});
+  const card = document.querySelector('.rm-week[data-wk="'+i+'"]');
+  if(card) card.scrollIntoView({block:'start'}); else window.scrollTo({top:0});
 }
 function planPreview(text){
   const plain = planStripTags(text);
@@ -21849,57 +22001,119 @@ function renderPlanStep(wi, st, si, isNext){
       </div>
     </li>`;
 }
-function renderPlan(){
-  const wrap = document.getElementById('weeks');
-  if(!wrap) return;
-  if(!weeks.length){ wrap.innerHTML = ''; return; }
-  resolvePlanWeek();
-  const wi = planWeekIdx, w = weeks[wi];
-  const steps = planWeekSteps(wi);
-  const counts = weekDoneCount(wi);
+/* ---------- PLAN: "Where am I in my learning journey?" — an expandable roadmap of weeks ---------- */
+let planOpen = new Set();     // weeks currently expanded
+let planOpenInit = false;     // first render of a level opens the week you're on
+function planWeekStatus(i, fWi, fresh){
+  if(isWeekComplete(i)) return 'done';
+  if(weekDoneCount(i).done > 0) return 'doing';
+  if(i === fWi) return fresh ? 'start' : 'next';
+  return i < fWi ? 'avail' : 'later';
+}
+const PLAN_STATUS_LABEL = {
+  done:  ['Completed','Pabaigta'], doing: ['In progress','Vyksta'], next: ['Up next','Toliau'],
+  start: ['Start here','Pradėkite čia'], avail: ['Available','Galima'], later: ['Upcoming','Netrukus']
+};
+function renderPlanIntro(){
+  const el = document.getElementById('planIntro');
+  if(!el) return;
+  if(!weeks || !weeks.length){ el.innerHTML = ''; return; }
+  const f = planFocus(), lp = levelProgress(), pct = lp.total ? Math.round(lp.done / lp.total * 100) : 0;
+  const wkNow = f && !f.allDone ? f.wi + 1 : weeks.length;
+  const lang = COURSES[currentCourseId] || {};
+  const lvIds = Object.keys(lang.levels || {});
+  const path = lvIds.length > 1 ? `<div class="pi-path" aria-label="${LL('Levels in this course','Kurso lygiai')}">${lvIds.map(l=>`<span class="pi-lv${l === currentLevelId ? ' cur' : ''}"${l === currentLevelId ? ' aria-current="true"' : ''}>${l.toUpperCase()}</span>`).join('<span class="pi-arr" aria-hidden="true">→</span>')}</div>` : '';
+  const how = `<p>${T('~30–40 min/day, six days a week. Listening and speaking lead every week.')} ${LL('This is a guide, not a deadline — go at your own pace.','Tai orientyras, o ne terminas – mokykitės savo tempu.')}</p>
+    <p>${LL(`This level has ${weeks.length} weeks. Follow the lessons in order if you like, or open any week you wish. Each button opens the matching activity, and you can tick a lesson when you finish it. Your progress is saved on this device.`, `Šiame lygyje – ${weeks.length} savaitės. Pamokas galite eiti iš eilės arba atidaryti bet kurią savaitę. Kiekvienas mygtukas atveria atitinkamą veiklą, o baigtą pamoką galite pažymėti. Pažanga saugoma šiame įrenginyje.`)}</p>
+    <p>${T('Reading and writing only show up when they directly support speaking.')}</p>`;
+  el.innerHTML = `
+    <div class="plan-intro">
+      <h2 class="pi-title">${LL(`Your ${currentCourseName} learning journey`, `Jūsų ${ltCourseName()} kalbos mokymosi kelionė`)}</h2>
+      <p class="pi-sub">${LL('Build the skills to communicate confidently in everyday situations.','Ugdykite įgūdžius, kad užtikrintai bendrautumėte kasdienėse situacijose.')}</p>
+      <div class="pi-now">
+        <div class="pi-now-top"><b>${levelLabel()}</b><span>${LL('Week','Savaitė')} ${wkNow} ${LL('of','iš')} ${weeks.length}</span></div>
+        <div class="hm-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${lp.total}" aria-valuenow="${lp.done}" aria-label="${LL('Lessons completed','Atliktos pamokos')}"><i style="width:${pct}%"></i></div>
+        <div class="pi-now-foot">${LL(`${lp.done} of ${lp.total} lessons done`, `${lp.done} iš ${lp.total} pamokų atlikta`)}</div>
+        ${path}
+      </div>
+      <details class="pi-help">
+        <summary><span class="info-dot" aria-hidden="true">i</span>${LL('How your plan works','Kaip veikia jūsų planas')}</summary>
+        <div class="pi-help-body">
+          <h4>${LL('What is my learning plan?','Kas yra mokymosi planas?')}</h4>
+          <p>${LL('Your plan organises lessons into manageable weeks, helping you build communication skills gradually.','Planas sugrupuoja pamokas į patogias savaites, kad bendravimo įgūdžiai augtų palaipsniui.')}</p>
+          ${how}
+          <h4>${LL(`What is ${(currentLevelId || '').toUpperCase()}?`, `Kas yra ${(currentLevelId || '').toUpperCase()}?`)}</h4>
+          <p>${levelExplain()}</p>
+          <h4>${LL('Lessons or exercises?','Pamokos ar pratimai?')}</h4>
+          <p>${LL('Lessons guide you through new material. Exercises help you apply and reinforce it — you can find them under Practice whenever you like.','Pamokos supažindina su nauja medžiaga. Pratimai padeda ją pritaikyti ir įtvirtinti – jų rasite skiltyje „Praktika“ bet kada.')}</p>
+        </div>
+      </details>
+      <button type="button" class="pi-link" data-pi="journey"><span>${LL('See your level goals and milestones','Žiūrėti lygio tikslus ir etapus')}</span><span aria-hidden="true">›</span></button>
+    </div>`;
+}
+function weekBodyHtml(wi, f, fresh){
+  const w = weeks[wi], steps = planWeekSteps(wi), counts = weekDoneCount(wi);
   const pct = counts.total ? Math.round(counts.done / counts.total * 100) : 0;
-  const nextIdx = nextPlanStepIdx(wi);
   const complete = counts.total > 0 && counts.done === counts.total;
-  const chips = weeks.map((_, i)=>{
-    const d = isWeekComplete(i), cur = i === wi;
-    return `<button type="button" class="pw-chip${d?' done':''}${cur?' current':''}" data-pw-week="${i}" aria-label="${T('Week')} ${i+1}" aria-current="${cur}">${d ? '✓' : i+1}</button>`;
-  }).join('');
+  const nextIdx = (f && !f.allDone && f.wi === wi) ? f.si : -1;
   let cta = '';
   if(complete){
     cta = wi < weeks.length - 1
-      ? `<div class="pw-complete"><div class="pw-complete-t">🎉 ${T('Week complete')}</div><button type="button" class="btn btn-primary" data-pw-week="${wi+1}">${T('Go to week ')}${wi+2} ›</button></div>`
-      : `<div class="pw-complete"><div class="pw-complete-t">🎉 ${T('Level plan complete — well done!')}</div></div>`;
+      ? `<div class="pw-complete"><div class="pw-complete-t">🌿 ${LL('Week complete — lovely work.','Savaitė baigta – puikus darbas.')}</div><button type="button" class="btn btn-primary" data-pw-week="${wi+1}">${LL('Open','Atidaryti')} ${T('Week')} ${wi+2} ›</button></div>`
+      : `<div class="pw-complete"><div class="pw-complete-t">🌿 ${T('Level plan complete — well done!')}</div></div>`;
   }
-  wrap.innerHTML = `
-    <div class="pw-nav">
-      <button type="button" class="pw-arrow" data-pw-delta="-1" aria-label="${T('Previous week')}" ${wi===0?'disabled':''}>‹</button>
-      <div class="pw-chips" id="pwChips">${chips}</div>
-      <button type="button" class="pw-arrow" data-pw-delta="1" aria-label="${T('Next week')}" ${wi===weeks.length-1?'disabled':''}>›</button>
-    </div>
-    <div class="card pw-card">
-      ${w._monthTitle ? `<div class="pw-month">${w._monthTitle}</div>` : ''}
-      <div class="pw-focus">${w.focus || ''}</div>
-      <h2 class="pw-title-h">${T('Week')} ${wi+1} · ${w.title}</h2>
-      ${weekCanDo(wi) ? `<div class="pw-cando"><span class="cl">🗣️ ${canDoLabel()}</span>${weekCanDo(wi)}</div>` : ''}
-      <p class="pw-summary" data-pw-summary title="${T('Read more')}">${w.summary || ''}</p>
-      ${steps.goal ? `<div class="pw-goal"><strong>🎯 ${T("This week's goal")}</strong> ${steps.goal}</div>` : ''}
-      <div class="pw-progress"><div class="pw-bar"><div class="pw-fill" style="width:${pct}%"></div></div><span>${counts.done}${T(' of ')}${counts.total} ${T('steps done')}</span></div>
-      ${cta}
-      <ol class="pw-steps">${steps.map((st, si)=> renderPlanStep(wi, st, si, si === nextIdx && !complete)).join('')}</ol>
-    </div>
-    <div class="pw-foot">
-      <button type="button" class="btn btn-ghost btn-sm" data-pw-delta="-1" ${wi===0?'disabled':''}>‹ ${T('Previous week')}</button>
-      <button type="button" class="btn btn-ghost btn-sm" data-pw-delta="1" ${wi===weeks.length-1?'disabled':''}>${T('Next week')} ›</button>
-    </div>`;
-  const chipWrap = document.getElementById('pwChips');
-  const cur = chipWrap && chipWrap.querySelector('.current');
-  if(chipWrap && cur) chipWrap.scrollLeft = cur.offsetLeft - chipWrap.clientWidth/2 + cur.offsetWidth/2;
+  return `
+    ${weekCanDo(wi) ? `<div class="pw-cando"><span class="cl">🗣️ ${canDoLabel()}</span>${weekCanDo(wi)}</div>` : ''}
+    ${w.summary ? `<p class="pw-summary" data-pw-summary title="${T('Read more')}">${w.summary}</p>` : ''}
+    ${steps.goal ? `<div class="pw-goal"><strong>🎯 ${T("This week's goal")}</strong> ${steps.goal}</div>` : ''}
+    <div class="pw-progress"><div class="pw-bar"><div class="pw-fill" style="width:${pct}%"></div></div><span>${LL(`${counts.done} of ${counts.total} lessons done`, `${counts.done} iš ${counts.total} pamokų atlikta`)}</span></div>
+    ${cta}
+    <ol class="pw-steps">${steps.map((st, si)=> renderPlanStep(wi, st, si, si === nextIdx)).join('')}</ol>`;
+}
+function renderPlan(){
+  const wrap = document.getElementById('weeks');
+  renderPlanIntro();
+  if(!wrap) return;
+  if(!weeks.length){ wrap.innerHTML = ''; return; }
+  const f = planFocus(), fresh = isNewLearner(), fWi = f ? f.wi : 0;
+  if(!planOpenInit){ planOpen = new Set([fWi]); planOpenInit = true; }
+  let out = '';
+  weeks.forEach((w, i)=>{
+    if(w._isFirstOfMonth && w._monthTitle) out += `<li class="rm-month" aria-hidden="true">${w._monthTitle}</li>`;
+    const status = planWeekStatus(i, fWi, fresh), open = planOpen.has(i), c = weekDoneCount(i);
+    const mark = status === 'done' ? '✓' : (status === 'doing' || status === 'next' || status === 'start' ? '●' : String(i+1));
+    out += `<li class="rm-week st-${status}${open ? ' open' : ''}" data-wk="${i}">
+      <button type="button" class="rm-head" data-rm-toggle="${i}" aria-expanded="${open}" aria-controls="rmb${i}">
+        <span class="rm-dot" aria-hidden="true">${mark}</span>
+        <span class="rm-ht">
+          <span class="rm-eyebrow">${T('Week')} ${i+1} · <b>${LL(PLAN_STATUS_LABEL[status][0], PLAN_STATUS_LABEL[status][1])}</b></span>
+          <span class="rm-title">${w.title}</span>
+          ${open ? '' : `<span class="rm-meta">${LL(`${c.done} of ${c.total} lessons`, `${c.done} iš ${c.total} pamokų`)}</span>`}
+        </span>
+        <span class="rm-chev" aria-hidden="true">▾</span>
+      </button>
+      ${open ? `<div class="rm-body" id="rmb${i}">${weekBodyHtml(i, f, fresh)}</div>` : ''}
+    </li>`;
+  });
+  wrap.innerHTML = `<h3 class="rm-h">${LL('Week by week','Savaitė po savaitės')}</h3><ol class="rm-list">${out}</ol>`;
 }
 function renderWeeks(){ renderPlan(); } // kept as the entry point loadCourse() already calls
 
+document.getElementById('planIntro').addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-pi]');
+  if(b && b.dataset.pi === 'journey') goToSection('journey');
+});
 /* One delegated listener for everything inside the Plan. */
 document.getElementById('weeks').addEventListener('click', (e)=>{
   if(e.target.closest('.ex-jump-link')) return; // handled by the document-level link handler
+  const tg = e.target.closest('[data-rm-toggle]');
+  if(tg){
+    const i = +tg.dataset.rmToggle;
+    if(planOpen.has(i)) planOpen.delete(i); else planOpen.add(i);
+    renderPlan();
+    const card = document.querySelector('.rm-week[data-wk="'+i+'"] .rm-head'); if(card) card.focus({preventScroll:true});
+    return;
+  }
   const sum = e.target.closest('[data-pw-summary]');
   if(sum){ sum.classList.toggle('open'); return; }
   const weekBtn = e.target.closest('[data-pw-week]');
@@ -21943,7 +22157,7 @@ function updateFlowBar(){
   const tgt = st.targets[planFlow.t] || st.targets[0];
   const multi = st.targets.length > 1 ? ` (${planFlow.t+1}/${st.targets.length})` : '';
   const title = st.kind==='detail' && !st.isObj ? tgt.label : (st.pillar || tgt.label);
-  document.getElementById('fbWhere').textContent = `${T('Week')} ${planFlow.week+1} · ${T('Step')} ${planFlow.step+1}/${steps.length}`;
+  document.getElementById('fbWhere').textContent = `${T('Week')} ${planFlow.week+1} · ${LL('Lesson','Pamoka')} ${planFlow.step+1}/${steps.length}`;
   document.getElementById('fbTitle').textContent = title + multi;
   const hasPrev = planFlow.t > 0 || steps.slice(0, planFlow.step).some(s=>s.targets.length);
   const atLastTarget = planFlow.t >= st.targets.length - 1;
@@ -21968,7 +22182,12 @@ function flowAdvance(markDone){
   const f = planFlow; if(!f) return;
   const steps = planWeekSteps(f.week), st = steps[f.step];
   if(st && f.t < st.targets.length - 1){ f.t++; launchTarget(st.targets[f.t]); updateFlowBar(); return; }
-  if(markDone && st) setStepDone(st, true);
+  if(markDone && st){ setStepDone(st, true); showLessonDone(f.week, f.step); return; }
+  flowProceed();
+}
+function flowProceed(){
+  const f = planFlow; if(!f) return;
+  const steps = planWeekSteps(f.week);
   for(let k=f.step+1; k<steps.length; k++){
     if(steps[k].targets.length){ f.step = k; f.t = 0; launchTarget(steps[k].targets[0]); updateFlowBar(); renderPlan(); return; }
   }
@@ -22083,7 +22302,9 @@ function awardXP(n){
   while(keys.length > 120) delete log[keys.shift()];
   store.set('activityLog', log);
   store.set('xpTotal', prevTotal + n);
-  if(before < goal && before + n >= goal) showXpToast(`🎉 <b>${T('Daily goal reached!')}</b>`, 'goal');
+  const grewTo = plantStageFor(prevTotal + n) > plantStageFor(prevTotal) ? PLANT_STAGES[plantStageFor(prevTotal + n)] : null;
+  if(grewTo) showXpToast(`🌱 <b>${LL('Your plant grew — ','Jūsų augalas paaugo – ')}${LL(grewTo.en, grewTo.lt)}!</b>`, 'goal');
+  else if(before < goal && before + n >= goal) showXpToast(`🎉 <b>${T('Daily goal reached!')}</b>`, 'goal');
   else showXpToast(`⚡ <b>+${n} XP</b>`);
   if(typeof renderHome === 'function') renderHome();
 }
@@ -22380,7 +22601,7 @@ function sheetKeys(e){
     else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   }
 }
-function openSheet(title, bodyHtml, onClick){
+function openSheet(title, bodyHtml, onClick, closeLabel){
   closeSheet(true);
   const root = document.getElementById('sheetRoot');
   sheetOpener = document.activeElement;
@@ -22388,7 +22609,7 @@ function openSheet(title, bodyHtml, onClick){
     <div class="sheet-grab" aria-hidden="true"></div>
     <h3 id="sheetT">${title}</h3>
     <div class="sheet-body">${bodyHtml}</div>
-    <button type="button" class="sheet-close" data-sheet="close">${LL('Done','Gerai')}</button>
+    <button type="button" class="sheet-close" data-sheet="close">${closeLabel || LL('Done','Gerai')}</button>
   </div></div>`;
   const ov = root.firstElementChild;
   ov.addEventListener('click', (e)=>{
@@ -22468,7 +22689,8 @@ function renderExHub(){
     return `<button type="button" class="hub-card" data-ex="${t.id}"><span class="hc-ic" aria-hidden="true">${info[0]}</span><span class="hc-t">${T(t.label)}</span><span class="hc-s">${LL(info[1], info[2])}</span>${m ? `<span class="hc-m">${m} ${LL('mastered','išmokta')}</span>` : ''}</button>`;
   };
   el.innerHTML = `
-    <div class="hub-hello"><h2>${LL('Practice','Praktika')}</h2><p>${LL('Choose something that suits your mood today.','Pasirinkite tai, kas šiandien patinka.')}</p></div>
+    <div class="hub-hello"><h2>${LL('Practice','Praktika')} ${infoBtn('hintPractice', LL('What is practice?','Kas yra praktika?'))}</h2><p>${LL('Choose a practice activity — whatever suits your mood today.','Pasirinkite praktikos veiklą – tai, kas šiandien patinka.')}</p>
+      <div class="hint-card" id="hintPractice" hidden>${LL('Practice helps you remember and use what you’ve already learned. Lessons in your plan introduce new material; exercises here reinforce it — do as many or as few as you like.','Praktika padeda prisiminti ir naudoti tai, ką jau išmokote. Plano pamokos pristato naują medžiagą, o čia esantys pratimai ją įtvirtina – atlikite tiek, kiek norite.')}</div></div>
     ${lastTab ? `<button type="button" class="hub-continue" data-ex="${lastTab.id}"><span class="hc-ic" aria-hidden="true">${(EX_INFO[lastTab.id]||['✨'])[0]}</span><span><i>${LL('Pick up where you left off','Tęskite ten, kur sustojote')}</i><b>${T(lastTab.label)}</b></span><span class="chev" aria-hidden="true">›</span></button>` : ''}
     ${availableExCategories().map(c=>{
       const list = tabs.filter(t=>t.cat === c.id);
@@ -22592,11 +22814,13 @@ function openMenuSheet(){
     sheetRow('courses', '🌍', LL('Courses and levels','Kursai ir lygiai'), LL('Switch language or level','Pakeisti kalbą ar lygį')) +
     sheetRow('sync', '☁️', synced ? `${LL('Synced','Sinchronizuota')} · ${syncLabel}` : LL('Sync your progress','Sinchronizuoti pažangą'), synced ? LL('Tap to manage your account','Spustelėkite paskyrai valdyti') : LL('Sign in to keep progress across devices','Prisijunkite, kad pažanga būtų visuose įrenginiuose')) +
     sheetRow('goal', '🎯', LL('Daily goal','Dienos tikslas'), `${getDailyGoal()} XP`) +
+    sheetRow('help', '🌱', LL('How Parle works','Kaip veikia Parle'), LL('A short tour — Home, Plan and Practice','Trumpa apžvalga – Pagrindinis, Planas ir Praktika')) +
     `<div class="sheet-set"><span>${LL('Audio speed','Garso greitis')}</span><span data-audio-speed data-no-label></span></div>`;
   openSheet(LL('Menu','Meniu'), rows, (act)=>{
     if(act === 'courses'){ closeSheet(true); document.getElementById('switchCourseBtn').click(); }
     else if(act === 'sync'){ closeSheet(true); document.getElementById('syncPill').click(); }
     else if(act === 'goal'){ closeSheet(true); openGoalDialog(); }
+    else if(act === 'help'){ closeSheet(true); openOnboarding(); }
   });
 }
 document.getElementById('menuBtn').addEventListener('click', openMenuSheet);
@@ -22726,6 +22950,15 @@ document.addEventListener('click', (e)=>{
       sum.className = 'done-summary';
       sum.innerHTML = `<span class="done-chip"><b>${xp}</b> XP ${T('today')}</span><span class="done-chip"><b>${pct}%</b> ${T('of daily goal')}</span>`;
       pill.insertAdjacentElement('afterend', sum);
+      if(!planFlow){   // inside the guided plan flow the bar / finish-lesson sheet already offers the next step
+        const f = planFocus();
+        const nx = document.createElement('div');
+        nx.className = 'done-next';
+        let st = null; if(f && !f.allDone) st = planWeekSteps(f.wi)[f.si];
+        nx.innerHTML = (st ? `<button type="button" class="btn btn-primary" data-done="next">${LL('Next lesson','Kita pamoka')}: ${homeStepTitle(st)}</button>` : '') +
+          `<button type="button" class="btn btn-ghost" data-done="practice">${LL('Choose another practice activity','Rinktis kitą praktikos veiklą')}</button>`;
+        sum.insertAdjacentElement('afterend', nx);
+      }
     });
   }
   const sched = ()=>{ if(!queued){ queued = true; requestAnimationFrame(enhance); } };
@@ -22747,6 +22980,7 @@ function syncNavActive(){
     if(on) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
   });
   if(sec.id === 'home') renderHome();
+  if(sec.id === 'plan') renderPlan();   // always reflect the latest ticks / finished lessons
   if(typeof syncSession === 'function') syncSession();
 }
 (function initNavSync(){
@@ -22767,94 +23001,357 @@ function homeStepTitle(st){
   const t = planStripTags(st.text);
   return t.length > 70 ? t.slice(0, 68).replace(/\s+\S*$/,'') + '…' : t;
 }
+/* ---------- Shared learning-state helpers (Home, Plan and the finish-lesson sheet all read these) ---------- */
+function ltCourseName(){ return currentCourseName === 'English' ? 'anglų' : currentCourseName; }
+function levelLabel(){
+  const c = currentLevelData || {};
+  return (c.label || String(currentLevelId || '').toUpperCase()).replace(/ · Phase \d+ — /, ' · ');
+}
+function levelProgress(){
+  let d = 0, t = 0;
+  for(let i=0;i<weeks.length;i++){ const c = weekDoneCount(i); d += c.done; t += c.total; }
+  return { done:d, total:t };
+}
+/* First unfinished lesson of a week that actually opens something; falls back to the first unfinished one. */
+function nextActionableIdx(wi){
+  const steps = planWeekSteps(wi); let first = -1;
+  for(let k=0;k<steps.length;k++){
+    if(isStepDone(wi, steps[k])) continue;
+    if(steps[k].targets.length) return k;
+    if(first < 0) first = k;
+  }
+  return first;
+}
+/* The single "what next?" answer: the week the learner last worked in, or the first week with something left. */
+function planFocus(){
+  if(!weeks || !weeks.length) return null;
+  resolvePlanWeek();
+  let wi = planWeekIdx, si = nextActionableIdx(wi);
+  if(si < 0){
+    for(let i=0;i<weeks.length;i++){ const n = nextActionableIdx(i); if(n >= 0){ wi = i; si = n; break; } }
+  }
+  return si < 0 ? { wi:planWeekIdx, si:-1, allDone:true } : { wi, si, allDone:false };
+}
+function nextLevelId(){
+  const lv = (COURSES[currentCourseId] || {}).levels || {}, ks = Object.keys(lv), i = ks.indexOf(currentLevelId);
+  for(let k=i+1;k<ks.length;k++) if(!lv[ks[k]].comingSoon) return ks[k];
+  return null;
+}
+function isNewLearner(){ return totalXP() === 0 && levelProgress().done === 0; }
+function lessonBlurb(st){
+  if(st.kind === 'quiz') return T('Check what you learned this week.');
+  if(!st.isObj) return '';
+  const t = planStripTags(st.text);
+  const m = t.match(/^(.{40,}?[.!?])(?:\s|$)/);
+  const p = (m && m[1].length <= 190) ? m[1] : (t.length > 160 ? t.slice(0,158).replace(/\s+\S*$/,'') + '…' : t);
+  return p;
+}
+function levelExplain(){
+  const lid = currentLevelId || '', L = lid.toUpperCase(), li = LEVEL_INFO[lid];
+  const lead = lid === 'a1'
+    ? LL("A1 is the beginner level. You'll learn useful expressions for simple everyday conversations.", 'A1 – pradedančiųjų lygis. Išmoksite naudingų posakių paprastiems kasdieniams pokalbiams.')
+    : LL(`${L} is a step on the CEFR scale — a European framework that runs from A1 (beginner) upwards.`, `${L} – vienas CEFR skalės žingsnių (Europos sistema, prasidedanti A1 lygiu).`);
+  const can = (li && lid !== 'a1') ? ` ${LL('Here you work towards:', 'Čia siekiate:')} ${li.can.slice(0,3).map(c=>LL(c[0], c[1]).replace(/\.$/,'').toLowerCase()).join('; ')}.` : '';
+  return lead + can;
+}
+function infoBtn(id, label){
+  return `<button type="button" class="info-btn" data-hint="${id}" aria-expanded="false" aria-controls="${id}" aria-label="${label || LL('What does this mean?','Ką tai reiškia?')}">i</button>`;
+}
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-hint]');
+  if(!b) return;
+  const box = document.getElementById(b.dataset.hint);
+  if(!box) return;
+  const open = box.hidden;
+  box.hidden = !open;
+  b.setAttribute('aria-expanded', String(open));
+});
+
+/* ---------- Growing plant (long-term effort: XP) & daily streak (consistency: days with XP) ---------- */
+const PLANT_SEEN_KEY = 'parle_plantSeen';
+function plantSeen(){ try{ const v = localStorage.getItem(PLANT_SEEN_KEY); return v === null ? null : +v; }catch(e){ return null; } }
+function setPlantSeen(n){ try{ localStorage.setItem(PLANT_SEEN_KEY, String(n)); }catch(e){} }
+function plantInfo(){
+  const xp = totalXP(), st = plantStageFor(xp), cur = PLANT_STAGES[st], nxt = PLANT_STAGES[st+1];
+  const span = nxt ? nxt.xp - cur.xp : 1;
+  return { xp, st, cur, nxt, toNext: nxt ? nxt.xp - xp : 0, pct: nxt ? Math.min(100, Math.round((xp - cur.xp) / span * 100)) : 100 };
+}
+/* Did the plant reach a new stage since the learner last looked at Home? (First run just records the stage — nothing is replayed.) */
+function plantGrewSinceSeen(){
+  const home = document.getElementById('home');
+  if(!home || !home.classList.contains('active')) return false;
+  const st = plantStageFor(totalXP()), seen = plantSeen();
+  if(seen === null || st < seen){ setPlantSeen(st); return false; }
+  if(st > seen){ setPlantSeen(st); return true; }
+  return false;
+}
+function streakDays(){ // last 7 local days, oldest first
+  const log = readActivity(), out = [], d = new Date(); d.setDate(d.getDate() - 6);
+  for(let i=0;i<7;i++){ out.push({ date:new Date(d), on: !!(log[dayKey(d)] && log[dayKey(d)].xp > 0), today: i === 6 }); d.setDate(d.getDate() + 1); }
+  return out;
+}
+function bestStreak(){
+  const keys = Object.keys(readActivity()).filter(k=> readActivity()[k].xp > 0).sort();
+  let best = 0, run = 0, prev = null;
+  keys.forEach(k=>{
+    const [y,m,dd] = k.split('-').map(Number), t = new Date(y, m-1, dd);
+    if(prev){ const nx = new Date(prev); nx.setDate(nx.getDate() + 1); run = dayKey(nx) === k ? run + 1 : 1; } else run = 1;
+    prev = t; if(run > best) best = run;
+  });
+  return best;
+}
+function streakChipHtml(n){
+  const label = n > 0 ? `${n}${LL('-day streak','d. serija')}` : LL('Start a streak today','Pradėkite seriją šiandien');
+  return `<button type="button" class="streak-chip${n ? '' : ' zero'}" data-hm="streak" aria-label="${LL('Learning streak','Mokymosi serija')}: ${label}"><span aria-hidden="true">${n ? '🔥' : '🌱'}</span>${label}</button>`;
+}
+function plantButtonHtml(grew){
+  const p = plantInfo();
+  return `<button type="button" class="plant-btn${grew ? ' grew' : ''}" data-hm="plant" aria-label="${LL('Your plant','Jūsų augalas')}: ${LL(p.cur.en, p.cur.lt)}. ${LL('Tap for details','Spustelėkite išsamiau')}">
+    <span class="plant-art" aria-hidden="true">${plantSvg(p.st)}</span><span class="plant-name">${LL(p.cur.en, p.cur.lt)}</span></button>`;
+}
+function openPlantSheet(){
+  const p = plantInfo();
+  const stages = PLANT_STAGES.map((s, i)=>`<li class="${i <= p.st ? 'on' : ''}${i === p.st ? ' now' : ''}"><span aria-hidden="true">${i <= p.st ? '✓' : '○'}</span>${LL(s.en, s.lt)}<i>${s.xp} XP</i></li>`).join('');
+  const body = `<div class="garden-sheet">
+    <div class="gs-plant">${plantSvg(p.st)}</div>
+    <p class="gs-stage">${LL(p.cur.en, p.cur.lt)}</p>
+    <p class="gs-xp">${p.xp} XP ${LL('earned so far','surinkta iki šiol')}</p>
+    ${p.nxt ? `<div class="hm-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p.pct}" aria-label="${LL('Progress to the next stage','Pažanga iki kito etapo')}"><i style="width:${p.pct}%"></i></div>
+      <p class="gs-next">${p.toNext} XP ${LL('to','iki')} <b>${LL(p.nxt.en.toLowerCase(), p.nxt.lt.toLowerCase())}</b></p>` : `<p class="gs-next">${LL('Fully grown — keep it blooming with a little practice.','Visiškai išaugo – palaikykite žydėjimą trumpa praktika.')}</p>`}
+    <ul class="gs-stages">${stages}</ul>
+    <p class="gs-note">${LL('Your plant grows with the effort you put in (XP) — it never shrinks. XP is a gentle reminder of practice, not a measure of your language level.','Augalas auga nuo jūsų įdėtų pastangų (XP) ir niekada nemažėja. XP – švelnus priminimas apie praktiką, o ne kalbos lygio matas.')}</p>
+  </div>`;
+  openSheet(LL('Your plant','Jūsų augalas'), body);
+}
+function openStreakSheet(){
+  const n = currentStreak(), best = bestStreak(), days = streakDays();
+  const wd = LL(['S','M','T','W','T','F','S'], ['S','P','A','T','K','P','Š']);
+  const cal = days.map(d=>`<li class="${d.on ? 'on' : ''}${d.today ? ' today' : ''}"><span>${wd[d.date.getDay()]}</span><i aria-label="${d.on ? LL('practised','praktikuota') : LL('no practice','nepraktikuota')}">${d.on ? '✓' : ''}</i></li>`).join('');
+  const todayDone = days[6].on;
+  const msg = n === 0 ? LL('Earn a little XP today to start a streak — a few minutes is plenty.','Šiandien surinkite šiek tiek XP, kad pradėtumėte seriją – užtenka kelių minučių.')
+    : (todayDone ? LL('You’ve practised today — that’s today taken care of.','Šiandien jau praktikavote – dienos užduotis atlikta.') : LL('Practise a little today to keep it going.','Šiandien šiek tiek pasimokykite, kad serija tęstųsi.'));
+  const body = `<div class="streak-sheet">
+    <p class="ss-big"><span aria-hidden="true">${n ? '🔥' : '🌱'}</span> ${n}<small>${LL(n === 1 ? ' day' : ' days',' d.')}</small></p>
+    <ol class="ss-cal" aria-label="${LL('Last 7 days','Paskutinės 7 dienos')}">${cal}</ol>
+    <p class="ss-msg">${msg}</p>
+    ${best > n ? `<p class="ss-best">${LL('Longest streak','Ilgiausia serija')}: ${best} ${LL('days','d.')}</p>` : ''}
+    <p class="gs-note">${LL('A day counts once you earn any XP, however many activities you do. Missed a day? Simply begin again — your plant keeps every bit of growth.','Diena įskaitoma, kai gaunate bet kiek XP, nesvarbu, kiek veiklų atlikote. Praleidote dieną? Tiesiog pradėkite iš naujo – augalas išsaugo visą augimą.')}</p>
+  </div>`;
+  openSheet(LL('Your learning streak','Jūsų mokymosi serija'), body);
+}
+
+/* ---------- HOME: "What should I do today?" — one next lesson, a quiet progress line, two quick practices ---------- */
 function renderHome(){
   const el = document.getElementById('homeBody');
   if(!el) return;
-  const goal = getDailyGoal(), xp = todayXP(), pct = Math.min(100, Math.round(xp / goal * 100));
-  const streak = currentStreak();
-  let hero = '';
-  if(weeks && weeks.length){
-    resolvePlanWeek();
-    const wi = planWeekIdx, w = weeks[wi];
-    const steps = planWeekSteps(wi), counts = weekDoneCount(wi), nextIdx = nextPlanStepIdx(wi);
-    const dots = steps.map(s=> `<i class="${isStepDone(wi, s) ? 'on' : ''}"></i>`).join('');
-    if(nextIdx >= 0){
-      const st = steps[nextIdx];
-      hero = `<div class="hm-hero">
-        <div class="hm-hero-eyebrow">${T('Week')} ${wi+1} · ${w.title}</div>
-        <div class="hm-hero-title">${homeStepTitle(st)}</div>
-        ${weekCanDo(wi) ? `<p class="hm-hero-goal">${weekCanDo(wi)}</p>` : ''}
-        <p class="hm-hero-sub">${counts.done}${T(' of ')}${counts.total} ${T('steps done')}</p>
+  const goal = getDailyGoal(), xp = todayXP(), streak = currentStreak(), fresh = isNewLearner();
+  const f = planFocus();
+  const name = cloudUser && cloudUser.displayName ? cloudUser.displayName.trim().split(/\s+/)[0] : '';
+  const hi = name ? `${greetingText()}` : greetingText();
+  let hero = '', mile = '', prog = '';
+  if(f){
+    const lp = levelProgress(), pct = lp.total ? Math.round(lp.done / lp.total * 100) : 0;
+    if(!f.allDone){
+      const { wi, si } = f, w = weeks[wi], steps = planWeekSteps(wi), st = steps[si], counts = weekDoneCount(wi);
+      const savedDone = (planWeekIdx !== wi && planWeekIdx >= 0 && planWeekIdx < weeks.length && isWeekComplete(planWeekIdx)) ? weeks[planWeekIdx] : null;
+      if(savedDone) mile = `<div class="hm-mile" role="status"><span aria-hidden="true">🌿</span> ${LL('You finished','Baigėte')} ${T('Week')} ${planWeekIdx+1} — ${savedDone.title}. ${LL('Nicely done.','Gražiai atlikta.')}</div>`;
+      const eyebrow = fresh ? LL('Start here','Pradėkite čia') : (counts.done ? LL('Pick up where you left off','Tęskite ten, kur sustojote') : LL('Your next lesson','Jūsų kita pamoka'));
+      const cta = fresh ? T('Start learning') : (counts.done ? LL('Continue learning','Tęsti mokymąsi') : LL('Start lesson','Pradėti pamoką'));
+      const blurb = lessonBlurb(st);
+      const dots = steps.map(s=> `<i class="${isStepDone(wi, s) ? 'on' : ''}"></i>`).join('');
+      hero = `<div class="hm-hero" role="region" aria-label="${LL('Your next lesson','Jūsų kita pamoka')}">
+        <div class="hm-hero-eyebrow">${eyebrow}</div>
+        <h2 class="hm-hero-title">${homeStepTitle(st)}</h2>
+        <div class="hm-hero-where">${T('Week')} ${wi+1} · ${w.title}</div>
+        ${blurb ? `<p class="hm-hero-desc">${blurb}</p>` : ''}
         <div class="hm-weekdots" aria-hidden="true">${dots}</div>
-        <div class="hm-hero-row"><button type="button" class="hm-cta" data-hm="continue" data-step="${nextIdx}">${counts.done ? T('Continue') : T('Start learning')} <span class="arr">→</span></button></div>
+        <p class="hm-hero-count">${LL(`${counts.done} of ${counts.total} lessons done this week`, `${counts.done} iš ${counts.total} šios savaitės pamokų atlikta`)}</p>
+        <button type="button" class="hm-cta" data-hm="continue" data-wk="${wi}" data-step="${si}">${cta} <span class="arr">→</span></button>
       </div>`;
     } else {
-      const last = wi >= weeks.length - 1;
-      hero = `<div class="hm-hero">
-        <div class="hm-hero-eyebrow">${T('Week')} ${wi+1} · ${w.title}</div>
-        <div class="hm-hero-title">🎉 ${last ? T('Level plan complete — well done!') : T('Week complete')}</div>
-        <p class="hm-hero-sub">${counts.done}${T(' of ')}${counts.total} ${T('steps done')}</p>
-        <div class="hm-weekdots" aria-hidden="true">${dots}</div>
-        <div class="hm-hero-row"><button type="button" class="hm-cta" data-hm="${last ? 'plan' : 'nextweek'}">${last ? T('Review the plan') : T('Go to week ')+(wi+2)} <span class="arr">→</span></button></div>
+      const nl = nextLevelId();
+      hero = `<div class="hm-hero" role="region" aria-label="${LL('Plan complete','Planas baigtas')}">
+        <div class="hm-hero-eyebrow">${levelLabel()}</div>
+        <h2 class="hm-hero-title">🌿 ${LL('You\'ve finished every lesson in this plan','Baigėte visas šio plano pamokas')}</h2>
+        <p class="hm-hero-desc">${LL('Lovely work. Keep it fresh with a little practice — or look back over your plan any time.','Puikus darbas. Palaikykite žinias trumpa praktika arba peržiūrėkite planą bet kada.')}</p>
+        <button type="button" class="hm-cta" data-hm="${nl ? 'nextlevel' : 'practice'}" ${nl ? `data-level="${nl}"` : ''}>${nl ? `${LL('Start','Pradėti')} ${nl.toUpperCase()}` : LL('Choose a practice activity','Pasirinkti praktiką')} <span class="arr">→</span></button>
+        <button type="button" class="hm-ghost" data-hm="plan">${LL('Look back over your plan','Peržiūrėti planą')}</button>
       </div>`;
     }
+    const wkNow = f.allDone ? weeks.length : f.wi + 1;
+    const grew = plantGrewSinceSeen(), pl = plantInfo();
+    prog = `<div class="hm-prog" role="group" aria-label="${LL('Your progress','Jūsų pažanga')}">
+      ${plantButtonHtml(grew)}
+      <div class="hm-prog-main">
+        <div class="hm-prog-top"><span class="hm-prog-lv">${levelLabel()} ${infoBtn('hintLevel', LL('What is this level?','Kas tai per lygis?'))}</span><span class="hm-prog-wk">${LL('Week','Savaitė')} ${Math.min(wkNow, weeks.length)} ${LL('of','iš')} ${weeks.length}</span></div>
+        <div class="hm-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${lp.total}" aria-valuenow="${lp.done}" aria-label="${LL('Lessons completed','Atliktos pamokos')}"><i style="width:${pct}%"></i></div>
+        <div class="hm-prog-foot"><span>${LL(`${lp.done} of ${lp.total} lessons done`, `${lp.done} iš ${lp.total} pamokų atlikta`)}</span></div>
+        <div class="hm-prog-foot"><span>${LL('Today','Šiandien')} ${xp}/${goal} XP <button type="button" class="hm-goal-edit" data-hm="goal">${T('Change goal')}</button></span></div>
+      </div>
+      <div class="hint-card" id="hintLevel" hidden>${levelExplain()}</div>
+    </div>`;
   }
   const avail = availableExTabs().map(t=>t.id);
   const tiles = [];
-  if(avail.includes('listen')) tiles.push(['listen','🎧',T('Listen'),T('Dictation'),'']);
-  tiles.push([avail.includes('words') ? 'words' : 'mcq','🔤', T('Words'), avail.includes('words') ? T('Top words') : T('Multiple choice'), 'lav']);
-  tiles.push(['phrases','💬',T('Phrases'),T('Hear & repeat'),'grn']);
-  tiles.push(['review','🔁',T('Review'),T('Mastered'),'']);
-  const recs = [];
-  if(weeks && weeks.length && typeof quizWeeks !== 'undefined' && quizWeeks[planWeekIdx]){
-    const b = quizBest[planWeekIdx];
-    recs.push(['quiz','🏁', T('Weekly quiz'), b !== undefined ? `${T('Best: ')}${b}/${quizWeeks[planWeekIdx].length}` : T('Check what you learned this week.')]);
-  }
-  if(avail.includes('tenses')) recs.push(['tenses','🧩', T('Verb tenses'), T('Grammar practice')]);
-  if(avail.includes('build')) recs.push(['build','🧱', T('Sentence builder'), T('Put the words in order')]);
+  if(avail.includes('listen')) tiles.push(['listen','🎧',LL('Practise listening','Klausymo praktika'),LL('Hear it, then write it','Išgirskite ir užrašykite')]);
+  const wordsId = avail.includes('words') ? 'words' : 'mcq';
+  tiles.push([wordsId,'🔤',LL('Review vocabulary','Pakartoti žodyną'),wordsId === 'words' ? LL('Your most useful words','Naudingiausi žodžiai') : LL('Pick the right meaning','Pasirinkite reikšmę')]);
+  const ready = LL(`Ready for a little ${currentCourseName}?`, `Pasiruošę šiek tiek ${ltCourseName()} kalbos?`);
   el.innerHTML = `
     <div class="hm-greet">
-      <div class="hm-hello">${greetingText()}</div>
-      <div class="hm-sub">${T('A few minutes today keeps the momentum going.')}</div>
+      <div class="hm-toprow"><div class="hm-hi">${hi}</div>${streakChipHtml(streak)}</div>
+      <h1 class="hm-ready">${ready}</h1>
+      <div class="hm-sub">${LL('Small steps, real conversations.','Maži žingsniai, tikri pokalbiai.')}</div>
     </div>
+    ${mile}
     ${hero}
-    ${(weeks && weeks.length) ? `<button type="button" class="hm-journey" data-hm="journey"><span class="tic" aria-hidden="true">🧭</span><span><div class="tt">${LL('Your journey','Jūsų kelionė')} · ${levelShortTitle(currentLevelId)}</div><div class="ts">${LL('Can-do milestones','Gebėjimų etapai')}: ${journeyCompletedCount()}/${weeks.length} · ${LL('conversation readiness','pasirengimas pokalbiams')}</div></span><span class="chev" aria-hidden="true">›</span></button>` : ''}
-    <div class="hm-stats">
-      <div class="hm-stat">
-        <div class="hm-ring${pct >= 100 ? ' done' : ''}" style="--p:${pct}" role="img" aria-label="${xp} / ${goal} XP"><span>${xp}/${goal}</span></div>
-        <div class="lbl">${T('Daily goal')} · XP</div>
-        <button type="button" class="hm-goal-edit" data-hm="goal">${T('Change goal')}</button>
-      </div>
-      <div class="hm-stat"><div class="hm-flame" aria-hidden="true">${streak ? '🌿' : '🌱'}</div><div class="val">${streak}</div><div class="lbl">${T('Day streak')}</div></div>
-      ${gardenHtml()}
-    </div>
-    <div class="hm-section-t"><h3>${T('Quick start')}</h3></div>
+    ${prog}
+    <div class="hm-section-t"><h3>${LL('Quick practice','Greita praktika')}</h3><button type="button" class="hm-more" data-hm="practice">${LL('See all','Visa praktika')} ›</button></div>
     <div class="hm-quick">${tiles.map(t=>`
-      <button type="button" class="hm-tile ${t[4]}" data-hm="tile" data-go="${t[0]}"><span class="tic" aria-hidden="true">${t[1]}</span><span><div class="tt">${t[2]}</div><div class="ts">${t[3]}</div></span></button>`).join('')}</div>
-    ${recs.length ? `<div class="hm-section-t"><h3>${T('Recommended')}</h3></div>${recs.map(r=>`
-      <button type="button" class="hm-rec" data-hm="rec" data-go="${r[0]}"><span class="tic" aria-hidden="true">${r[1]}</span><span><div class="tt">${r[2]}</div><div class="ts">${r[3]}</div></span><span class="chev" aria-hidden="true">›</span></button>`).join('')}` : ''}
-    <p class="ts" style="font-size:.76rem; color:var(--text-2); margin:14px 4px 0;">${T('XP: +10 per correct answer, +15 per plan step, +30 per weekly quiz, +20 per mastered item.')}</p>`;
+      <button type="button" class="hm-tile" data-hm="tile" data-go="${t[0]}"><span class="tic" aria-hidden="true">${t[1]}</span><span><div class="tt">${t[2]}</div><div class="ts">${t[3]}</div></span></button>`).join('')}</div>
+    ${(weeks && weeks.length) ? `<button type="button" class="hm-planlink" data-hm="plan"><span class="tic" aria-hidden="true">🗺️</span><span><div class="tt">${LL('Explore your learning plan','Peržiūrėkite mokymosi planą')}</div><div class="ts">${LL("See where you're heading next.",'Pažiūrėkite, kur judate toliau.')}</div></span><span class="chev" aria-hidden="true">›</span></button>` : ''}`;
 }
 document.getElementById('homeBody').addEventListener('click', (e)=>{
   const b = e.target.closest('[data-hm]');
   if(!b) return;
   const act = b.dataset.hm;
   if(act === 'continue'){
-    const wi = planWeekIdx, si = +b.dataset.step, st = planWeekSteps(wi)[si];
+    const wi = +b.dataset.wk, si = +b.dataset.step, st = planWeekSteps(wi)[si];
     if(st && st.targets.length) startPlanStep(wi, si, 0);
-    else { goToSection('plan'); renderPlan(); }
-  } else if(act === 'nextweek'){ setPlanWeek(planWeekIdx + 1); goToSection('plan'); }
-  else if(act === 'plan'){ goToSection('plan'); }
-  else if(act === 'journey'){ goToSection('journey'); }
-  else if(act === 'goal'){
-    openGoalDialog();
-  } else if(act === 'tile' || act === 'rec'){
+    else { setPlanWeek(wi); goToSection('plan'); }
+  } else if(act === 'nextlevel'){ loadCourse(currentCourseId, b.dataset.level); }
+  else if(act === 'plan'){ goToSection('plan'); renderPlan(); }
+  else if(act === 'practice'){ if(typeof setExMode === 'function') setExMode('pick'); goToSection('exercises'); }
+  else if(act === 'goal'){ openGoalDialog(); }
+  else if(act === 'plant'){ openPlantSheet(); }
+  else if(act === 'streak'){ openStreakSheet(); }
+  else if(act === 'tile'){
     const go = b.dataset.go;
-    if(go === 'phrases') goToSection('phrases');
-    else if(go === 'review') goToSection('mastered');
-    else if(go === 'quiz') goToQuizWeek(planWeekIdx);
-    else goToExercise(go);
+    if(go === 'phrases') goToSection('phrases'); else goToExercise(go);
   }
+});
+
+/* ---------- Finishing a lesson: say what was practised, show progress, offer the next step ---------- */
+const LESSON_DONE_LINES = [
+  ['Lovely work. You’re making progress.','Puikus darbas. Darote pažangą.'],
+  ['Nicely done — one more step on your path.','Gražiai atlikta – dar vienas žingsnis kelyje.'],
+  ['That’s a lesson finished. Well done.','Pamoka baigta. Šaunu.'],
+  ['Good going. It all adds up.','Puiku. Viskas kaupiasi.']
+];
+let lessonDoneLine = -1;
+function nextFlowStepIdx(wi, si){
+  const steps = planWeekSteps(wi);
+  for(let k=si+1;k<steps.length;k++) if(steps[k].targets.length) return k;
+  return -1;
+}
+function showLessonDone(wi, si){
+  const steps = planWeekSteps(wi), st = steps[si], w = weeks[wi];
+  if(!st || !w){ flowProceed(); return; }
+  const counts = weekDoneCount(wi), pct = counts.total ? Math.round(counts.done / counts.total * 100) : 0;
+  const complete = counts.total > 0 && counts.done === counts.total;
+  let n; do { n = Math.floor(Math.random() * LESSON_DONE_LINES.length); } while(n === lessonDoneLine && LESSON_DONE_LINES.length > 1);
+  lessonDoneLine = n;
+  const nk = nextFlowStepIdx(wi, si);
+  let primary = '';
+  if(nk >= 0) primary = `<button type="button" class="ds-primary" data-sheet="next"><span>${LL('Next lesson','Kita pamoka')}</span><b>${homeStepTitle(steps[nk])}</b></button>`;
+  else if(wi < weeks.length - 1) primary = `<button type="button" class="ds-primary" data-sheet="nextweek"><span>${LL('Next week','Kita savaitė')}</span><b>${T('Week')} ${wi+2} · ${weeks[wi+1].title}</b></button>`;
+  const body = `<div class="done-sheet">
+      <div class="ds-leaf" aria-hidden="true">🌿</div>
+      <p class="ds-msg">${LL(LESSON_DONE_LINES[n][0], LESSON_DONE_LINES[n][1])}</p>
+      <p class="ds-did">${LL('You practised','Praktikavote')}: <b>${homeStepTitle(st)}</b><br><span>${T('Week')} ${wi+1} · ${w.title}</span></p>
+      <div class="pw-progress"><div class="pw-bar"><div class="pw-fill" style="width:${pct}%"></div></div><span>${LL(`${counts.done} of ${counts.total} lessons done`, `${counts.done} iš ${counts.total} pamokų atlikta`)}</span></div>
+      ${complete ? `<p class="ds-mile">🌿 ${LL('That completes','Tai užbaigia')} ${T('Week')} ${wi+1}.</p>` : ''}
+      ${primary}
+      <button type="button" class="ds-secondary" data-sheet="plan">${LL('Back to your plan','Grįžti į planą')}</button>
+    </div>`;
+  openSheet(LL('Lesson complete','Pamoka baigta'), body, (act)=>{
+    closeSheet(true);
+    if(act === 'next') flowProceed();
+    else if(act === 'nextweek'){
+      endPlanFlow(false);
+      const k = nextActionableIdx(wi+1);
+      if(k >= 0 && planWeekSteps(wi+1)[k].targets.length) startPlanStep(wi+1, k, 0);
+      else { setPlanWeek(wi+1); goToSection('plan'); }
+    }
+    else if(act === 'plan'){ setPlanWeek(wi); endPlanFlow(true); }
+  }, LL('Stay here','Likti čia'));
+}
+
+/* ---------- First-time welcome (3 short, skippable steps) ---------- */
+const ONB_KEY = 'parle_onboarded_v1';
+function onbSeen(){ try{ return localStorage.getItem(ONB_KEY) === '1'; }catch(e){ return true; } }
+function onbMark(){ try{ localStorage.setItem(ONB_KEY, '1'); }catch(e){} }
+let onbStep = 0, onbOpener = null;
+function onbSteps(){
+  const lang = COURSES[currentCourseId] || {}, ids = Object.keys(lang.levels || {});
+  const levels = ids.filter(l=>!(lang.levels[l] || {}).comingSoon).map(l=>`<span class="onb-lv${l === currentLevelId ? ' cur' : ''}"${l === currentLevelId ? ' aria-current="true"' : ''}>${l.toUpperCase()}</span>`).join('<span class="pi-arr" aria-hidden="true">→</span>');
+  return [
+    { art: plantSvg(1), h: LL('Welcome to Parle.','Sveiki atvykę į Parle.'), p: LL('Learn to communicate in a new language, one small step at a time.','Išmokite bendrauti nauja kalba – po mažą žingsnelį.'), next: LL('Let’s begin','Pradėkime') },
+    { art: `<div class="onb-levels">${levels}</div>`, h: LL('A path you can follow','Kelias, kuriuo galite eiti'), p: LL('Your lessons follow a structured path from simple introductions to more confident everyday conversations.','Pamokos eina struktūruotu keliu – nuo paprastų prisistatymų iki užtikrintesnių kasdienių pokalbių.') + ' ' + levelExplain(), next: LL('Next','Toliau') },
+    { art: plantSvg(2), h: LL('One next step, every day','Kasdien – vienas kitas žingsnis'), p: LL('Each day, we’ll help you find the next useful lesson. You can also explore your full plan or practise whenever you like.','Kasdien padėsime rasti kitą naudingą pamoką. Galite ir naršyti visą planą ar praktikuotis bet kada.'), next: LL('Start learning','Pradėti mokytis') }
+  ];
+}
+function closeOnboarding(){
+  const r = document.getElementById('onbRoot');
+  if(r) r.remove();
+  document.removeEventListener('keydown', onbKeys, true);
+  document.body.classList.remove('onb-open');
+  onbMark();
+  if(onbOpener && onbOpener.focus){ try{ onbOpener.focus(); }catch(e){} }
+  onbOpener = null;
+}
+function onbKeys(e){ if(e.key === 'Escape'){ e.preventDefault(); closeOnboarding(); } }
+function openOnboarding(){
+  if(!weeks || !weeks.length) return;
+  onbStep = 0; onbOpener = document.activeElement;
+  let r = document.getElementById('onbRoot');
+  if(!r){ r = document.createElement('div'); r.id = 'onbRoot'; document.body.appendChild(r); }
+  document.body.classList.add('onb-open');
+  document.addEventListener('keydown', onbKeys, true);
+  r.onclick = (e)=>{
+    const b = e.target.closest('[data-onb]');
+    if(!b) return;
+    const a = b.dataset.onb;
+    if(a === 'skip') closeOnboarding();
+    else if(a === 'next'){ onbStep++; paintOnboarding(); }
+    else if(a === 'back'){ onbStep = Math.max(0, onbStep - 1); paintOnboarding(); }
+    else if(a === 'go'){
+      closeOnboarding();
+      const f = planFocus();
+      if(f && !f.allDone){ const st = planWeekSteps(f.wi)[f.si]; if(st && st.targets.length) startPlanStep(f.wi, f.si, 0); }
+    } else if(a === 'look'){ closeOnboarding(); }
+  };
+  paintOnboarding();
+}
+function paintOnboarding(){
+  const r = document.getElementById('onbRoot'); if(!r) return;
+  const steps = onbSteps(), s = steps[onbStep], last = onbStep === steps.length - 1;
+  r.innerHTML = `<div class="onb-ov"><div class="onb" role="dialog" aria-modal="true" aria-labelledby="onbH">
+    <button type="button" class="onb-skip" data-onb="skip">${LL('Skip','Praleisti')}</button>
+    <div class="onb-art">${s.art}</div>
+    <h2 id="onbH">${s.h}</h2>
+    <p>${s.p}</p>
+    <div class="onb-dots" aria-hidden="true">${steps.map((_, i)=>`<i class="${i === onbStep ? 'on' : ''}"></i>`).join('')}</div>
+    <button type="button" class="onb-primary" data-onb="${last ? 'go' : 'next'}">${s.next}</button>
+    ${last ? `<button type="button" class="onb-quiet" data-onb="look">${LL('Look around first','Pirmiausia apsižvalgysiu')}</button>` : (onbStep > 0 ? `<button type="button" class="onb-quiet" data-onb="back">${LL('Back','Atgal')}</button>` : '')}
+  </div></div>`;
+  const p = r.querySelector('.onb-primary'); if(p) setTimeout(()=>p.focus(), 30);
+}
+function maybeOnboard(){
+  if(onbSeen()) return;
+  if(!isNewLearner()){ onbMark(); return; }   // returning learners never see it, and their progress is untouched
+  setTimeout(()=>{ if(!onbSeen() && document.getElementById('appScreen').style.display !== 'none') openOnboarding(); }, 500);
+}
+
+/* ---------- After a practice activity (outside the guided plan flow): suggest what's next ---------- */
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-done]');
+  if(!b) return;
+  if(b.dataset.done === 'next'){
+    const f = planFocus();
+    if(f && !f.allDone){ const st = planWeekSteps(f.wi)[f.si]; if(st && st.targets.length){ startPlanStep(f.wi, f.si, 0); return; } }
+    goToSection('plan');
+  } else if(b.dataset.done === 'practice'){ if(typeof setExMode === 'function') setExMode('pick'); goToSection('exercises'); }
 });
 
 /* ---------- MORE hub ---------- */
@@ -22867,6 +23364,7 @@ function renderMore(){
       <button type="button" class="mo-item" data-mo="journey"><span class="tic" aria-hidden="true">🧭</span><span><div class="tt">${LL('Your journey','Jūsų kelionė')}</div><div class="ts">${LL('Level goals, can-do milestones and conversation readiness','Lygio tikslai, gebėjimų etapai ir pasirengimas pokalbiams')}</div></span><span class="chev" aria-hidden="true">›</span></button>
       <button type="button" class="mo-item" data-mo="quiz"><span class="tic" aria-hidden="true">🏁</span><span><div class="tt">${T('Weekly quiz')}</div><div class="ts">${T("A short check after each week — mixes phrases and patterns from that week's focus.")}</div></span><span class="chev" aria-hidden="true">›</span></button>
       <button type="button" class="mo-item" data-mo="mastered"><span class="tic" aria-hidden="true">🏆</span><span><div class="tt">${T('Mastered')}</div><div class="ts">${T('Words and phrases you know by heart')}</div></span><span class="chev" aria-hidden="true">›</span></button>
+      <button type="button" class="mo-item" data-mo="help"><span class="tic" aria-hidden="true">🌱</span><span><div class="tt">${LL('How Parle works','Kaip veikia Parle')}</div><div class="ts">${LL('A short tour of Home, Plan and Practice','Trumpa Pagrindinio, Plano ir Praktikos apžvalga')}</div></span><span class="chev" aria-hidden="true">›</span></button>
       <button type="button" class="mo-item" data-mo="resources"><span class="tic" aria-hidden="true">🔗</span><span><div class="tt">${T('Free resources')}</div><div class="ts">${T('Everything referenced in the plan, all free to start with.')}</div></span><span class="chev" aria-hidden="true">›</span></button>
     </div>
     <div class="hm-section-t"><h3>${T('Settings')}</h3></div>
@@ -22891,6 +23389,7 @@ document.getElementById('moreBody').addEventListener('click', (e)=>{
   else if(a === 'mastered') goToSection('mastered');
   else if(a === 'resources') goToSection('resources');
   else if(a === 'courses') showLanding();
+  else if(a === 'help') openOnboarding();
 });
 
 /* ---------- RENDER: PHRASES ---------- */
@@ -25652,6 +26151,7 @@ function loadCourse(langId, levelId){
   planFlow = null;
   planWeekIdx = -1;
   planExpanded = new Set();
+  planOpen = new Set(); planOpenInit = false;
   loadMastered();
   loadDifficult();
   activeCat = PHRASE_CATS[0];
@@ -25698,6 +26198,7 @@ function loadCourse(langId, levelId){
 
   store.set('lastCourse', langId);
   if(resolvedLevelId) store.set('lastLevel_'+langId, resolvedLevelId);
+  maybeOnboard();
 }
 
 function showLanding(){
