@@ -1758,6 +1758,79 @@
   .ds-primary b{ font-size:1rem; font-weight:800; }
   .ds-secondary{ min-height:48px; background:none; border:none; color:var(--primary-text); font:inherit; font-weight:800; cursor:pointer; }
 
+
+  /* Single completion sheet: compact, no stacked card behind it */
+  body.lesson-done-open #exBody, body.lesson-done-open #quizBody{ visibility:hidden; }
+  .sheet{ position:relative; }
+  .sheet-x{ position:absolute; top:6px; right:8px; width:44px; height:44px; border:none; background:none; font-size:1.6rem; line-height:1; color:var(--text-2); cursor:pointer; border-radius:50%; }
+  .done-sheet{ gap:12px; }
+  .ds-score{ display:inline-block; margin-left:8px; padding:1px 10px; border-radius:999px; background:var(--primary-soft); font-weight:800; font-size:.8rem; }
+  .ds-note{ margin:0; color:var(--text-2); font-size:.84rem; }
+  .ds-secondary{ min-height:44px; font-weight:700; color:var(--text-2); font-size:.9rem; }
+
+
+  /* Listening: multiple choice by default */
+  .listen-instr{ font-size:.9rem; color:var(--text-2); margin:0 0 12px; }
+  .listen-play{ width:100%; min-height:56px; font-size:1.05rem; margin-bottom:16px; }
+  .listen-opts{ display:flex; flex-direction:column; gap:10px; }
+  .listen-opts .opt.picked{ border-color:var(--primary); background:var(--primary-soft); box-shadow:0 0 0 2px var(--primary) inset; }
+  .listen-mode{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:.82rem; color:var(--text-2); cursor:pointer; min-height:36px; }
+  .listen-mode input{ width:18px; height:18px; accent-color:var(--primary); }
+
+
+  /* XP feedback: a small chip under the answer, toasts at the bottom */
+  .xp-chip{ display:inline-flex; align-items:center; gap:2px; margin:8px 0 0; padding:3px 12px; border-radius:999px; background:var(--success-soft); color:var(--success); font-weight:800; font-size:.82rem; animation:xpChip .5s var(--ease) both; }
+  @keyframes xpChip{ from{ opacity:0; transform:translateY(6px) scale(.92); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .xp-chip{ animation:none; } }
+  .xp-toast{ top:auto !important; bottom:calc(var(--actionh, 0px) + 84px + env(safe-area-inset-bottom)); }
+
+
+  /* One compact exercise header: back · title/progress · options. Flow controls live in the menu. */
+  .sess-sub{ font-size:.72rem; font-weight:700; color:var(--text-3); margin:-4px 0 5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sess-bar{ height:6px; }
+  body.in-session .flow-bar{ display:none !important; }
+  body.in-session.has-flowbar main{ padding-top:14px; }
+  body.in-session{ padding-bottom:calc(var(--actionh, 90px) + 28px + env(safe-area-inset-bottom)); }
+  body.in-session.has-flowbar{ padding-bottom:calc(var(--actionh, 90px) + 28px + env(safe-area-inset-bottom)); }
+  body.in-session .tense-mcq-only{ display:none; }
+
+
+  /* ---- Spacing system: 8px related · 12–16px inside components · 20–24px between groups · 28–40px between sections ---- */
+  .hm-greet{ margin:8px 2px 24px; }
+  .hm-hero{ margin-bottom:24px; }
+  .hm-prog{ margin-bottom:0; padding:16px 18px; }
+  .hm-bar{ margin:12px 0 10px; }
+  .hm-section-t{ margin:36px 2px 12px; }
+  .hm-quick{ gap:12px; }
+  .hm-tile{ padding:16px; }
+  .hm-rec{ margin-top:0; }
+  .hm-quick + .hm-rec, .hm-quick + button, .hm-quick + .hm-journey{ margin-top:16px; }
+  #homeBody > .hm-journey, #homeBody > button.hm-journey{ margin-top:24px; }
+  #homeBody > *:last-child{ margin-bottom:8px; }
+  #plan .plan-intro{ margin:8px 0 32px; }
+  .pi-sub{ margin:0 0 20px; }
+  .pi-now{ padding:16px 18px; }
+  .pi-help{ margin-top:16px; }
+  .pi-link{ margin-top:8px; }
+  .rm-h{ margin:0 2px 16px; }
+  .rm-list{ gap:16px; margin-bottom:32px; }
+  .rm-month{ margin:20px 4px 0; }
+  .rm-month:first-child{ margin-top:0; }
+  .rm-head{ padding:16px 18px; }
+  .rm-body{ padding:0 18px 20px; }
+  .pw-step{ padding:18px 0; }
+  .pw-actions{ gap:8px; margin-top:12px; }
+  .pw-cando{ margin-bottom:12px; }
+
+
+  html{ scroll-padding-bottom:calc(var(--actionh, 0px) + 24px); scroll-padding-top:calc(var(--sessh, 0px) + 12px); }
+  @media (prefers-reduced-motion: reduce){ .sheet, .sheet-ov{ animation:none !important; transition:none !important; } }
+
+
+  .ds-alt{ display:flex; flex-direction:column; align-items:center; gap:2px; min-height:56px; padding:8px 16px; border:2px solid var(--primary); border-radius:var(--r-pill); background:transparent; color:var(--primary-text); font:inherit; cursor:pointer; }
+  .ds-alt span{ font-size:.7rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; opacity:.85; }
+  .ds-alt b{ font-size:.95rem; font-weight:800; }
+
   /* Welcome (first run) */
   .onb-ov{ position:fixed; inset:0; z-index:400; background:var(--bg); display:flex; align-items:center; justify-content:center; padding:20px; animation:fadeIn .25s ease; overflow:auto; }
   .onb{ position:relative; width:100%; max-width:420px; text-align:center; padding:32px 6px 8px; }
@@ -1888,6 +1961,13 @@
   @media (prefers-reduced-motion:reduce){
     *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
   }
+
+/* ---- Lesson scope note (above the exercise) ---- */
+.ex-scope{display:flex;align-items:flex-start;gap:8px;margin:0 0 12px;padding:8px 12px;border-radius:12px;font-size:.82rem;line-height:1.35;background:#EEF3EA;color:#304F3C;border:1px solid #D7E3D3}
+.ex-scope[hidden]{display:none}
+.ex-scope .sc-dot{flex:0 0 8px;height:8px;border-radius:50%;background:#759B80;margin-top:6px}
+.ex-scope.note{background:#FBF1E8;border-color:#F0DCCB;color:#6B4A36}
+.ex-scope.note .sc-dot{background:#E7B89E}
 </style>
 </head>
 <body>
@@ -2001,7 +2081,7 @@
 
 <div id="sessHead" class="sess-head" hidden>
   <button type="button" class="sess-btn" id="sessBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-  <div class="sess-mid"><div class="sess-title" id="sessTitle"></div><div class="sess-bar" id="sessBar" role="progressbar" aria-valuemin="0" aria-label="Progress"><i></i></div></div>
+  <div class="sess-mid"><div class="sess-title" id="sessTitle"></div><div class="sess-sub" id="sessSub" hidden></div><div class="sess-bar" id="sessBar" role="progressbar" aria-valuemin="0" aria-label="Progress"><i></i></div></div>
   <button type="button" class="sess-btn" id="sessStar" aria-label="Mark as mastered" hidden>★</button>
   <button type="button" class="sess-btn" id="sessMore" aria-label="Options" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg></button>
 </div>
@@ -2037,6 +2117,7 @@
     <div class="ex-cat-tabs" id="exCatTabs"></div>
     <p class="ex-cat-desc" id="exCatDesc"></p>
     <div class="ex-tabs" id="exTabs"></div>
+    <div class="ex-scope" id="exScope" hidden></div>
     <div id="exBody"></div>
   </section>
 
@@ -21738,9 +21819,10 @@ function goToSection(sectionId){
   if(sectionId === 'journey' && typeof renderJourney === 'function') renderJourney();
   window.scrollTo({top:0});
 }
-function goToExercise(exId){
+function goToExercise(exId, opts){
   if(typeof exTabs === 'undefined') return;
   const tab = exTabs.find(t=> t.id === exId);
+  exScope = (opts && Number.isInteger(opts.wi) && Number.isInteger(opts.si)) ? computeScope(exId, opts.wi, opts.si) : null;
   activeEx = exId;
   activeExCat = tab ? tab.cat : 'core';
   exMode = 'play';
@@ -21812,6 +21894,7 @@ document.addEventListener('keydown', (e)=>{
 let planSteps = {};      // { "weekIdx:detailIdx" | "weekIdx:q": true/false }
 let planWeekIdx = -1;    // week currently shown (-1 = not resolved yet for this level)
 let planFlow = null;     // { week, step, t } while following the guided flow
+let exScope = null;      // lesson scope of the exercise opened from the Plan: { tab, wi, si, key, keep:Set|null, mode, label, note, count }
 let planExpanded = new Set(); // step keys whose full text is open
 const PLAN_GOAL_RE = /^\s*(tikslai|goals?)\s*$/i;
 const PLAN_EX_SYNONYMS = [
@@ -21947,10 +22030,193 @@ function planPreview(text){
   const p = (m && m[1].length <= 200) ? m[1] : plain.slice(0,150).replace(/\s+\S*$/,'') + '…';
   return { html: p, more: p.length < plain.length };
 }
-function launchTarget(t){
+function launchTarget(t, ctx){
   if(t.type==='phrases') goToPhraseCat(t.idx);
-  else if(t.type==='ex') goToExercise(t.id);
+  else if(t.type==='ex'){
+    const c = ctx || (planFlow ? { wi: planFlow.week, si: planFlow.step } : null);
+    goToExercise(t.id, c ? { wi: c.wi, si: c.si } : undefined);
+  }
   else if(t.type==='quiz') goToQuizWeek(t.idx);
+}
+
+/* =====================================================================================
+   LESSON-SCOPED PRACTICE
+   Practice pools are level-wide lists. When an exercise is opened FROM a plan lesson, the
+   pool is narrowed to what that lesson actually teaches — and when a pool can't be tied to
+   the lesson, the screen says so ("mixed practice") instead of silently serving unrelated
+   items. Items keep their stable indices (the narrowed source is a sparse view), so
+   mastery, difficulty marks and saved progress are never touched or renumbered.
+   ===================================================================================== */
+function scMixedNote(){
+  return LL('Mixed practice — questions from across this level. This activity isn’t matched to this lesson yet.',
+            'Mišri praktika – klausimai iš viso šio lygio. Ši veikla dar nesusieta su šia pamoka.');
+}
+function scNorm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim(); }
+function scWords(s){ return new Set(String(s||'').toLowerCase().split(/[^a-zà-ÿœ]+/).filter(Boolean)); }
+function inScope(type, idx){ return !exScope || exScope.tab !== type || !exScope.keep || exScope.keep.has(idx); }
+function scopeActive(type){ return !!(exScope && exScope.tab === type && exScope.keep); }
+function scopeSuffix(type){ return (exScope && exScope.tab === type && exScope.key) ? '_' + exScope.key : ''; }
+function phraseCatRanges(){
+  const out = []; let at = 0;
+  Object.keys(phrases || {}).forEach((cat, ci)=>{ const n = (phrases[cat]||[]).length; out.push({ ci, cat, start: at, end: at + n }); at += n; });
+  return out;
+}
+/* Phrase categories a lesson is about: those its text names, else the week's own. */
+function lessonPhraseCats(wi, st){
+  const lower = planStripTags(st.text).toLowerCase();
+  const named = [];
+  (PHRASE_CATS||[]).forEach((cat, ci)=>{ if(lower.includes(cat.toLowerCase())) named.push(ci); });
+  if(named.length) return named;
+  const byWeek = weekPhraseCatIndices(wi);
+  if(byWeek.length) return byWeek;
+  // courses whose categories don't divide evenly across weeks: use the categories this
+  // week's own vocabulary lesson(s) open
+  const viaSteps = [];
+  planWeekSteps(wi).forEach(s=> s.targets.forEach(t=>{ if(t.type==='phrases' && !viaSteps.includes(t.idx)) viaSteps.push(t.idx); }));
+  return viaSteps;
+}
+const SC_CONCEPTS = [
+  ['reflexive', /reflexi|myself|yourself|himself|herself|ourselves|themselves|se lev|s appel/],
+  ['objpron', /object pronoun|pronoun placement|pronoun goes|pronoun sits|le la les|\blui\b|\bleur\b|indirect object|direct object/],
+  ['negation', /negat|\bne pas\b|ne verb pas|don t|doesn t|\bniet\b|\bgeen\b/],
+  ['question', /question|est ce que|inversion|\bdo you\b|\bdoes\b|\bvraag\b/],
+  ['passecompose', /passe compose|past participle|voltooid/],
+  ['imparfait', /imparfait|used to|onvoltooid/],
+  ['futurproche', /futur proche|aller inf|near future|going to|\bgaan\b/],
+  ['connector', /connector|parce que|\bdonc\b|pourtant|because|therefore|\bmais\b|\bomdat\b/],
+  ['comparative', /comparativ|superlativ|plus que|moins|meilleur|\bthan\b/],
+  ['sicond', /\bsi\b.*(present|condition)|si clause|condition|if clause/],
+  ['relative', /relative|\bqui\b.*\bque\b/],
+  ['cest', /\bc est\b|\bil est\b|il elle est|profession/],
+  ['subjonctif', /subjonctif|subjunctive/],
+  ['conditionnel', /conditionnel|conditional/],
+  ['reported', /reported|indirect speech|discours indirect/],
+  ['svo', /subject verb|subject \+ verb|svo|sentence order|statements follow|word order/],
+  ['articles', /article/],
+  ['therebe', /there is|there are/],
+  ['adjorder', /adjective order|adjectives in/],
+  ['thirdperson', /third person|he she it/],
+  ['pronounsEn', /subject pronoun|possessive|pronoun:/]
+];
+function scTags(text){
+  const n = scNorm(text); const out = new Set();
+  SC_CONCEPTS.forEach(([tag, rx])=>{ if(rx.test(n)) out.add(tag); });
+  return out;
+}
+function scItemText(type, it){
+  if(!it) return '';
+  return [it.prompt, it.fr, it.note].filter(x=>typeof x==='string').join(' ');
+}
+function scopeLabelList(arr, max){ const a = arr.slice(0, max||5); return a.join(', ') + (arr.length > a.length ? '…' : ''); }
+
+function scopeTenses(wi, st){
+  if(typeof tenseVerbs === 'undefined' || !tenseVerbs || !tenseVerbs.length || !tenseItems.length) return null;
+  const txt = planStripTags(st.text).toLowerCase();
+  const stripped = txt.replace(/(subjonctif|conditionnel|imparfait|plus-que-parfait|futur simple)\s+pr[ée]sent/g, ' ');
+  // tense names in the order the lesson mentions them (the first one is the lesson's focus)
+  const NAMES = [
+    ['pres', /pr[ée]sent/g, true], ['futur', /futur proche|near future|aller \+ inf/g, true], ['passe', /pass[ée] compos[ée]/g, true],
+    ['imparfait', /imparfait/g, false], ['subjonctif', /subjonctif/g, false], ['conditionnel', /conditionnel/g, false],
+    ['plus-que-parfait', /plus-que-parfait/g, false], ['futur simple', /futur simple/g, false]
+  ];
+  const found = [];
+  NAMES.forEach(([key, rx, supported])=>{ const m = stripped.search(rx); if(m >= 0) found.push({ key, pos:m, supported }); });
+  found.sort((x,y)=> x.pos - y.pos);
+  const tenses = new Set(found.filter(f=>f.supported).map(f=>f.key));
+  const focus = found[0] || null;
+  const gap = focus && !focus.supported ? focus.key : null;
+  // verbs the lesson names (infinitives, or past participles — "passé composé" itself is not the verb "passer")
+  const words = scWords(stripped.replace(/pass[ée] compos[ée]/g, ' '));
+  const verbs = new Set();
+  tenseVerbs.forEach((v, vi)=>{ if(words.has(v.inf.toLowerCase()) || (v.pp && v.pp.length>2 && words.has(v.pp.toLowerCase()))) verbs.add(vi); });
+  if(verbs.size < 3 && /regular -er|-er verbs/.test(txt)) tenseVerbs.forEach((v, vi)=>{ if(/er$/.test(v.inf) && v.inf !== 'aller' && ['parler','aimer','donner','demander','travailler','manger','trouver'].includes(v.inf)) verbs.add(vi); });
+  const mixedNote = gap
+    ? LL(`There is no ${gap} drill yet, so this is mixed verb practice from across the level.`, `Šio laiko (${gap}) užduočių dar nėra — mišri šio lygio veiksmažodžių praktika.`)
+    : scMixedNote();
+  const useTenses = tenses.size ? tenses : new Set(TENSE_DEFS.map(t=>t.key));
+  if(!verbs.size && !tenses.size) return { mode:'mixed', keep:null, note: mixedNote };
+  if(gap && !verbs.size) return { mode:'mixed', keep:null, note: mixedNote };
+  const keep = new Set();
+  tenseItems.forEach((it, idx)=>{ if((!verbs.size || verbs.has(it.verbIdx)) && useTenses.has(it.tenseKey)) keep.add(idx); });
+  if(!keep.size) return { mode:'mixed', keep:null, note: mixedNote };
+  const vl = verbs.size ? scopeLabelList([...verbs].map(i=>tenseVerbs[i].inf), 5) : LL('all verbs','visi veiksmažodžiai');
+  const tl = [...useTenses].map(k=> (TENSE_DEFS.find(t=>t.key===k)||{}).label).join(' + ');
+  if(gap) return { mode:'gap', keep, label: vl,
+    note: LL(`There is no ${gap} drill yet — practising this lesson's verbs (${vl}) in the tenses available.`, `Šio laiko (${gap}) užduočių dar nėra — treniruojami pamokos veiksmažodžiai (${vl}) esamais laikais.`) };
+  return { mode:'scoped', keep, label: `${vl} · ${tl}`, note: LL(`This lesson: ${vl} · ${tl}`, `Ši pamoka: ${vl} · ${tl}`) };
+}
+function scopeListen(wi, st){
+  const cats = lessonPhraseCats(wi, st);
+  if(!cats.length) return { mode:'mixed', keep:null, note: scMixedNote() };
+  const ranges = phraseCatRanges(), keep = new Set(), names = [];
+  cats.forEach(ci=>{ const r = ranges[ci]; if(!r) return; names.push(r.cat); for(let k=r.start;k<r.end;k++) keep.add(k); });
+  if(keep.size < 3) return { mode:'mixed', keep:null, note: scMixedNote() };
+  return { mode:'scoped', keep, label: names.join(', '), note: LL(`This lesson's phrases: ${names.join(', ')}`, `Šios pamokos frazės: ${names.join(', ')}`) };
+}
+/* mcq / builder / translate: an item belongs to the phrase category whose phrase it uses.
+   Only trusted when most of the pool can be placed AND the lesson's categories get ≥3 items. */
+function scopePhraseLinked(type, list, getTexts, wi, st){
+  const cats = lessonPhraseCats(wi, st);
+  const none = { mode:'mixed', keep:null, note: scMixedNote() };
+  if(!cats.length || !list || !list.length) return none;
+  const lookup = new Map();
+  Object.keys(phrases||{}).forEach((cat, ci)=>{ (phrases[cat]||[]).forEach(pair=>{ (pair||[]).forEach(txt=>{ const n = scNorm(txt); if(n && !lookup.has(n)) lookup.set(n, ci); }); }); });
+  const catOf = (it)=>{
+    for(const t of getTexts(it)){ const n = scNorm(t); if(!n) continue; if(lookup.has(n)) return lookup.get(n); }
+    return -1;
+  };
+  const keep = new Set(); let placed = 0;
+  list.forEach((it, idx)=>{ const c = catOf(it); if(c >= 0){ placed++; if(cats.includes(c)) keep.add(idx); } });
+  if(placed < list.length * 0.5 || keep.size < 3) return none;
+  const names = cats.map(ci=>PHRASE_CATS[ci]).filter(Boolean);
+  return { mode:'scoped', keep, label: names.join(', '), note: LL(`This lesson's topic: ${names.join(', ')}`, `Šios pamokos tema: ${names.join(', ')}`) };
+}
+/* Grammar judgement drills: concept tags on the lesson text vs. on each item; if the lesson's
+   own concepts give too few items, widen to concepts taught up to and including this week. */
+function scopeConcept(type, list, wi, st, tabId){
+  const none = { mode:'mixed', keep:null, note: scMixedNote() };
+  if(!list || !list.length) return none;
+  const own = scTags(planStripTags(st.text));
+  if(!own.size) return none;
+  const itemTags = list.map(it=> scTags(scItemText(type, it)));
+  function collect(tags){ const keep = new Set(); itemTags.forEach((t, idx)=>{ for(const x of t){ if(tags.has(x)){ keep.add(idx); break; } } }); return keep; }
+  let keep = collect(own), widened = false;
+  if(keep.size < 4){
+    const cum = new Set(own);
+    for(let w=0; w<=wi; w++){
+      planWeekSteps(w).forEach(s=>{ if(s.targets.some(t=>t.type==='ex' && t.id===tabId)) scTags(planStripTags(s.text)).forEach(x=>cum.add(x)); });
+    }
+    const k2 = collect(cum); if(k2.size > keep.size){ keep = k2; widened = true; }
+  }
+  if(keep.size < 3) return none;
+  const names = [...own].slice(0,4).join(', ');
+  return { mode:'scoped', keep, label: names, note: widened
+    ? LL(`This lesson and earlier ones: ${keep.size} questions`, `Ši ir ankstesnės pamokos: ${keep.size} klausimai`)
+    : LL(`This lesson: ${keep.size} questions`, `Ši pamoka: ${keep.size} klausimai`) };
+}
+function computeScope(tabId, wi, si){
+  const st = planWeekSteps(wi)[si]; if(!st) return null;
+  let r = null;
+  if(tabId === 'tenses') r = scopeTenses(wi, st);
+  else if(tabId === 'listen') r = scopeListen(wi, st);
+  else if(tabId === 'mcq') r = scopePhraseLinked('mcq', mcq, it=>[it.fr, (it.choices||[])[it.answer]], wi, st);
+  else if(tabId === 'build') r = scopePhraseLinked('build', builderSentences, it=>[it.answer, it.en], wi, st);
+  else if(tabId === 'translate') r = scopePhraseLinked('translate', translateItems, it=>[it.fr, it.en], wi, st);
+  else if(tabId === 'verbMechanics') r = scopeConcept('verbMechanics', verbMechanicsItems, wi, st, tabId);
+  else if(tabId === 'syntax') r = scopeConcept('syntax', syntaxItems, wi, st, tabId);
+  else r = { mode:'mixed', keep:null, note: scMixedNote() };
+  if(!r) return null;
+  r.tab = tabId; r.wi = wi; r.si = si; r.key = 'L' + wi + '-' + si;
+  r.count = r.keep ? r.keep.size : 0;
+  return r;
+}
+function renderExScope(){
+  const host = document.getElementById('exScope'); if(!host) return;
+  if(!exScope || exScope.tab !== activeEx){ host.hidden = true; host.innerHTML = ''; return; }
+  const cls = exScope.mode === 'scoped' ? 'ok' : 'note';
+  host.className = 'ex-scope ' + cls;
+  host.innerHTML = `<span class="sc-dot" aria-hidden="true"></span><span class="sc-txt">${exScope.note}</span>`;
+  host.hidden = false;
 }
 function startPlanStep(wi, si, ti){
   const steps = planWeekSteps(wi), st = steps[si];
@@ -22182,17 +22448,57 @@ function flowAdvance(markDone){
   const f = planFlow; if(!f) return;
   const steps = planWeekSteps(f.week), st = steps[f.step];
   if(st && f.t < st.targets.length - 1){ f.t++; launchTarget(st.targets[f.t]); updateFlowBar(); return; }
-  if(markDone && st){ setStepDone(st, true); showLessonDone(f.week, f.step); return; }
+  if(markDone && st){
+    const key = f.week + ':' + f.step;
+    if(f.doneKey === key){ flowProceed(); return; }   // this lesson's completion was already shown — just move on
+    const was = isStepDone(f.week, st);
+    setStepDone(st, true);
+    f.doneKey = key;
+    showLessonDone(f.week, f.step, { repeat: was });
+    return;
+  }
   flowProceed();
 }
 function flowProceed(){
   const f = planFlow; if(!f) return;
-  const steps = planWeekSteps(f.week);
-  for(let k=f.step+1; k<steps.length; k++){
-    if(steps[k].targets.length){ f.step = k; f.t = 0; launchTarget(steps[k].targets[0]); updateFlowBar(); renderPlan(); return; }
-  }
+  const rec = recommendNext(f.week, f.step);
+  if(rec.type === 'lesson'){ startPlanStep(rec.wi, rec.si, 0); renderPlan(); return; }
   endPlanFlow(true);
 }
+/* A finished exercise set inside the guided flow hands over to the single completion sheet
+   (when it was the lesson's last screen) instead of leaving its own end card to stack with it. */
+(function initFlowFinishWatch(){
+  const hosts = ['exBody', 'quizBody'].map(id=>document.getElementById(id)).filter(Boolean);
+  if(!hosts.length) return;
+  let shownFor = '';
+  function onChange(host){
+    const pill = host.querySelector('.score-pill');
+    if(!pill){ shownFor = ''; return; }
+    const f = planFlow; if(!f || !weeks[f.week]) return;
+    const sec = document.querySelector('main section.active');
+    const isQuiz = host.id === 'quizBody';
+    if(!sec || sec.id !== (isQuiz ? 'quiz' : 'exercises')) return;
+    const steps = planWeekSteps(f.week), st = steps[f.step];
+    if(!st) return;
+    const tgt = st.targets[f.t];
+    if(!tgt) return;
+    if(isQuiz ? !(tgt.type === 'quiz' && tgt.idx === activeQuizWeek) : !(tgt.type === 'ex' && tgt.id === activeEx)) return;
+    const key = f.week + ':' + f.step + ':' + f.t + ':' + (isQuiz ? 'q' : activeEx);
+    if(shownFor === key) return;
+    shownFor = key;
+    if(document.getElementById('sheetRoot').firstElementChild) return;
+    const m = pill.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+    const score = m ? (m[1] + '/' + m[2]) : '';
+    // Shown straight away (the exercise's own end card is hidden behind it, never flashed): the sheet
+    // carries the score, so there is nothing to read on the card underneath.
+    if(f.t < st.targets.length - 1){ showPartDone(f, score); return; }
+    const was = planSteps[st.key] === true;
+    setStepDone(st, true);
+    f.doneKey = f.week + ':' + f.step;
+    showLessonDone(f.week, f.step, { repeat: was, score });
+  }
+  hosts.forEach(h=> new MutationObserver(()=>onChange(h)).observe(h, { childList:true, subtree:true }));
+})();
 function flowBack(){
   const f = planFlow; if(!f) return;
   const steps = planWeekSteps(f.week);
@@ -22229,7 +22535,8 @@ function flowBack(){
    +30 for finishing a weekly quiz, +20 for marking an item mastered. A streak counts
    consecutive days with any XP; missing a day just resets it — no penalties or nagging. */
 const XP_RULES = { correct:10, retry:5, step:15, quiz:30, mastered:20 };
-const DAILY_GOAL_CHOICES = [30, 50, 100, 150];
+const DEFAULT_DAILY_GOAL = 1000;
+const DAILY_GOAL_CHOICES = [250, 500, 1000, 1500];
 const GOAL_MIN = 5, GOAL_MAX = 5000;
 function dayKey(d){ const x = d || new Date(); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
 function readActivity(){
@@ -22237,7 +22544,8 @@ function readActivity(){
   Object.keys(a).forEach(k=>{ const e = a[k]; if(e && typeof e === 'object' && Number.isFinite(e.xp) && e.xp >= 0) out[k] = e; });
   return out;
 }
-function getDailyGoal(){ const g = store.get('dailyGoalXP', 50); return (Number.isFinite(g) && g >= GOAL_MIN && g <= GOAL_MAX) ? Math.round(g) : 50; }
+/* Only a goal the learner chose themselves is ever stored, so changing the default never overrides a custom one. */
+function getDailyGoal(){ const g = store.get('dailyGoalXP', DEFAULT_DAILY_GOAL); return (Number.isFinite(g) && g >= GOAL_MIN && g <= GOAL_MAX) ? Math.round(g) : DEFAULT_DAILY_GOAL; }
 function setDailyGoal(n){ n = Math.round(+n); if(!Number.isFinite(n)) return false; n = Math.min(GOAL_MAX, Math.max(GOAL_MIN, n)); store.set('dailyGoalXP', n); if(typeof renderHome==='function') renderHome(); if(typeof renderMore==='function') renderMore(); return true; }
 /* Small dialog to type your own daily XP goal (presets are shortcuts). */
 function openGoalDialog(){
@@ -22248,7 +22556,7 @@ function openGoalDialog(){
   ov.innerHTML = `<div class="goal-dlg" role="dialog" aria-modal="true" aria-labelledby="goalDlgT">
     <h3 id="goalDlgT">${T('Daily goal')}</h3>
     <p>${T('How many XP do you want to earn each day?')}</p>
-    <input id="goalInput" type="number" inputmode="numeric" min="${GOAL_MIN}" max="${GOAL_MAX}" step="5" value="${cur}" aria-label="${T('Daily goal')} (XP)">
+    <input id="goalInput" type="number" inputmode="numeric" min="${GOAL_MIN}" max="${GOAL_MAX}" step="50" value="${cur}" aria-label="${T('Daily goal')} (XP)">
     <div class="goal-presets">${DAILY_GOAL_CHOICES.map(g=>`<button type="button" data-preset="${g}">${g}</button>`).join('')}</div>
     <div class="goal-err" id="goalErr" role="alert"></div>
     <div class="goal-actions"><button type="button" class="btn btn-ghost" id="goalCancel">${T('Cancel')}</button><button type="button" class="btn btn-primary" id="goalSave">${T('Save')}</button></div>
@@ -22291,7 +22599,7 @@ function showXpToast(html, cls){
   clearTimeout(xpToastTimer);
   xpToastTimer = setTimeout(()=> el.classList.remove('show'), 1950);
 }
-function awardXP(n){
+function awardXP(n, opts){
   if(!n) return;
   const log = readActivity(), key = dayKey();
   const goal = getDailyGoal();
@@ -22305,8 +22613,20 @@ function awardXP(n){
   const grewTo = plantStageFor(prevTotal + n) > plantStageFor(prevTotal) ? PLANT_STAGES[plantStageFor(prevTotal + n)] : null;
   if(grewTo) showXpToast(`🌱 <b>${LL('Your plant grew — ','Jūsų augalas paaugo – ')}${LL(grewTo.en, grewTo.lt)}!</b>`, 'goal');
   else if(before < goal && before + n >= goal) showXpToast(`🎉 <b>${T('Daily goal reached!')}</b>`, 'goal');
-  else showXpToast(`⚡ <b>+${n} XP</b>`);
+  else if(!(opts && opts.chipRoot)) showXpToast(`⚡ <b>+${n} XP</b>`);
+  if(opts && opts.chipRoot) showAnswerXP(n, opts.chipRoot);
   if(typeof renderHome === 'function') renderHome();
+}
+/* "+10 XP" for a correct answer sits right under that answer's feedback — never in the header, never
+   over the controls. One chip at most per question; screen readers get it through the live region. */
+function showAnswerXP(n, rootId){
+  const root = document.getElementById(rootId); if(!root) return;
+  const fbs = root.querySelectorAll('.feedback.ok:not(:empty)'); const fb = fbs[fbs.length - 1]; if(!fb) return;
+  root.querySelectorAll('.xp-chip').forEach(c=>c.remove());
+  const chip = document.createElement('div');
+  chip.className = 'xp-chip'; chip.setAttribute('role', 'status');
+  chip.innerHTML = `<span aria-hidden="true">+</span>${n} XP`;
+  fb.insertAdjacentElement('afterend', chip);
 }
 
 /* One-time XP (plan step done, item mastered, weekly quiz first finished): un/re-ticking or
@@ -22329,12 +22649,17 @@ function awardOnce(tag, n){
     const t = e.target;
     const root = t.closest && t.closest('#exBody, #quizBody');
     if(!root) return;
-    if(t.closest('#difficultBtn, #masterBtn, #restartBtn, #nextBtn, .dir-opt, .rule-toggle, .q-actions, .ex-tab, .ex-cat-tab')) return;
+    if(t.closest('#difficultBtn, #masterBtn, #restartBtn, #nextBtn, .dir-opt, .rule-toggle, .q-actions, .ex-tab, .ex-cat-tab, .listen-mode, .tense-mcq-only, .mcq-only')) return;
     const before = okCount(root);
     const retry = !!root.querySelector('.opt.wrong, .feedback.bad:not(:empty)');
     setTimeout(()=>{
       const now = document.getElementById(root.id);
-      if(now && okCount(now) > before) awardXP(retry ? XP_RULES.retry : XP_RULES.correct);
+      if(!now || okCount(now) <= before) return;
+      // one answer can reach here through both its click and an Enter keydown — pay once
+      const t0 = performance.now();
+      if(t0 - (window.__xpLast || -1e9) < 250) return;
+      window.__xpLast = t0;
+      awardXP(retry ? XP_RULES.retry : XP_RULES.correct, { chipRoot: root.id });
     }, 0);
   }
   document.addEventListener('click', watch, true);
@@ -22578,10 +22903,25 @@ document.getElementById('journeyBody').addEventListener('click', (e)=>{
 
 /* ---------- Bottom sheet (shared by the session menu and the header menu) ---------- */
 let sheetOpener = null;
+/* While a sheet is open, everything behind it is inert: no stray taps, no tab-stops, no
+   screen-reader reading of the page underneath. */
+function setBackgroundInert(on){
+  const root = document.getElementById('sheetRoot'); if(!root) return;
+  // walk from the sheet up to <body>; at every level, everything that is not on that path goes inert
+  for(let node = root; node && node !== document.body; node = node.parentElement){
+    const par = node.parentElement; if(!par) break;
+    [...par.children].forEach(el=>{
+      if(el === node || el.tagName === 'SCRIPT') return;
+      if(on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
+    });
+  }
+}
 function closeSheet(immediate){
   const root = document.getElementById('sheetRoot');
   const ov = root && root.firstElementChild;
-  if(!ov) return;
+  if(!ov){ setBackgroundInert(false); document.body.classList.remove('lesson-done-open'); return; }
+  setBackgroundInert(false);
+  document.body.classList.remove('lesson-done-open');
   document.removeEventListener('keydown', sheetKeys, true);
   const done = ()=>{ if(ov.isConnected) ov.remove(); };
   if(immediate){ done(); }
@@ -22609,8 +22949,10 @@ function openSheet(title, bodyHtml, onClick, closeLabel){
     <div class="sheet-grab" aria-hidden="true"></div>
     <h3 id="sheetT">${title}</h3>
     <div class="sheet-body">${bodyHtml}</div>
-    <button type="button" class="sheet-close" data-sheet="close">${closeLabel || LL('Done','Gerai')}</button>
+    ${closeLabel === false ? `<button type="button" class="sheet-x" data-sheet="close" aria-label="${LL('Close','Uždaryti')}">×</button>` : ''}
+    ${closeLabel === false ? '' : `<button type="button" class="sheet-close" data-sheet="close">${closeLabel || LL('Done','Gerai')}</button>`}
   </div></div>`;
+  setBackgroundInert(true);
   const ov = root.firstElementChild;
   ov.addEventListener('click', (e)=>{
     if(e.target === ov){ closeSheet(); return; }
@@ -22621,7 +22963,7 @@ function openSheet(title, bodyHtml, onClick, closeLabel){
   });
   document.addEventListener('keydown', sheetKeys, true);
   if(typeof renderAudioSpeed === 'function') renderAudioSpeed();
-  const first = ov.querySelector('[data-sheet]:not([data-sheet="close"]), .sheet-close');
+  const first = ov.querySelector('[data-sheet]:not([data-sheet="close"]), .sheet-close, .sheet-x');
   setTimeout(()=>{ if(first) first.focus(); }, 30);
 }
 function sheetRow(act, icon, label, sub){
@@ -22725,6 +23067,10 @@ function syncSession(){
   if(!area){ bar.hidden = true; document.body.style.removeProperty('--sessh'); return; }
   const title = area === 'ex' ? exTabLabel(activeEx) : `${T('Weekly quiz')} · ${T('Week')} ${activeQuizWeek + 1}`;
   document.getElementById('sessTitle').textContent = title;
+  const sub = document.getElementById('sessSub');
+  const fst = planFlow && weeks[planFlow.week] ? planWeekSteps(planFlow.week) : null;
+  if(fst && fst[planFlow.step]){ sub.textContent = `${T('Week')} ${planFlow.week+1} · ${LL('Lesson','Pamoka')} ${planFlow.step+1}/${fst.length}`; sub.hidden = false; }
+  else { sub.textContent = ''; sub.hidden = true; }
   const pane = activePane();
   const prog = paneProgress(pane);
   const fill = document.querySelector('#sessBar i');
@@ -22733,7 +23079,7 @@ function syncSession(){
   else { sb.hidden = true; }
   const star = document.getElementById('sessStar');
   const master = pane && pane.querySelector('#masterBtn');
-  star.hidden = !master;
+  star.hidden = true;                      // "mastered" lives in the Options menu now — one compact header
   if(master) star.classList.toggle('armed', master.classList.contains('armed'));
   syncActionBar(pane);
   document.body.style.setProperty('--sessh', head.offsetHeight + 'px');
@@ -22741,7 +23087,7 @@ function syncSession(){
 function syncActionBar(pane){
   const bar = document.getElementById('actionBar'), btn = document.getElementById('actionBtn');
   const chk = pane && pane.querySelector('#check'), nxt = pane && pane.querySelector('#nextBtn');
-  if(!pane || (!chk && !nxt)){ bar.hidden = true; return; }   // finished / empty screens bring their own buttons
+  if(!pane || (!chk && !nxt)){ bar.hidden = true; document.body.style.setProperty('--actionh', '0px'); return; }   // finished / empty screens bring their own buttons
   bar.hidden = false;
   let label, enabled = true, target;
   if(chk && !chk.disabled){ label = LL('Check answer','Tikrinti atsakymą'); target = chk; }
@@ -22754,6 +23100,7 @@ function syncActionBar(pane){
   btn.disabled = !enabled;
   btn._target = enabled ? target : null;
   bar.classList.toggle('ready', enabled);
+  document.body.style.setProperty('--actionh', bar.offsetHeight + 'px');   // content always clears the action bar
 }
 (function initSession(){
   document.getElementById('actionBtn').addEventListener('click', ()=>{
@@ -22761,6 +23108,7 @@ function syncActionBar(pane){
     if(b._target && b._target.isConnected) b._target.click();
   });
   document.getElementById('sessBack').addEventListener('click', ()=>{
+    if(planFlow){ endPlanFlow(true); return; }                 // opened from the Plan → back to the Plan
     if(sessionArea() === 'quiz') goToSection(prevSectionId && prevSectionId !== 'quiz' ? prevSectionId : 'more');
     else setExMode('pick');
   });
@@ -22783,7 +23131,19 @@ function openSessionSheet(){
   const area = sessionArea(), pane = activePane();
   if(!area) return;
   let rows = '';
+  if(planFlow && weeks[planFlow.week]){
+    const steps = planWeekSteps(planFlow.week), st = steps[planFlow.step];
+    const hasPrev = planFlow.t > 0 || steps.slice(0, planFlow.step).some(x=>x.targets.length);
+    if(st) rows += sheetRow('f:done', '✓', LL('Finish this lesson','Baigti šią pamoką'), LL('Mark it done and see what’s next','Pažymėti atlikta ir pamatyti, kas toliau'));
+    if(hasPrev) rows += sheetRow('f:back', '‹', LL('Previous screen','Ankstesnis ekranas'), '');
+    rows += sheetRow('f:skip', '↷', LL('Skip for now','Praleisti kol kas'), LL('Leave it unticked and move on','Palikti nepažymėtą ir eiti toliau'));
+    rows += sheetRow('f:plan', '📅', LL('Back to Plan','Atgal į planą'), '');
+  }
   if(area === 'ex' && pane){
+    const mcqOnly = pane.querySelector('#tenseMcqOnly');
+    if(mcqOnly) rows += `<div class="sheet-set"><span>${T('Multiple choice only')}</span><span class="seg" role="group"><button type="button" data-sheet="mcqonly" aria-pressed="${mcqOnly.checked}">${mcqOnly.checked ? LL('On','Įjungta') : LL('Off','Išjungta')}</button></span></div>`;
+    const masterB = pane.querySelector('#masterBtn');
+    if(masterB) rows += sheetRow('master', '★', masterB.classList.contains('armed') ? LL('Cancel “mastered”','Atšaukti „išmokta“') : LL('Mark as mastered','Pažymėti kaip išmoktą'), LL('It won’t show again','Jis daugiau nebus rodomas'));
     const diff = pane.querySelector('#difficultBtn'), restart = pane.querySelector('#restartBtn');
     if(restart) rows += sheetRow('restart', '↺', LL('Restart this practice','Pradėti praktiką iš naujo'), LL('Start again from the first question','Pradėti nuo pirmo klausimo'));
     if(diff) rows += sheetRow('difficult', '🐢', diff.classList.contains('active') ? LL('Unmark as difficult','Nebežymėti kaip sunkaus') : LL('Mark as difficult','Pažymėti kaip sunkų'), LL('Difficult items come back more often','Sunkūs klausimai grįžta dažniau'));
@@ -22802,7 +23162,13 @@ function openSessionSheet(){
     else if(act === 'difficult' && p){ const b = p.querySelector('#difficultBtn'); closeSheet(); if(b) b.click(); }
     else if(act.startsWith('dir:') && p){ const d = p.querySelectorAll('.dir-opt')[+act.slice(4)]; closeSheet(); if(d) d.click(); }
     else if(act.startsWith('wk:')){ closeSheet(true); goToQuizWeek(+act.slice(3)); }
-    else if(act === 'hub'){ closeSheet(true); setExMode('pick'); }
+    else if(act === 'hub'){ closeSheet(true); planFlow = null; updateFlowBar(); setExMode('pick'); }
+    else if(act === 'mcqonly' && p){ const b = p.querySelector('#tenseMcqOnly'); closeSheet(true); if(b){ b.click(); } }
+    else if(act === 'master' && p){ const b = p.querySelector('#masterBtn'); closeSheet(true); if(b) b.click(); setTimeout(syncSession, 0); }
+    else if(act === 'f:done'){ closeSheet(true); if(planFlow){ planFlow.t = Math.max(planFlow.t, planWeekSteps(planFlow.week)[planFlow.step].targets.length - 1); flowAdvance(true); } }
+    else if(act === 'f:back'){ closeSheet(true); flowBack(); }
+    else if(act === 'f:skip'){ closeSheet(true); flowAdvance(false); }
+    else if(act === 'f:plan'){ closeSheet(true); endPlanFlow(true); }
   });
 }
 
@@ -23022,15 +23388,36 @@ function nextActionableIdx(wi){
   }
   return first;
 }
-/* The single "what next?" answer: the week the learner last worked in, or the first week with something left. */
+/* ONE recommendation mechanism for Home, Plan, the lesson-complete sheet, the guided flow and
+   week/level completion. It only ever returns a lesson that (a) can be opened and (b) is NOT done.
+   Order of preference: the rest of the current week, then the following weeks, then earlier weeks
+   (so out-of-order progress is handled), and never the lesson it was asked "after".
+   Returns { type:'lesson', wi, si, st, sameWeek } or { type:'none' } when nothing is left. */
+function recommendNext(wi, si){
+  const n = weeks ? weeks.length : 0;
+  if(!n) return { type:'none' };
+  const from = Number.isInteger(wi) && wi >= 0 && wi < n ? wi : 0;
+  const cur = Number.isInteger(si) ? si : -1;
+  const open = (w, k)=>{ const s = planWeekSteps(w)[k]; return !!(s && s.targets.length && !isStepDone(w, s)); };
+  const same = planWeekSteps(from);
+  for(let k=cur+1; k<same.length; k++) if(open(from, k)) return { type:'lesson', wi:from, si:k, st:same[k], sameWeek:true };
+  for(let k=0; k<Math.min(cur, same.length); k++) if(open(from, k)) return { type:'lesson', wi:from, si:k, st:same[k], sameWeek:true, earlierInWeek:true };
+  for(let d=1; d<n; d++){
+    const w = (from + d) % n, steps = planWeekSteps(w);
+    for(let k=0; k<steps.length; k++) if(open(w, k)) return { type:'lesson', wi:w, si:k, st:steps[k], sameWeek:false, earlier: w < from };
+  }
+  return { type:'none' };
+}
+function isLevelComplete(){ const lp = levelProgress(); return lp.total > 0 && lp.done === lp.total; }
+/* The single "what next?" answer: the week the learner last worked in, or the next week with something left. */
 function planFocus(){
   if(!weeks || !weeks.length) return null;
   resolvePlanWeek();
-  let wi = planWeekIdx, si = nextActionableIdx(wi);
-  if(si < 0){
-    for(let i=0;i<weeks.length;i++){ const n = nextActionableIdx(i); if(n >= 0){ wi = i; si = n; break; } }
-  }
-  return si < 0 ? { wi:planWeekIdx, si:-1, allDone:true } : { wi, si, allDone:false };
+  const rec = recommendNext(planWeekIdx, -1);
+  if(rec.type === 'lesson') return { wi:rec.wi, si:rec.si, allDone:false };
+  // nothing openable is left — but a lesson with no practice screen may still be unticked
+  for(let i=0;i<weeks.length;i++){ const k = nextActionableIdx(i); if(k >= 0) return { wi:i, si:k, allDone:false }; }
+  return { wi:planWeekIdx, si:-1, allDone:true };
 }
 function nextLevelId(){
   const lv = (COURSES[currentCourseId] || {}).levels || {}, ks = Object.keys(lv), i = ks.indexOf(currentLevelId);
@@ -23239,42 +23626,81 @@ const LESSON_DONE_LINES = [
   ['Good going. It all adds up.','Puiku. Viskas kaupiasi.']
 ];
 let lessonDoneLine = -1;
-function nextFlowStepIdx(wi, si){
+
+/* An earlier lesson of the same week that is still undone (e.g. one the learner skipped). */
+function pendingEarlier(wi, si){
   const steps = planWeekSteps(wi);
-  for(let k=si+1;k<steps.length;k++) if(steps[k].targets.length) return k;
-  return -1;
+  for(let k=0; k<Math.min(si, steps.length); k++){
+    if(steps[k].targets.length && !isStepDone(wi, steps[k])) return { type:'lesson', wi, si:k, st:steps[k] };
+  }
+  return null;
 }
-function showLessonDone(wi, si){
-  const steps = planWeekSteps(wi), st = steps[si], w = weeks[wi];
-  if(!st || !w){ flowProceed(); return; }
-  const counts = weekDoneCount(wi), pct = counts.total ? Math.round(counts.done / counts.total * 100) : 0;
-  const complete = counts.total > 0 && counts.done === counts.total;
-  let n; do { n = Math.floor(Math.random() * LESSON_DONE_LINES.length); } while(n === lessonDoneLine && LESSON_DONE_LINES.length > 1);
-  lessonDoneLine = n;
-  const nk = nextFlowStepIdx(wi, si);
-  let primary = '';
-  if(nk >= 0) primary = `<button type="button" class="ds-primary" data-sheet="next"><span>${LL('Next lesson','Kita pamoka')}</span><b>${homeStepTitle(steps[nk])}</b></button>`;
-  else if(wi < weeks.length - 1) primary = `<button type="button" class="ds-primary" data-sheet="nextweek"><span>${LL('Next week','Kita savaitė')}</span><b>${T('Week')} ${wi+2} · ${weeks[wi+1].title}</b></button>`;
+/* Finished one screen of a multi-screen lesson: same single-sheet pattern, offering the next screen. */
+function showPartDone(f, score){
+  const steps = planWeekSteps(f.week), st = steps[f.step], w = weeks[f.week];
+  const nextT = st.targets[f.t + 1];
   const body = `<div class="done-sheet">
       <div class="ds-leaf" aria-hidden="true">🌿</div>
-      <p class="ds-msg">${LL(LESSON_DONE_LINES[n][0], LESSON_DONE_LINES[n][1])}</p>
-      <p class="ds-did">${LL('You practised','Praktikavote')}: <b>${homeStepTitle(st)}</b><br><span>${T('Week')} ${wi+1} · ${w.title}</span></p>
-      <div class="pw-progress"><div class="pw-bar"><div class="pw-fill" style="width:${pct}%"></div></div><span>${LL(`${counts.done} of ${counts.total} lessons done`, `${counts.done} iš ${counts.total} pamokų atlikta`)}</span></div>
-      ${complete ? `<p class="ds-mile">🌿 ${LL('That completes','Tai užbaigia')} ${T('Week')} ${wi+1}.</p>` : ''}
-      ${primary}
-      <button type="button" class="ds-secondary" data-sheet="plan">${LL('Back to your plan','Grįžti į planą')}</button>
+      <p class="ds-did"><b>${st.targets[f.t].label}</b>${score ? `<span class="ds-score">${score}</span>` : ''}<br><span>${T('Week')} ${f.week+1} · ${homeStepTitle(st)} · ${LL('part','dalis')} ${f.t+1}/${st.targets.length}</span></p>
+      <button type="button" class="ds-primary" data-sheet="part"><span>${LL('Next activity','Kita veikla')}</span><b>${nextT.label}</b></button>
+      <button type="button" class="ds-secondary" data-sheet="plan">${LL('Back to Plan','Grįžti į planą')}</button>
     </div>`;
-  openSheet(LL('Lesson complete','Pamoka baigta'), body, (act)=>{
+  openSheet(LL('Nice work!','Puiku!'), body, (act)=>{
+    closeSheet(true);
+    if(act === 'part') flowAdvance(false);
+    else if(act === 'plan'){ setPlanWeek(f.week); endPlanFlow(true); }
+  }, false);
+  document.body.classList.add('lesson-done-open');
+}
+
+/* The ONE completion experience. Shown when the last practice screen of a lesson is finished
+   (or "Done" is tapped). It replaces — never sits on top of — the exercise's own end card. */
+function showLessonDone(wi, si, opts){
+  opts = opts || {};
+  const steps = planWeekSteps(wi), st = steps[si], w = weeks[wi];
+  if(!st || !w){ flowProceed(); return; }
+  const repeat = !!opts.repeat;
+  const counts = weekDoneCount(wi), weekComplete = counts.total > 0 && counts.done === counts.total;
+  const levelDone = isLevelComplete();
+  const rec = recommendNext(wi, si);
+  const nxtLvl = nextLevelId();
+  const title = repeat ? LL('Practice complete','Praktika baigta') : LL('Lesson complete!','Pamoka baigta!');
+  let chips = '';
+  if(!repeat && levelDone) chips = `<p class="ds-mile">🌿 ${LL('You’ve completed every lesson in this level.','Baigėte visas šio lygio pamokas.')}</p>`;
+  else if(!repeat && weekComplete) chips = `<p class="ds-mile">🌿 ${T('Week')} ${wi+1} ${LL('complete','baigta')}</p>`;
+  else if(repeat) chips = `<p class="ds-note">${LL('You’d already completed this lesson — your progress stays as it was.','Šią pamoką jau buvote baigę – pažanga nesikeičia.')}</p>`;
+  let primary = '', pAct = '', alt = '';
+  const back = pendingEarlier(wi, si);
+  if(rec.type === 'lesson'){
+    const isSkipped = back && rec.si === back.si && rec.wi === back.wi;
+    const lbl = isSkipped ? LL('Skipped lesson','Praleista pamoka') : (rec.sameWeek ? LL('Next lesson','Kita pamoka') : (rec.earlier ? `${LL('Still to do','Dar liko')} · ${T('Week')} ${rec.wi+1}` : `${LL('Next','Toliau')} · ${T('Week')} ${rec.wi+1}`));
+    primary = `<button type="button" class="ds-primary" data-sheet="next"><span>${lbl}</span><b>${homeStepTitle(rec.st)}</b></button>`; pAct = 'next';
+    // also offer the lesson that was skipped earlier in this week, so nothing is left behind silently
+    if(back && !isSkipped) alt = `<button type="button" class="ds-alt" data-sheet="goback"><span>${LL('Go back to the skipped lesson','Grįžti į praleistą pamoką')}</span><b>${homeStepTitle(back.st)}</b></button>`;
+  } else if(nxtLvl){
+    primary = `<button type="button" class="ds-primary" data-sheet="nextlevel"><span>${LL('Next level','Kitas lygis')}</span><b>${nxtLvl.toUpperCase()}</b></button>`; pAct = 'nextlevel';
+  } else {
+    primary = `<button type="button" class="ds-primary" data-sheet="review"><span>${LL('Keep it fresh','Pasikartokite')}</span><b>${LL('Practise a little','Šiek tiek pasitreniruokite')}</b></button>`; pAct = 'review';
+  }
+  const score = opts.score ? `<span class="ds-score">${opts.score}</span>` : '';
+  const body = `<div class="done-sheet">
+      <div class="ds-leaf" aria-hidden="true">🌿</div>
+      <p class="ds-did"><b>${homeStepTitle(st)}</b>${score}<br><span>${T('Week')} ${wi+1} · ${w.title}</span></p>
+      <div class="pw-progress"><div class="pw-bar"><div class="pw-fill" style="width:${counts.total ? Math.round(counts.done / counts.total * 100) : 0}%"></div></div><span>${LL(`${counts.done} of ${counts.total} lessons completed`, `${counts.done} iš ${counts.total} pamokų baigta`)}</span></div>
+      ${chips}
+      ${primary}
+      ${alt}
+      <button type="button" class="ds-secondary" data-sheet="plan">${LL('Back to Plan','Grįžti į planą')}</button>
+    </div>`;
+  openSheet(title, body, (act)=>{
     closeSheet(true);
     if(act === 'next') flowProceed();
-    else if(act === 'nextweek'){
-      endPlanFlow(false);
-      const k = nextActionableIdx(wi+1);
-      if(k >= 0 && planWeekSteps(wi+1)[k].targets.length) startPlanStep(wi+1, k, 0);
-      else { setPlanWeek(wi+1); goToSection('plan'); }
-    }
+    else if(act === 'goback' && back){ startPlanStep(back.wi, back.si, 0); renderPlan(); }
+    else if(act === 'nextlevel'){ endPlanFlow(false); loadCourse(currentCourseId, nxtLvl); goToSection('home'); }
+    else if(act === 'review'){ endPlanFlow(false); goToSection('exercises'); }
     else if(act === 'plan'){ setPlanWeek(wi); endPlanFlow(true); }
-  }, LL('Stay here','Likti čia'));
+  }, false);
+  document.body.classList.add('lesson-done-open');
 }
 
 /* ---------- First-time welcome (3 short, skippable steps) ---------- */
@@ -23760,7 +24186,7 @@ function toggleDifficult(type, idx){
    Practice — or switching to a different exercise tab — and coming back resumes exactly
    where you left off, instead of restarting from question 1. Only the dedicated Restart
    button (or actually finishing the set) clears it. */
-function sessionKey(type){ return 'session_'+type+'_'+currentStoreKey; }
+function sessionKey(type){ return 'session_'+type+'_'+currentStoreKey+scopeSuffix(type); }
 function loadSession(type){ return store.get(sessionKey(type), null); }
 function saveSession(type, data){ store.set(sessionKey(type), data); }
 function clearSession(type){ store.set(sessionKey(type), null); }
@@ -23773,7 +24199,7 @@ function resumeSession(type, sourceList, withState){
   if(!saved || !Array.isArray(saved.order) || !saved.order.length) return null;
   const pool = [], state = [];
   saved.order.forEach((idx, k)=>{
-    if(isMastered(type, idx) || !sourceList[idx]) return;
+    if(isMastered(type, idx) || !sourceList[idx] || !inScope(type, idx)) return;
     pool.push({idx, item: sourceList[idx]});
     if(withState) state.push((saved.state && saved.state[k]) || { wrong: [], done:false, choices:null, answer:null });
   });
@@ -23982,7 +24408,7 @@ function wireRuleCard(body){
 function buildPracticePool(type, sourceList, shuffle){
   const base = [], extra = [];
   sourceList.forEach((item, idx)=>{
-    if(isMastered(type, idx)) return;
+    if(isMastered(type, idx) || !inScope(type, idx)) return;
     base.push({idx, item});
     if(isDifficult(type, idx)) extra.push({idx, item});
   });
@@ -24255,7 +24681,7 @@ function renderExCatTabs(){
     b.addEventListener('click', ()=>{
       if(activeExCat === c.id) return;
       activeExCat = c.id;
-      activeEx = null; // force renderExTabs to pick this category's first available tab
+      exScope = null; activeEx = null; // force renderExTabs to pick this category's first available tab
       renderExTabs(); // also re-renders the category row so its active state updates
       renderExBody();
     });
@@ -24272,7 +24698,7 @@ function renderExTabs(){
     const b = document.createElement('button');
     b.className = 'ex-tab' + (t.id===activeEx? ' active':'');
     b.textContent = t.id==='translate' ? `${T('Translate')} ${currentNativeLangLabel}→${(currentCourseId||'').toUpperCase()}` : T(t.label);
-    b.addEventListener('click', ()=>{ activeEx = t.id; renderExTabs(); renderExBody(); });
+    b.addEventListener('click', ()=>{ if(activeEx !== t.id) exScope = null; activeEx = t.id; renderExTabs(); renderExBody(); });
     wrap.appendChild(b);
   });
 }
@@ -24288,6 +24714,7 @@ function freshPane(hostId){
 }
 function renderExBody(){
   stopSpeech();
+  renderExScope();
   const body = freshPane('exBody');
   if(activeEx==='mcq') return renderMCQ(body);
   if(activeEx==='fill') return renderFill(body);
@@ -24779,18 +25206,19 @@ function renderFill(body){
    skips the gaps) so idx still always means the same thing in tenseItems either way. */
 function getTenseMcqOnly(){ return !!store.get('tenseMcqOnly_'+currentStoreKey, false); }
 function setTenseMcqOnly(v){ store.set('tenseMcqOnly_'+currentStoreKey, !!v); }
-function getTenseFilter(){ return store.get('tenseFilter_'+currentStoreKey, 'all'); }
+function getTenseFilter(){ return scopeActive('tenses') ? 'all' : store.get('tenseFilter_'+currentStoreKey, 'all'); }
 function setTenseFilter(val){ store.set('tenseFilter_'+currentStoreKey, val); }
 function tenseFilterLabel(key){ return key==='all' ? 'All tenses' : (TENSE_DEFS.find(t=>t.key===key) || {}).label; }
 function filteredTenseSourceList(){
   const filter = getTenseFilter();
-  if(filter === 'all') return tenseItems;
+  if(filter === 'all' && !scopeActive('tenses')) return tenseItems;
   const sparse = new Array(tenseItems.length);
-  tenseItems.forEach((it, idx)=>{ if(it.tenseKey === filter) sparse[idx] = it; });
+  tenseItems.forEach((it, idx)=>{ if((filter === 'all' || it.tenseKey === filter) && inScope('tenses', idx)) sparse[idx] = it; });
   return sparse;
 }
 function tenseFilterHtml(){
   const active = getTenseFilter();
+  if(scopeActive('tenses')) return `<label class="tense-mcq-only"><input type="checkbox" id="tenseMcqOnly"${getTenseMcqOnly() ? ' checked' : ''}> <span>${T('Multiple choice only')}</span></label>`;
   const opts = [{key:'all', label:'All'}, ...TENSE_DEFS.map(t=>({key:t.key, label:t.label}))];
   return `<div class="dir-row">
     <div class="dir-switch" id="tenseFilterSwitch">
@@ -24819,7 +25247,7 @@ function wireTenseFilter(body, onSwitch, onMcqOnly){
    clearSession and resumeSession (see near buildPracticePool above), just keyed by filter too
    since plain 'tenses' can't hold four separate positions at once. Mastery/difficulty stay
    on the real 'tenses' type throughout — only the saved position is filter-specific. */
-function tensesSessionKey(filter){ return 'session_tenses_'+filter+'_'+currentStoreKey; }
+function tensesSessionKey(filter){ return 'session_tenses_'+filter+'_'+currentStoreKey+scopeSuffix('tenses'); }
 function loadTensesSession(filter){ return store.get(tensesSessionKey(filter), null); }
 function saveTensesSession(filter, data){ store.set(tensesSessionKey(filter), data); }
 function clearTensesSession(filter){ store.set(tensesSessionKey(filter), null); }
@@ -24957,7 +25385,7 @@ function renderTenses(body){
           <div class="ex-btn-row">
             <button class="btn btn-ghost" id="prevBtn" ${i===0? 'disabled':''}>${T('Back')}</button>
             <button type="button" class="btn btn-ghost" id="playBtn" ${st.done ? '' : 'style="display:none;"'}>${T('▶ Play sound')}</button>
-            <button class="btn btn-primary" id="nextBtn">${i===pool.length-1? T('Finish'):T('Next')}</button>
+            <button class="btn btn-primary" id="nextBtn" ${st.done ? '' : 'disabled'}>${i===pool.length-1? T('Finish'):T('Next')}</button>
           </div>
         </div>`;
       const opts = body.querySelectorAll('.opt');
@@ -25143,109 +25571,184 @@ function renderTenses(body){
 }
 
 /* Listening dictation */
+/* Listening: multiple choice by default (hear it, pick what was said); typing the whole phrase is an
+   optional mode ("Type the full answer instead"). The preference is saved; switching modes keeps
+   the same phrase, the same audio and the same place in the set. */
+function getListenMode(){ const v = store.get('listenMode', 'mcq'); return v === 'type' ? 'type' : 'mcq'; }
+function setListenMode(v){ store.set('listenMode', v === 'type' ? 'type' : 'mcq'); }
+/* 3 distractors that are plausible (same category, similar length / shared words) yet unambiguous:
+   never the same written form, never the same English meaning, never a near-duplicate of the answer. */
+function listenDistractors(idx, want){
+  const [fr, en] = listenItems[idx];
+  const nf = scNorm(fr), ne = scNorm(en), wf = new Set(nf.split(' ')), len = nf.split(' ').length;
+  const ranges = phraseCatRanges(); const home = ranges.find(r=> idx >= r.start && idx < r.end);
+  const seen = new Set([nf]);
+  const cands = [];
+  listenItems.forEach((it, k)=>{
+    if(k === idx) return;
+    const nk = scNorm(it[0]); if(!nk || seen.has(nk) || scNorm(it[1]) === ne) return;
+    const words = nk.split(' '); const shared = words.filter(w=>wf.has(w)).length;
+    if(shared === words.length || shared === wf.size) return;                 // contained in / containing the answer → ambiguous
+    const lenGap = Math.abs(words.length - len);
+    const sameCat = home && k >= home.start && k < home.end;
+    cands.push({ k, nk, score: (sameCat ? 4 : 0) + shared * 1.5 - lenGap * (lenGap > 3 ? 3 : 1) + Math.random() * 2.5 });
+  });
+  cands.sort((a,b)=> b.score - a.score);
+  const out = [];
+  for(const c of cands){ if(out.some(o=>o.nk === c.nk)) continue; out.push(c); if(out.length >= want) break; }
+  return out.map(c=> listenItems[c.k][0]);
+}
 function renderListen(body){
   const resumed = resumeSession('listen', listenItems, false);
   let pool = resumed ? resumed.pool : buildPracticePool('listen', listenItems, false);
   let i = resumed ? resumed.i : 0;
   let score = resumed ? resumed.score : 0;
+  let cur = null;               // the question on screen: { key, choices, answer, picked, done, correct, typed }
+  let pendingMaster = false, advanceTimer = null;
   function persist(){ saveSession('listen', { order: pool.map(p=>p.idx), i, score }); }
+  function goNext(autoPlay){ if(advanceTimer) clearTimeout(advanceTimer); advanceTimer = null; pendingMaster = false; i++; show(false, autoPlay); }
   function show(skipAnim, autoPlay){
     if(pool.length === 0){ clearSession('listen'); body.innerHTML = emptyPoolCard('Listening dictation'); return; }
     if(i >= pool.length){
       clearSession('listen');
       body.innerHTML = `<div class="card"><div class="score-pill">${T('Score: ')}${Math.min(score, pool.uniqueTotal)}/${pool.uniqueTotal}</div><p>${T("That's the set. Reset to try again.")}</p><button class="btn btn-primary" id="restart">${T('Restart')}</button></div>`;
-      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('listen', listenItems, false); i=0; score=0; show(); });
+      body.querySelector('#restart').addEventListener('click', ()=>{ pool = buildPracticePool('listen', listenItems, false); i=0; score=0; cur = null; show(); });
       return;
     }
-    const [fr, en] = pool[i].item;
-    const prevVal = skipAnim ? (body.querySelector('#dictIn')?.value || '') : '';
+    const idx = pool[i].idx, [fr, en] = pool[i].item;
+    const key = i + ':' + idx;
+    if(!cur || cur.key !== key) cur = { key, choices:null, answer:-1, wrong:[], done:false, correct:null, firstTry:true, typed:'' };
+    const mode = getListenMode();
+    if(mode === 'mcq' && !cur.choices){
+      const ds = listenDistractors(idx, 3);
+      const all = [fr, ...ds].map((c, n)=>({ c, ok: n === 0 })).sort(()=>Math.random() - 0.5);
+      cur.choices = all.map(x=>x.c); cur.answer = all.findIndex(x=>x.ok);
+    }
+    const lang = COURSES[currentCourseId].name;
+    const instr = mode === 'mcq'
+      ? (currentUILang==='lt' ? 'Paklausykite ir pasirinkite, ką išgirdote.' : 'Listen, then choose what you heard.')
+      : (currentUILang==='lt' ? `Klausykite ir įrašykite, ką girdite — tik ${lang} kalba.` : `Listen, then type what you hear — in ${lang} only.`);
+    const answerHtml = mode === 'mcq'
+      ? `<div class="listen-opts" role="radiogroup" aria-label="${T('Choose what you heard')}">${cur.choices.map((c, n)=>`<button type="button" class="opt" role="radio" aria-checked="false" data-idx="${n}">${c}</button>`).join('')}</div>`
+      : `<input class="fill-input" id="dictIn" placeholder="${T('Type what you heard')}" autocomplete="off" autocapitalize="off">`;
     persist();
     body.innerHTML = `
       <div class="card question-card${skipAnim ? '' : ' card-enter'}">
         <div class="q-topline">
           <div class="q-progress">${cefrTagHtml()}${T('Phrase')} ${distinctOrdinal(pool,i)}${T(' of ')}${pool.uniqueTotal}${masteredNote('listen')}</div>
-          ${qActionsHtml('listen', pool[i].idx)}
+          ${qActionsHtml('listen', idx)}
         </div>
-        <p style="font-size:.88rem; color:var(--text-2); margin-top:0;">${currentUILang==='lt' ? `Klausykite ir įrašykite, ką girdite — tik ${COURSES[currentCourseId].name} kalba.` : `Listen, then type what you hear — ${COURSES[currentCourseId].name} only.`}</p>
-        <button class="btn btn-primary" id="playBtn" style="margin-bottom:14px;">${T('▶ Play phrase')}</button>
-        <input class="fill-input" id="dictIn" placeholder="${T('Type what you heard')}" autocomplete="off" autocapitalize="off">
+        <p class="listen-instr">${instr}</p>
+        <button class="btn btn-primary listen-play" id="playBtn">${T('▶ Play phrase')}</button>
+        ${answerHtml}
+        <div class="feedback" id="fb" role="status" aria-live="polite"></div>
+        <label class="listen-mode"><input type="checkbox" id="listenTyped"${mode === 'type' ? ' checked' : ''}> <span>${LL('Type the full answer instead','Vietoj to įrašyti visą atsakymą')}</span></label>
         <div class="ex-btn-row">
-          <button class="btn btn-primary" id="check">${T('Check')}</button>
+          ${mode === 'type' ? `<button class="btn btn-primary" id="check" disabled>${T('Check')}</button>` : ''}
           <button class="btn btn-ghost" id="replay">${T('Replay')}</button>
           <button class="btn btn-primary" id="nextBtn" disabled>${i===pool.length-1? T('Finish'):T('Next')}</button>
         </div>
-        <div class="feedback" id="fb" role="status" aria-live="polite"></div>
       </div>`;
-    if(prevVal) body.querySelector('#dictIn').value = prevVal;
+    const fb = body.querySelector('#fb'), checkBtn = body.querySelector('#check'), nextBtn = body.querySelector('#nextBtn');
+    const input = body.querySelector('#dictIn');
+    const opts = [...body.querySelectorAll('.listen-opts .opt')];
     body.querySelector('#playBtn').addEventListener('click', ()=> speak(fr));
     body.querySelector('#replay').addEventListener('click', ()=> speak(fr));
-    const input = body.querySelector('#dictIn');
-    const nextBtn = body.querySelector('#nextBtn');
-    let advanceTimer = null;
-    let pendingMaster = false;
-    let checkedCorrect = null;
-    body.querySelector('#check').addEventListener('click', ()=>{
-      const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s]/g,'').trim();
-      const fb = body.querySelector('#fb');
-      const correct = norm(input.value) === norm(fr);
-      checkedCorrect = correct;
-      speak(fr); // Check plays the phrase
-      input.disabled = true;
-      body.querySelector('#check').disabled = true;
-      nextBtn.disabled = false;
-      if(correct){
-        score++;
-        if(pendingMaster){
-          const masteredIdx = pool[i].idx;
-          celebrateMastered(body, ()=>{
-            setMastered('listen', masteredIdx, true);
-            removeUpcomingOccurrences(pool, null, i, masteredIdx);
-            show();
-          });
-          return;
-        }
-        fb.textContent = `Correct! "${fr}" — ${en}`; fb.className='feedback ok';
-        advanceTimer = setTimeout(()=>{ i++; show(); }, 1500);
-      } else {
-        fb.textContent = `${T('Target: ')}"${fr}" (${en})`; fb.className='feedback bad';
-      }
-    });
-    input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled) body.querySelector('#check').click(); });
-    nextBtn.addEventListener('click', ()=>{ if(advanceTimer) clearTimeout(advanceTimer); i++; show(false, true); }); // Next plays the next phrase
-    body.querySelector('#masterBtn').addEventListener('click', ()=>{
-      const masteredIdx = pool[i].idx;
-      if(checkedCorrect){
-        if(advanceTimer) clearTimeout(advanceTimer);
-        celebrateMastered(body, ()=>{
-          setMastered('listen', masteredIdx, true);
-          removeUpcomingOccurrences(pool, null, i, masteredIdx);
-          show();
-        });
+    if(pendingMaster && !cur.done) armMaster(body, T('Answer correctly to master this.'));
+
+    function paintOpts(){
+      opts.forEach((o, n)=>{
+        const bad = cur.wrong.includes(n);
+        o.classList.toggle('wrong', bad);
+        o.classList.toggle('correct', cur.done && n === cur.answer);
+        o.disabled = bad || cur.done;
+        o.setAttribute('aria-checked', String(cur.done && n === cur.answer));
+      });
+    }
+    function showResult(){
+      if(checkBtn) checkBtn.disabled = true;
+      nextBtn.disabled = !cur.done;
+      if(input){ input.disabled = cur.done; if(cur.done) input.value = cur.typed; }
+      paintOpts();
+      if(!cur.done){
+        if(cur.wrong.length){ fb.textContent = T('Not quite — try another option.'); fb.className = 'feedback bad'; }
         return;
       }
-      if(checkedCorrect === false){
-        const fb2 = body.querySelector('#fb');
-        fb2.textContent = T("You already answered this one this round — it'll come back around for another chance.");
-        fb2.className = 'feedback bad';
+      if(cur.correct){
+        fb.textContent = (mode === 'mcq' && !cur.firstTry)
+          ? `${T('Correct — but only a first-try answer counts toward your score.')} "${fr}" — ${en}`
+          : `Correct! "${fr}" — ${en}`;
+        fb.className = 'feedback ok';
+      } else { fb.textContent = `${T('Target: ')}"${fr}" (${en})`; fb.className = 'feedback bad'; }
+    }
+    if(cur.done || cur.wrong.length) showResult();
+    else if(mode === 'type' && cur.typed && input) { input.value = cur.typed; checkBtn.disabled = !input.value.trim(); }
+
+    function settle(correct){
+      cur.done = true; cur.correct = correct;
+      speak(fr); // answering plays the phrase
+      showResult();
+      if(correct){
+        if(cur.firstTry) score++;
+        if(pendingMaster){
+          const masteredIdx = idx;
+          celebrateMastered(body, ()=>{ setMastered('listen', masteredIdx, true); removeUpcomingOccurrences(pool, null, i, masteredIdx); pendingMaster = false; cur = null; show(); });
+          return;
+        }
+        // typing keeps its gentle auto-advance; multiple choice waits for Continue so the feedback can be read
+        if(mode === 'type') advanceTimer = setTimeout(()=>{ goNext(false); }, 1500);
+      }
+    }
+    if(mode === 'mcq'){
+      // like the other exercises: tapping an option answers immediately — no separate Check step
+      opts.forEach((o, n)=> o.addEventListener('click', ()=>{
+        if(cur.done || o.disabled) return;
+        if(n === cur.answer){ settle(true); }
+        else { cur.wrong.push(n); cur.firstTry = false; showResult(); if(typeof syncSession === 'function') syncSession(); }
+      }));
+    } else if(input){
+      input.addEventListener('input', ()=>{ cur.typed = input.value; checkBtn.disabled = !input.value.trim(); if(typeof syncSession === 'function') syncSession(); });
+      const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\w\s]/g,'').trim();
+      checkBtn.addEventListener('click', ()=>{ if(cur.done || !input.value.trim()) return; cur.typed = input.value; settle(norm(input.value) === norm(fr)); });
+      input.addEventListener('keydown', e=>{ if(e.key==='Enter' && !input.disabled && !checkBtn.disabled) checkBtn.click(); });
+    }
+    body.querySelector('#listenTyped').addEventListener('change', (e)=>{
+      setListenMode(e.target.checked ? 'type' : 'mcq');
+      if(advanceTimer){ clearTimeout(advanceTimer); advanceTimer = null; }
+      // same phrase, same place — only the way of answering changes (a result already shown stays)
+      show(true);
+    });
+    nextBtn.addEventListener('click', ()=> goNext(true)); // Next plays the next phrase
+    body.querySelector('#masterBtn').addEventListener('click', ()=>{
+      const masteredIdx = idx;
+      if(cur.done && cur.correct){
+        if(advanceTimer) clearTimeout(advanceTimer);
+        celebrateMastered(body, ()=>{ setMastered('listen', masteredIdx, true); removeUpcomingOccurrences(pool, null, i, masteredIdx); pendingMaster = false; cur = null; show(); });
+        return;
+      }
+      if(cur.done && cur.correct === false){
+        fb.textContent = T("You already answered this one this round — it'll come back around for another chance.");
+        fb.className = 'feedback bad';
         return;
       }
       pendingMaster = !pendingMaster;
-      if(pendingMaster) armMaster(body, T('Type what you hear to master this.'));
-      else { disarmMaster(body); const fb2 = body.querySelector('#fb'); fb2.textContent = ''; fb2.className = 'feedback'; }
+      if(pendingMaster) armMaster(body, mode === 'mcq' ? T('Answer correctly to master this.') : T('Type what you hear to master this.'));
+      else { disarmMaster(body); fb.textContent = ''; fb.className = 'feedback'; }
     });
     body.querySelector('#difficultBtn').addEventListener('click', ()=>{
-      toggleDifficult('listen', pool[i].idx);
-      applyDifficultToggle('listen', pool[i].idx, pool, i, null);
+      toggleDifficult('listen', idx);
+      applyDifficultToggle('listen', idx, pool, i, null);
       show(true);
     });
     body.querySelector('#restartBtn').addEventListener('click', ()=>{
       if(!confirm(restartConfirmText(T('Listening dictation')))) return;
       clearSession('listen');
       pool = buildPracticePool('listen', listenItems, false);
-      i = 0; score = 0;
+      i = 0; score = 0; cur = null; pendingMaster = false;
       show();
     });
     if(autoPlay && !skipAnim) speak(fr); // never auto-play on entering/resuming/auto-advance
+    if(typeof syncSession === 'function') syncSession();
   }
   show();
 }
@@ -26157,7 +26660,7 @@ function loadCourse(langId, levelId){
   activeCat = PHRASE_CATS[0];
   activeResType = 'All';
   activeQuizWeek = 0;
-  activeEx = 'mcq';
+  activeEx = 'mcq'; exScope = null;
   activeExCat = 'core';
   exBodyStale = false;
 
